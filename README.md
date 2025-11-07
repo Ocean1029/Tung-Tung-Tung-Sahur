@@ -1,39 +1,67 @@
-# What is Town Pass?
+# Town Pass
 
-Town Pass is an open-source project developed by the Taipei City Government. With the growth of smart cities, the demand for digitalization in city management and citizen services continues to rise. As we enter a new digital era, our goal is to involve citizens in the process, combining third-party expertise and innovation to make digital life in Taipei more convenient.
+台北通 App - 集章系統專案
 
-Town Pass is not just an application; it is an open community project. Through open-source, every citizen can participate in the ideation, development, and optimization of the application. This not only enhances citizen engagement and satisfaction but also leverages collective intelligence to continuously improve the application, making it truly serve the people. Furthermore, we hope that various municipalities can widely adopt the open-source framework of Town Pass, integrate it with their existing municipal service systems, and quickly have their own applications to enhance digital governance.
+## 📁 專案結構
 
-Open source is a key driver of technological progress and social development. Through open-source, Town Pass will become an ever-evolving platform, attracting developers from all backgrounds to contribute. We welcome experts to submit code, report issues, provide suggestions, and even develop new features and creative ideas, working together to perfect Town Pass as we advance toward a smart city.
+```
+TownPass/
+├── frontend/          # Flutter 前端應用
+│   ├── lib/          # Dart 程式碼
+│   ├── android/      # Android 平台配置
+│   ├── ios/          # iOS 平台配置
+│   └── ...
+│
+├── backend/          # 後端 API 服務
+│   ├── src/         # 後端程式碼
+│   └── ...
+│
+└── docs/             # 專案文件
+    ├── API.md       # API 規格文件
+    ├── ARCHITECTURE.md  # 架構說明
+    └── CONTRIBUTING.md  # 協作指南
+```
 
-# Getting Started
+## 🛠️ 技術棧
 
-We highly recommend to read through our [document](https://tpe-guideline.web.app/en/docs/) for more detail.
+- **前端**: Flutter + Dart
+- **後端**: (待定)
+- **狀態管理**: GetX
 
-Here are some quick setup guide.
+## 🚀 快速開始
 
-## Requirement
+### 前端開發
 
-- [Flutter](https://docs.flutter.dev/get-started/install) or [FVM](https://fvm.app/documentation/getting-started/installation)
-- [XCode](https://developer.apple.com/xcode/) (for iOS)
-- [Android SDK](https://developer.android.com/studio/index.html) (for Android, with or without Android Studio)
+```bash
+cd frontend
 
-## Build the Project
+# 安裝依賴
+flutter pub get
 
-1. Get the packages project needed:
+# 運行應用
+flutter run
+```
 
-   ``` bash
-   flutter pub get
-   ```
+### 後端開發
 
-2. Generate additional needed dart code for the project.
+詳見 `backend/README.md`
 
-   ``` bash
-   flutter packages pub run build_runner build
-   ```
+## 👥 團隊協作
 
-3. You are all set now, Run the project from your IDE or the through the command line:
+詳見 `docs/CONTRIBUTING.md`
 
-   ``` bash
-   flutter run
-   ```
+## 📚 文件
+
+- [API 文件](./docs/API.md)
+- [架構說明](./docs/ARCHITECTURE.md)
+- [協作指南](./docs/CONTRIBUTING.md)
+
+## 📝 開發團隊
+
+- **後端工程師**: 負責 `backend/` 目錄
+- **前端工程師**: 負責 `frontend/` 目錄
+
+## 📄 授權
+
+詳見 `frontend/LICENSE`
+

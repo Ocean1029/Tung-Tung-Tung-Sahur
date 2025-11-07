@@ -22,63 +22,63 @@ migrate_working_dir/
 .vscode/
 
 # Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+frontend/**/doc/api/
+frontend/**/ios/Flutter/.last_build_id
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
 
 # Android related
-**/android/**/gradle-wrapper.jar
-**/android/app/.cxx/
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
+frontend/**/android/**/gradle-wrapper.jar
+frontend/**/android/app/.cxx/
+frontend/**/android/.gradle
+frontend/**/android/captures/
+frontend/**/android/gradlew
+frontend/**/android/gradlew.bat
+frontend/**/android/local.properties
+frontend/**/android/**/GeneratedPluginRegistrant.java
 
 # iOS/XCode related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/.generated/
-**/ios/Flutter/App.framework
-**/ios/Flutter/Flutter.framework
-**/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/app.flx
-**/ios/Flutter/app.zip
-**/ios/Flutter/flutter_assets/
-**/ios/ServiceDefinitions.json
-**/ios/Runner/GeneratedPluginRegistrant.*
+frontend/**/ios/**/*.mode1v3
+frontend/**/ios/**/*.mode2v3
+frontend/**/ios/**/*.moved-aside
+frontend/**/ios/**/*.pbxuser
+frontend/**/ios/**/*.perspectivev3
+frontend/**/ios/**/*sync/
+frontend/**/ios/**/.sconsign.dblite
+frontend/**/ios/**/.tags*
+frontend/**/ios/**/.vagrant/
+frontend/**/ios/**/DerivedData/
+frontend/**/ios/**/Icon?
+frontend/**/ios/**/Pods/
+frontend/**/ios/**/.symlinks/
+frontend/**/ios/**/profile
+frontend/**/ios/**/xcuserdata
+frontend/**/ios/.generated/
+frontend/**/ios/Flutter/App.framework
+frontend/**/ios/Flutter/Flutter.framework
+frontend/**/ios/Flutter/Generated.xcconfig
+frontend/**/ios/Flutter/app.flx
+frontend/**/ios/Flutter/app.zip
+frontend/**/ios/Flutter/flutter_assets/
+frontend/**/ios/ServiceDefinitions.json
+frontend/**/ios/Runner/GeneratedPluginRegistrant.*
 
 # Symbolication related
-app.*.symbols
+frontend/app.*.symbols
 
 # Obfuscation related
-app.*.map.json
+frontend/app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-*.g.dart
-*.gen.dart
+frontend/android/app/debug
+frontend/android/app/profile
+frontend/android/app/release
+frontend/**/*.g.dart
+frontend/**/*.gen.dart
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
@@ -88,4 +88,17 @@ app.*.map.json
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 # FVM Version Cache
-.fvm/
+frontend/.fvm/
+
+# Backend
+backend/node_modules/
+backend/.env
+backend/__pycache__/
+backend/.venv/
+backend/dist/
+backend/build/
+backend/.env.local
+
+# Other
+flutter_application_1/
+chathistory/
