@@ -6,7 +6,8 @@ services:
       context: ./backend
       target: development
     # Run the development server with hot reload enabled.
-    command: ["npm", "run", "dev"]
+    # Generate Prisma Client on startup to ensure it's available after volume mount
+    command: ["sh", "-c", "npm run prisma:generate && npm run dev"]
     env_file:
       - .env.dev
     ports:
