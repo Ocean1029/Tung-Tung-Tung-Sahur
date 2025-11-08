@@ -39,6 +39,8 @@ import 'package:town_pass/page/run_city/run_city_stats_view.dart';
 import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
 import 'package:town_pass/page/run_city/run_city_activity_detail_view.dart';
 import 'package:town_pass/page/run_city/run_city_activity_detail_controller.dart';
+import 'package:town_pass/page/nfc_scan/nfc_scan_view.dart';
+import 'package:town_pass/page/nfc_scan/nfc_scan_controller.dart';
 import 'package:town_pass/util/tp_web_view.dart';
 
 abstract class TPRoute {
@@ -64,10 +66,11 @@ abstract class TPRoute {
   static const String settingStartPage = '/setting_start_page';
   static const String subscription = '/subscription';
   static const String suspendAccount = '/suspend_account';
-    static const String runCity = '/run_city';
-    static const String runCityStats = '/run_city_stats';
-    static const String runCityActivityDetail = '/run_city_activity_detail';
-    static const String webView = '/web_view';
+  static const String runCity = '/run_city';
+  static const String runCityStats = '/run_city_stats';
+  static const String runCityActivityDetail = '/run_city_activity_detail';
+  static const String nfcScan = '/nfc_scan';
+  static const String webView = '/web_view';
 
   static final List<GetPage> page = [
     GetPage(
@@ -213,6 +216,13 @@ abstract class TPRoute {
       page: () => const RunCityActivityDetailView(),
       binding: BindingsBuilder(() {
         Get.put<RunCityActivityDetailController>(RunCityActivityDetailController());
+      }),
+    ),
+    GetPage(
+      name: nfcScan,
+      page: () => const NFCScanView(),
+      binding: BindingsBuilder(() {
+        Get.put<NFCScanController>(NFCScanController());
       }),
     ),
   ];
