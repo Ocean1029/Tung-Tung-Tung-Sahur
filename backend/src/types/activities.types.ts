@@ -50,6 +50,7 @@ export type CollectedLocation = {
   name: string;
   latitude: number;
   longitude: number;
+  area: string | null;
   coinsEarned: number;
 };
 
@@ -123,6 +124,7 @@ export type ActivityDetailResponse = {
       name: string;
       latitude: number;
       longitude: number;
+      area: string | null;
       collectedAt: string;
     }>;
     coinsEarned: number;

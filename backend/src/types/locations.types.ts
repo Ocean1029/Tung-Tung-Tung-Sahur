@@ -10,6 +10,7 @@ export type LocationResponse = {
   description: string | null;
   nfcId: string | null;
   isNfcEnabled: boolean;
+  area: string | null;
   createdAt: Date;
   updatedAt: Date;
 };

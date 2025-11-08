@@ -32,6 +32,7 @@ model Location {
   description  String?  @db.Text
   latitude     Float    @db.DoublePrecision
   longitude    Float    @db.DoublePrecision
+  area         String?  @db.Text // Administrative area (e.g., "大安區", "中正區")
   nfcId        String?  @unique @map("nfc_id") @db.Text
   isNfcEnabled Boolean  @default(false) @map("is_nfc_enabled")
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp

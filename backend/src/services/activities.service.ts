@@ -11,6 +11,8 @@ import type {
 } from "../types/activities.types.js";
 import { prisma } from "../utils/prismaClient.js";
 
+import { geocodingService } from "./geocoding.service.js";
+
 /**
  * Service layer for Activities module
  * Handles all business logic related to activity tracking
@@ -308,21 +310,55 @@ const endActivity = async (
     }
   });
 
-  // Get collected location details
-  const collectedLocationDetails = await Promise.all(
+  // Get collected location details with areas from database
+  const collectedLocationData = await Promise.all(
     collectedLocations.map(async (collected) => {
       const location = await prisma.location.findUnique({
         where: { id: collected.locationId }
       });
       return {
-        id: location!.id,
-        name: location!.name,
-        latitude: location!.latitude,
-        longitude: location!.longitude,
-        coinsEarned: collected.coinsEarned
+        location: location!,
+        collected
       };
     })
   );
+
+  // Separate locations that need area lookup (area is null in database)
+  const locationsNeedingArea = collectedLocationData.filter(
+    (data) => !data.location.area
+  );
+
+  // Batch fetch areas for locations that need them
+  if (locationsNeedingArea.length > 0) {
+    const areaMap = await geocodingService.getAreasFromCoordinates(
+      locationsNeedingArea.map((data) => ({
+        latitude: data.location.latitude,
+        longitude: data.location.longitude
+      }))
+    );
+
+    // Update locations in database
+    await Promise.all(
+      locationsNeedingArea.map(async (data) => {
+        const area = areaMap.get(`${data.location.latitude},${data.location.longitude}`) || null;
+        await prisma.location.update({
+          where: { id: data.location.id },
+          data: { area }
+        });
+        // Update the location object in memory
+        data.location.area = area;
+      })
+    );
+  }
+
+  const collectedLocationDetails = collectedLocationData.map((data) => ({
+    id: data.location.id,
+    name: data.location.name,
+    latitude: data.location.latitude,
+    longitude: data.location.longitude,
+    area: data.location.area,
+    coinsEarned: data.collected.coinsEarned
+  }));
 
   return {
     success: true,
@@ -454,6 +490,34 @@ const getActivityDetail = async (
     0
   );
 
+  // Separate locations that need area lookup (area is null in database)
+  const locationsNeedingArea = activity.activityCollectedLocations.filter(
+    (collected) => !collected.location.area
+  );
+
+  // Batch fetch areas for locations that need them
+  if (locationsNeedingArea.length > 0) {
+    const areaMap = await geocodingService.getAreasFromCoordinates(
+      locationsNeedingArea.map((collected) => ({
+        latitude: collected.location.latitude,
+        longitude: collected.location.longitude
+      }))
+    );
+
+    // Update locations in database
+    await Promise.all(
+      locationsNeedingArea.map(async (collected) => {
+        const area = areaMap.get(`${collected.location.latitude},${collected.location.longitude}`) || null;
+        await prisma.location.update({
+          where: { id: collected.location.id },
+          data: { area }
+        });
+        // Update the location object in memory
+        collected.location.area = area;
+      })
+    );
+  }
+
   return {
     success: true,
     data: {
@@ -473,6 +537,7 @@ const getActivityDetail = async (
         name: collected.location.name,
         latitude: collected.location.latitude,
         longitude: collected.location.longitude,
+        area: collected.location.area,
         collectedAt: collected.collectedAt.toISOString()
       })),
       coinsEarned: totalCoins

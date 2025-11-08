@@ -10,10 +10,70 @@ import type {
 } from "../types/locations.types.js";
 import { prisma } from "../utils/prismaClient.js";
 
+import { geocodingService } from "./geocoding.service.js";
+
 /**
  * Service layer for Locations module
  * Handles all business logic related to location management
  */
+
+/**
+ * Batch ensure areas for multiple locations
+ * Fetches areas only for locations that don't have area in database
+ * @param locations - Array of locations with id, latitude, longitude, and optional area
+ * @returns Map of location ID to area
+ */
+const batchEnsureLocationAreas = async (
+  locations: Array<{ id: string; latitude: number; longitude: number; area: string | null }>
+): Promise<Map<string, string | null>> => {
+  const results = new Map<string, string | null>();
+
+  // Separate locations that need area lookup
+  const locationsNeedingArea = locations.filter((loc) => !loc.area);
+
+  if (locationsNeedingArea.length === 0) {
+    // All locations already have area, return them
+    locations.forEach((loc) => {
+      results.set(loc.id, loc.area);
+    });
+    return results;
+  }
+
+  // Batch fetch areas for locations that need them
+  const areaMap = await geocodingService.getAreasFromCoordinates(
+    locationsNeedingArea.map((loc) => ({
+      latitude: loc.latitude,
+      longitude: loc.longitude
+    }))
+  );
+
+  // Update locations in database and build result map
+  const updatePromises = locationsNeedingArea.map(async (loc) => {
+    const area = areaMap.get(`${loc.latitude},${loc.longitude}`) || null;
+
+    // Update location in database
+    await prisma.location.update({
+      where: { id: loc.id },
+      data: { area }
+    });
+
+    return { id: loc.id, area };
+  });
+
+  const updatedAreas = await Promise.all(updatePromises);
+
+  // Build result map
+  locations.forEach((loc) => {
+    if (loc.area) {
+      results.set(loc.id, loc.area);
+    } else {
+      const updated = updatedAreas.find((u) => u.id === loc.id);
+      results.set(loc.id, updated?.area || null);
+    }
+  });
+
+  return results;
+};
 
 const getLocations = async (
   query: LocationListQuery
@@ -63,20 +123,35 @@ const getLocations = async (
     })
   ]);
 
+  // Ensure all locations have area in database
+  const areaMap = await batchEnsureLocationAreas(
+    locations.map((loc) => ({
+      id: loc.id,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      area: loc.area
+    }))
+  );
+
   return {
     success: true,
     count: totalCount,
-    data: locations.map((loc) => ({
-      id: loc.id,
-      name: loc.name,
-      latitude: loc.latitude,
-      longitude: loc.longitude,
-      description: loc.description,
-      nfcId: loc.nfcId,
-      isNfcEnabled: loc.isNfcEnabled,
-      createdAt: loc.createdAt,
-      updatedAt: loc.updatedAt
-    }))
+    data: locations.map((loc) => {
+      const area = areaMap.get(loc.id) || null;
+
+      return {
+        id: loc.id,
+        name: loc.name,
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+        description: loc.description,
+        nfcId: loc.nfcId,
+        isNfcEnabled: loc.isNfcEnabled,
+        area,
+        createdAt: loc.createdAt,
+        updatedAt: loc.updatedAt
+      };
+    })
   };
 };
 
@@ -94,12 +169,19 @@ const createLocation = async (
     }
   }
 
+  // Get area for the new location before creating
+  const area = await geocodingService.getAreaFromCoordinates(
+    input.latitude,
+    input.longitude
+  );
+
   const location = await prisma.location.create({
     data: {
       name: input.name,
       latitude: input.latitude,
       longitude: input.longitude,
       description: input.description || null,
+      area,
       isNfcEnabled: input.isNfcEnabled ?? false,
       nfcId: input.nfcId || null
     }
@@ -115,6 +197,7 @@ const createLocation = async (
       description: location.description,
       nfcId: location.nfcId,
       isNfcEnabled: location.isNfcEnabled,
+      area: location.area,
       createdAt: location.createdAt,
       updatedAt: location.updatedAt
     }
@@ -145,6 +228,20 @@ const updateLocation = async (
     }
   }
 
+  // Determine final coordinates after update
+  const finalLat = input.latitude !== undefined ? input.latitude : existingLocation.latitude;
+  const finalLng = input.longitude !== undefined ? input.longitude : existingLocation.longitude;
+
+  // Recalculate area if coordinates changed
+  let area = existingLocation.area;
+  if (
+    input.latitude !== undefined ||
+    input.longitude !== undefined ||
+    (finalLat !== existingLocation.latitude || finalLng !== existingLocation.longitude)
+  ) {
+    area = await geocodingService.getAreaFromCoordinates(finalLat, finalLng);
+  }
+
   const location = await prisma.location.update({
     where: { id: locationId },
     data: {
@@ -153,7 +250,8 @@ const updateLocation = async (
       ...(input.longitude !== undefined && { longitude: input.longitude }),
       ...(input.description !== undefined && { description: input.description }),
       ...(input.isNfcEnabled !== undefined && { isNfcEnabled: input.isNfcEnabled }),
-      ...(input.nfcId !== undefined && { nfcId: input.nfcId })
+      ...(input.nfcId !== undefined && { nfcId: input.nfcId }),
+      ...(area !== undefined && { area })
     }
   });
 
@@ -167,6 +265,7 @@ const updateLocation = async (
       description: location.description,
       nfcId: location.nfcId,
       isNfcEnabled: location.isNfcEnabled,
+      area: location.area,
       createdAt: location.createdAt,
       updatedAt: location.updatedAt
     }
@@ -270,9 +369,20 @@ const getUserMap = async (query: UserMapQuery): Promise<UserMapResponse> => {
     ).map((c) => c.locationId)
   );
 
+  // Ensure all locations have area in database
+  const areaMap = await batchEnsureLocationAreas(
+    locations.map((loc) => ({
+      id: loc.id,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      area: loc.area
+    }))
+  );
+
   const locationsWithStatus = locations.map((loc) => {
     const isCollected = collectedLocationIds.has(loc.id);
     const collection = loc.userLocationCollections[0];
+    const area = areaMap.get(loc.id) || null;
 
     return {
       id: loc.id,
@@ -282,6 +392,7 @@ const getUserMap = async (query: UserMapQuery): Promise<UserMapResponse> => {
       description: loc.description,
       nfcId: loc.nfcId,
       isNfcEnabled: loc.isNfcEnabled,
+      area,
       createdAt: loc.createdAt,
       updatedAt: loc.updatedAt,
       isCollected,
