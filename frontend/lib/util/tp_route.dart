@@ -33,6 +33,10 @@ import 'package:town_pass/page/setting/setting_view_controller.dart';
 import 'package:town_pass/page/subscription/subscription_view.dart';
 import 'package:town_pass/page/suspend_account/suspend_account_controller.dart';
 import 'package:town_pass/page/suspend_account/suspend_account_view.dart';
+import 'package:town_pass/page/run_city/run_city_view.dart';
+import 'package:town_pass/page/run_city/run_city_controller.dart';
+import 'package:town_pass/page/run_city/run_city_stats_view.dart';
+import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
 import 'package:town_pass/util/tp_web_view.dart';
 
 abstract class TPRoute {
@@ -58,6 +62,8 @@ abstract class TPRoute {
   static const String settingStartPage = '/setting_start_page';
   static const String subscription = '/subscription';
   static const String suspendAccount = '/suspend_account';
+  static const String runCity = '/run_city';
+  static const String runCityStats = '/run_city_stats';
   static const String webView = '/web_view';
 
   static final List<GetPage> page = [
@@ -184,6 +190,20 @@ abstract class TPRoute {
     GetPage(
       name: activityDetail,
       page: () => const ActivityDetailView(),
+    ),
+    GetPage(
+      name: runCity,
+      page: () => const RunCityView(),
+      binding: BindingsBuilder(() {
+        Get.put<RunCityController>(RunCityController());
+      }),
+    ),
+    GetPage(
+      name: runCityStats,
+      page: () => const RunCityStatsView(),
+      binding: BindingsBuilder(() {
+        Get.put<RunCityStatsController>(RunCityStatsController());
+      }),
     ),
   ];
 

@@ -142,6 +142,19 @@ abstract final class TPColors {
   /// [Color(0xFF180505)]
   static const Color red950 = Color(0xFF180505);
 
+  // Run City specific colors
+  /// [Color(0xFFE6F8F9)] - Run City background
+  static const Color runCityBackground = Color(0xFFE6F8F9);
+
+  /// [Color(0xFF00B9CA)] - Run City primary blue
+  static const Color runCityBlue = Color(0xFF00B9CA);
+
+  /// [Color(0xFF91A0A8)] - Run City gray text
+  static const Color runCityGray = Color(0xFF91A0A8);
+
+  /// [Color(0xFFF5F5F5)] - Run City table header background
+  static const Color runCityTableHeader = Color(0xFFF5F5F5);
+
   // Orange
 
   /// [Color(0xFFFDF3EC)]

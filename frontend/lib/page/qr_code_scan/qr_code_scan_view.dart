@@ -32,7 +32,7 @@ class QRCodeScanView extends GetView<QRCodeScanController> {
           MobileScanner(
             scanWindow: _scanWindow,
             controller: controller.scanController,
-            errorBuilder: (context, error, child) {
+            errorBuilder: (context, error) {
               return ScannerErrorWidget(error: error);
             },
           ),
