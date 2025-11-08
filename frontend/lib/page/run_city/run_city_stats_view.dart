@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
+import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/util/tp_app_bar.dart';
 import 'package:town_pass/util/tp_cached_network_image.dart';
@@ -66,8 +67,8 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
           );
         }
 
-        final userData = controller.userData.value;
-        if (userData == null) {
+        final profile = controller.userProfile.value;
+        if (profile == null) {
           return const Center(
             child: TPText(
               '無資料',
@@ -85,7 +86,11 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
               padding: const EdgeInsets.all(16),
               children: [
                 // 個人簡介區塊
-                _buildUserProfileCard(userData),
+                _buildUserProfileCard(
+                  profile,
+                  collectedBadges: controller.collectedBadges,
+                  totalBadges: controller.totalBadges,
+                ),
                 const SizedBox(height: 16),
                 // 徽章區塊（預留位置）
                 _buildBadgeSection(),
@@ -101,7 +106,11 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
   }
 
   /// 建立個人簡介區塊（無陰影）
-  Widget _buildUserProfileCard(userData) {
+  Widget _buildUserProfileCard(
+    RunCityUserProfile profile, {
+    required int collectedBadges,
+    required int totalBadges,
+  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -112,10 +121,10 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 頭貼（約70x70像素）
-          if (userData.avatarUrl != null && userData.avatarUrl!.isNotEmpty)
+          if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty)
             ClipOval(
               child: TPCachedNetworkImage(
-                imageUrl: userData.avatarUrl!,
+                imageUrl: profile.avatarUrl!,
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
@@ -141,7 +150,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
               children: [
                 // 姓名（18-20pt）
                 TPText(
-                  userData.name,
+                  profile.name,
                   style: TPTextStyles.titleSemiBold,
                   color: TPColors.grayscale900,
                 ),
@@ -160,7 +169,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                     ),
                     const SizedBox(width: 4),
                     TPText(
-                      'x ${userData.totalCoins}',
+                      'x ${profile.totalCoins}',
                       style: TPTextStyles.bodyRegular,
                       color: TPColors.grayscale900,
                     ),
@@ -173,7 +182,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                     ),
                     const SizedBox(width: 4),
                     TPText(
-                      'x 10',
+                      'x $collectedBadges/$totalBadges',
                       style: TPTextStyles.bodyRegular,
                       color: TPColors.grayscale900,
                     ),
@@ -203,7 +212,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                       child: _buildTotalStatItem(
                         icon: Icons.straighten,
                         label: '總距離',
-                        value: userData.formattedTotalDistance,
+                        value: profile.formattedTotalDistance,
                       ),
                     ),
                   ],

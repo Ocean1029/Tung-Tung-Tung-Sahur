@@ -182,6 +182,25 @@ class RunCityApiService extends GetxService {
     );
   }
 
+  Future<void> collectLocation({
+    required String userId,
+    required String activityId,
+    required String nfcId,
+  }) async {
+    if (useMockData) {
+      // 模擬成功回傳
+      await Future.delayed(const Duration(milliseconds: 200));
+      return;
+    }
+
+    await _post(
+      '/api/users/$userId/activities/$activityId/collect',
+      body: <String, dynamic>{
+        'nfcId': nfcId,
+      },
+    );
+  }
+
   Future<RunCityActivitySummary> endActivity({
     required String userId,
     required String activityId,

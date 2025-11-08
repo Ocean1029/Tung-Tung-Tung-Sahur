@@ -130,6 +130,93 @@ class RunCityActivitySummary {
   final int totalCoinsEarned;
 }
 
+class RunCityUserProfile {
+  const RunCityUserProfile({
+    required this.userId,
+    required this.name,
+    this.avatarUrl,
+    this.totalCoins = 0,
+    this.totalDistanceKm = 0,
+    this.totalTimeSeconds = 0,
+    this.updatedAt,
+  });
+
+  final String userId;
+  final String name;
+  final String? avatarUrl;
+  final int totalCoins;
+  final double totalDistanceKm;
+  final int totalTimeSeconds;
+  final DateTime? updatedAt;
+
+  String get formattedTotalDistance {
+    if (totalDistanceKm <= 0) {
+      return '0 公里';
+    }
+    if (totalDistanceKm < 1) {
+      return '${(totalDistanceKm * 1000).toStringAsFixed(0)} 公尺';
+    }
+    if (totalDistanceKm == totalDistanceKm.roundToDouble()) {
+      return '${totalDistanceKm.toInt()} 公里';
+    }
+    return '${totalDistanceKm.toStringAsFixed(1)} 公里';
+  }
+
+  String get formattedTotalTime {
+    if (totalTimeSeconds <= 0) {
+      return '0 分鐘';
+    }
+    final hours = totalTimeSeconds ~/ 3600;
+    final minutes = (totalTimeSeconds % 3600) ~/ 60;
+    final seconds = totalTimeSeconds % 60;
+    if (hours > 0) {
+      return '${hours}小時${minutes}分';
+    }
+    if (minutes > 0) {
+      return '${minutes}分${seconds}秒';
+    }
+    return '${seconds}秒';
+  }
+}
+
+class RunCityBadge {
+  const RunCityBadge({
+    required this.id,
+    required this.name,
+    required this.pointIds,
+    required this.collectedPointIds,
+    required this.distanceMeters,
+  });
+
+  final String id;
+  final String name;
+  final List<String> pointIds;
+  final List<String> collectedPointIds;
+  final double distanceMeters;
+
+  int get totalPoints => pointIds.length;
+  int get collectedPoints => collectedPointIds.length;
+  List<String> get remainingPointIds =>
+      pointIds.where((id) => !collectedPointIds.contains(id)).toList();
+  bool get isCompleted => remainingPointIds.isEmpty;
+  double get completionRate =>
+      totalPoints == 0 ? 0 : collectedPoints / totalPoints;
+  double get distanceKm => distanceMeters / 1000;
+
+  RunCityBadge copyWith({
+    List<String>? collectedPointIds,
+    double? distanceMeters,
+  }) {
+    return RunCityBadge(
+      id: id,
+      name: name,
+      pointIds: pointIds,
+      collectedPointIds: collectedPointIds ?? this.collectedPointIds,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
+    );
+  }
+}
+
 /// 活動列表項目（用於歷史紀錄）
 class RunCityActivityItem {
   const RunCityActivityItem({

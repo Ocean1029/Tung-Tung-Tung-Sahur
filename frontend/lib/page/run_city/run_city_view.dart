@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_controller.dart';
+import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/util/tp_app_bar.dart';
 import 'package:town_pass/util/tp_cached_network_image.dart';
 import 'package:town_pass/util/tp_colors.dart';
 import 'package:town_pass/util/tp_route.dart';
 import 'package:town_pass/util/tp_text.dart';
+
+const _badgeCompletedColor = Color(0xFF76A732);
+const _badgeBaseColor = Color(0xFF76A732);
+const double _badgeCloseButtonSize = 26;
 
 class RunCityView extends GetView<RunCityController> {
   const RunCityView({super.key});
@@ -80,7 +86,7 @@ class RunCityView extends GetView<RunCityController> {
               zoomControlsEnabled: false,
             ),
             // 用戶資料卡片（可點擊，覆蓋在地圖上方）
-            if (controller.userData.value != null)
+            if (controller.userProfile.value != null)
               Positioned(
                 top: 16,
                 left: 16,
@@ -89,16 +95,38 @@ class RunCityView extends GetView<RunCityController> {
                   onTap: () {
                     Get.toNamed(TPRoute.runCityStats);
                   },
-                  child: _buildUserProfileCard(controller.userData.value!),
+                  child: _buildUserProfileCard(controller.userProfile.value!),
                 ),
               ),
-            
+            Obx(() {
+              if (!controller.isBadgePanelVisible.value) {
+                return const SizedBox.shrink();
+              }
+              return Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: controller.closeBadgePanel,
+                  child: const SizedBox.shrink(),
+                ),
+              );
+            }),
+            Obx(() {
+              if (!controller.isBadgePanelVisible.value) {
+                return const SizedBox.shrink();
+              }
+              return Positioned(
+                left: 16,
+                right: 16,
+                bottom: 120,
+                child: _buildBadgePanel(context),
+              );
+            }),
             // 本次跑步紀錄卡片（如果有路線）
             if (!controller.isTracking.value && controller.routePath.isNotEmpty)
               Positioned(
                 left: 16,
                 right: 16,
-                bottom: 140,
+                bottom: 360,
                 child: _buildSummaryCard(
                   distanceMeters: controller.totalDistanceMeters.value,
                   elapsed: controller.elapsed.value,
@@ -112,6 +140,11 @@ class RunCityView extends GetView<RunCityController> {
               right: 0,
               bottom: 24,
               child: _buildTrackingControls(),
+            ),
+            Positioned(
+              right: 32,
+              bottom: 40,
+              child: _buildBadgeToggleButton(),
             ),
           ],
         );
@@ -199,6 +232,85 @@ class RunCityView extends GetView<RunCityController> {
     );
   }
 
+  Widget _buildBadgePanel(BuildContext context) {
+    return Obx(() {
+      final badges = controller.sortedBadges;
+      final selected = controller.selectedBadge.value;
+
+      if (badges.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: TPColors.white.withOpacity(0.82),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: TPColors.grayscale300.withOpacity(0.35),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: _badgeCloseButtonSize + 14),
+                _BadgeArrowButton(
+                  icon: Icons.chevron_left,
+                  isEnabled: controller.canPageBadgesLeft,
+                  onTap: controller.pageBadgesLeft,
+                ),
+              ],
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(RunCityController.badgesPerPage, (i) {
+                  final badge = controller.currentBadgeSlots.length > i
+                      ? controller.currentBadgeSlots[i]
+                      : null;
+                  final isSelected = badge != null && selected?.id == badge.id;
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: i == 1 ? 12 : 6,
+                      ),
+                      child: badge != null
+                          ? _BadgePreview(
+                              badge: badge,
+                              isSelected: isSelected,
+                              onTap: () => controller.selectBadge(badge),
+                            )
+                          : const _BadgePlaceholder(),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: _badgeCloseButtonSize + 14),
+                _BadgeArrowButton(
+                  icon: Icons.chevron_right,
+                  isEnabled: controller.canPageBadgesRight,
+                  onTap: controller.pageBadgesRight,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
 
   Widget _buildTrackingControls() {
     return Center(
@@ -236,6 +348,45 @@ class RunCityView extends GetView<RunCityController> {
         );
       }),
     );
+  }
+
+  Widget _buildBadgeToggleButton() {
+    return Obx(() {
+      final hasBadges = controller.badges.isNotEmpty;
+      final backgroundColor = TPColors.white;
+
+      return Opacity(
+        opacity: hasBadges ? 1 : 0.4,
+        child: GestureDetector(
+          onTap: hasBadges ? controller.toggleBadgePanel : null,
+          child: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x33000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset(
+                'assets/svg/badge_icon.svg',
+                colorFilter: const ColorFilter.mode(
+                  _badgeBaseColor,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildSummaryCard({
@@ -332,7 +483,6 @@ class RunCityView extends GetView<RunCityController> {
   }
 }
 
-
 class _StatChip extends StatelessWidget {
   const _StatChip({
     required this.label,
@@ -367,6 +517,177 @@ class _StatChip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _BadgePreview extends StatelessWidget {
+  const _BadgePreview({
+    required this.badge,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final RunCityBadge badge;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final collectedCount = badge.collectedPoints;
+    final totalCount = badge.totalPoints;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: isSelected
+                  ? Border.all(
+                      color: _badgeCompletedColor,
+                      width: 3,
+                    )
+                  : null,
+            ),
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/svg/badge_icon.svg',
+                width: 40,
+                height: 40,
+                colorFilter: const ColorFilter.mode(
+                  _badgeCompletedColor,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 66,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TPText(
+                  badge.name,
+                  style: TPTextStyles.caption,
+                  color: isSelected
+                      ? const Color(0xFF5AB4C5)
+                      : TPColors.grayscale900,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: TPColors.grayscale200, width: 1),
+                  ),
+                  child: TPText.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: collectedCount.toString(),
+                          style: const TextStyle(color: TPColors.primary500),
+                        ),
+                        TextSpan(
+                          text: '/$totalCount',
+                          style: const TextStyle(color: TPColors.grayscale400),
+                        ),
+                      ],
+                      style: TPTextStyles.caption,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BadgeArrowButton extends StatelessWidget {
+  const _BadgeArrowButton({
+    required this.icon,
+    required this.isEnabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final bool isEnabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isEnabled ? onTap : null,
+        borderRadius: BorderRadius.circular(999),
+        child: Ink(
+          width: 36,
+          height: 36,
+          child: Icon(
+            icon,
+            size: 22,
+            color: isEnabled ? TPColors.grayscale500 : TPColors.grayscale300,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BadgePlaceholder extends StatelessWidget {
+  const _BadgePlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: 0.25,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: TPColors.grayscale100,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: 40,
+            height: 12,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              color: TPColors.grayscale100,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: 44,
+            height: 18,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: TPColors.grayscale200, width: 1),
+            ),
+          ),
+        ],
       ),
     );
   }
