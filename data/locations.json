@@ -40,7 +40,7 @@
     "nfcId": null
   },
   {
-    "name": "Taipei 101",
+    "name": "臺北 101",
     "latitude": 25.033976,
     "longitude": 121.5645389,
     "description": "",
@@ -168,9 +168,9 @@
     "nfcId": null
   },
   {
-    "name": "103臺北市大同區迪化街一段",
-    "latitude": 25.0585055,
-    "longitude": 121.5095956,
+    "name": "迪化街",
+    "latitude": 25.0550727,
+    "longitude": 121.5099829,
     "description": "",
     "isNFCEnabled": false,
     "nfcId": null
@@ -385,8 +385,8 @@
   },
   {
     "name": "貓空纜車",
-    "latitude": 24.9959318,
-    "longitude": 121.5763329,
+    "latitude": 24.9959221,
+    "longitude": 121.5763544,
     "description": "",
     "isNFCEnabled": false,
     "nfcId": null
@@ -456,9 +456,9 @@
     "nfcId": null
   },
   {
-    "name": "金瓜石地質公園",
-    "latitude": 25.1009411,
-    "longitude": 121.8545499,
+    "name": "金瓜石",
+    "latitude": 25.1103595,
+    "longitude": 121.8562962,
     "description": "",
     "isNFCEnabled": false,
     "nfcId": null
@@ -617,8 +617,8 @@
   },
   {
     "name": "香堤大道廣場",
-    "latitude": 25.0372425,
-    "longitude": 121.5669885,
+    "latitude": 25.0372183,
+    "longitude": 121.5669958,
     "description": "",
     "isNFCEnabled": false,
     "nfcId": null
@@ -696,9 +696,9 @@
     "nfcId": null
   },
   {
-    "name": "小南門傳統豆花東門店",
-    "latitude": 25.033942,
-    "longitude": 121.529955,
+    "name": "臺北府城 小南門 (重熙門)",
+    "latitude": 25.0369236,
+    "longitude": 121.5080322,
     "description": "",
     "isNFCEnabled": false,
     "nfcId": null
@@ -828,22 +828,6 @@
     "latitude": 25.0873088,
     "longitude": 121.6228307,
     "description": "",
-    "isNFCEnabled": false,
-    "nfcId": null
-  },
-  {
-    "name": "地熱谷",
-    "latitude": 25.1379481,
-    "longitude": 121.5116771,
-    "description": "北投區中山路30號之10",
-    "isNFCEnabled": false,
-    "nfcId": null
-  },
-  {
-    "name": "國立臺灣科學教育館",
-    "latitude": 25.0962609,
-    "longitude": 121.5164742,
-    "description": "士林區士商路189號",
     "isNFCEnabled": false,
     "nfcId": null
   }

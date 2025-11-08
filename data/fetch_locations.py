@@ -14,66 +14,6 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 if not GOOGLE_API_KEY:
     raise ValueError('請在 .env 檔案中設定 GOOGLE_API_KEY')
 
-def fetch_nearby_places(lat, lng, radius, place_type, keyword=''):
-    """從 Google Places API 取得附近地點"""
-    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
-    
-    params = {
-        'location': f'{lat},{lng}',
-        'radius': radius,
-        'key': GOOGLE_API_KEY,
-        'language': 'zh-TW'
-    }
-    
-    if place_type:
-        params['type'] = place_type
-    if keyword:
-        params['keyword'] = keyword
-    
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        
-        if data['status'] not in ['OK', 'ZERO_RESULTS']:
-            print(f"❌ API 錯誤: {data['status']}")
-            return []
-        
-        return data.get('results', [])
-    except Exception as e:
-        print(f"❌ 請求失敗: {e}")
-        return []
-
-def get_district_coordinates(district_name):
-    """透過 Geocoding API 取得行政區的經緯度"""
-    url = 'https://maps.googleapis.com/maps/api/geocode/json'
-    
-    params = {
-        'address': f'{district_name} 台北市',
-        'key': GOOGLE_API_KEY,
-        'language': 'zh-TW',
-        'region': 'tw'
-    }
-    
-    try:
-        response = requests.get(url, params=params)
-        data = response.json()
-        
-        if data['status'] != 'OK':
-            print(f"❌ 取得 '{district_name}' 座標時發生錯誤: {data['status']}")
-            return None
-        
-        results = data.get('results', [])
-        if results:
-            location = results[0]['geometry']['location']
-            return {
-                'lat': location['lat'],
-                'lng': location['lng']
-            }
-        return None
-    except Exception as e:
-        print(f"❌ 取得 '{district_name}' 座標失敗: {e}")
-        return None
-
 def search_place_by_name(place_name, location_bias=''):
     """透過名稱搜尋特定地點（使用 Text Search API）"""
     url = 'https://maps.googleapis.com/maps/api/place/textsearch/json'
@@ -275,55 +215,6 @@ def main():
         else:
             print(f"   ⚠️  未找到: {attraction_name}")
         time.sleep(0.5)
-    
-    # 補充更多觀光景點以達到100個
-    print("\n   搜尋更多台北市觀光景點...")
-    
-    # 台北市所有12個行政區
-    taipei_districts = [
-        '北投區', '士林區', '中山區', '內湖區', '大同區', 
-        '松山區', '萬華區', '中正區', '大安區', '信義區', 
-        '南港區', '文山區'
-    ]
-    
-    # 動態取得各行政區的座標
-    print("   正在取得各行政區座標...")
-    taipei_areas = []
-    for district in taipei_districts:
-        print(f"   取得 {district} 座標...")
-        coords = get_district_coordinates(district)
-        if coords:
-            taipei_areas.append({
-                'name': district,
-                'lat': coords['lat'],
-                'lng': coords['lng'],
-                'radius': 3000  # 統一使用3000公尺半徑
-            })
-            print(f"   ✅ {district}: ({coords['lat']:.6f}, {coords['lng']:.6f})")
-        else:
-            print(f"   ⚠️  無法取得 {district} 座標，跳過")
-        time.sleep(0.3)  # 避免 API 請求過快
-    
-    # 使用關鍵字來搜尋觀光景點（補充搜尋）
-    attraction_keywords = [
-        '觀光景點', '博物館', '公園', '古蹟', '寺廟', 
-        '夜市', '商圈', '文創園區', '步道', '紀念館'
-    ]
-    
-    for area in taipei_areas:
-        # 使用關鍵字搜尋
-        for keyword in attraction_keywords:
-            places = fetch_nearby_places(
-                area['lat'], area['lng'],
-                area['radius'], '', keyword
-            )
-            
-            locations = [
-                convert_to_location_format(p)
-                for p in places
-            ]
-            taipei_locations.extend(locations)
-            time.sleep(0.5)
     
     # 去除重複並限制數量
     ntu_final = remove_duplicates(ntu_locations)
