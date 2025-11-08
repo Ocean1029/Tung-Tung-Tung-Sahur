@@ -58,7 +58,27 @@
         <string>This app needs camera access to scan QR codes</string>
         <key>NSPhotoLibraryUsageDescription</key>
         <string>This app needs photos access to get QR code from photo library</string>
+		<key>NFCReaderUsageDescription</key>
+		<string>TownPass 需要 NFC 權限來讀取 NFC 標籤</string>
+		<key>com.apple.developer.nfc.readersession.formats</key>
+		<array>
+			<string>NDEF</string>
+			<string>TAG</string>
+		</array>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>com.yu.townpass</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>runcity</string>
+				</array>
+			</dict>
+		</array>
 	</dict>
 </plist>

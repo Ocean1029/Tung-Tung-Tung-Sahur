@@ -17,15 +17,27 @@ type HealthStatus = {
 };
 
 const getStatus = async ({ traceId }: HealthStatusInput): Promise<HealthStatus> => {
-  // Run a lightweight query to verify database connectivity.
-  await prisma.$queryRaw`SELECT 1`;
+  // Try to verify database connectivity, but don't fail if database is not available.
+  // This allows the server to run without a database (useful for NFC testing).
+  let databaseConnected = false;
+  
+  try {
+    // Check if DATABASE_URL is set
+    if (process.env.DATABASE_URL) {
+      await prisma.$queryRaw`SELECT 1`;
+      databaseConnected = true;
+    }
+  } catch (error) {
+    // Database is not available or not configured - this is OK for NFC testing
+    databaseConnected = false;
+  }
 
   return {
     status: "ok",
     uptime: process.uptime(),
     hostname: os.hostname(),
     database: {
-      connected: true
+      connected: databaseConnected
     },
     traceId
   };

@@ -127,7 +127,7 @@ frontend/.flutter-plugins-dependencies
 frontend/.pub-cache/
 frontend/.pub/
 frontend/.fvm/
-
+frontend/.dart_tool/
 # Flutter generated files
 frontend/**/*.g.dart
 frontend/**/*.gen.dart

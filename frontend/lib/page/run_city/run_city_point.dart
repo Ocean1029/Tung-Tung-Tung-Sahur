@@ -130,6 +130,93 @@ class RunCityActivitySummary {
   final int totalCoinsEarned;
 }
 
+class RunCityUserProfile {
+  const RunCityUserProfile({
+    required this.userId,
+    required this.name,
+    this.avatarUrl,
+    this.totalCoins = 0,
+    this.totalDistanceKm = 0,
+    this.totalTimeSeconds = 0,
+    this.updatedAt,
+  });
+
+  final String userId;
+  final String name;
+  final String? avatarUrl;
+  final int totalCoins;
+  final double totalDistanceKm;
+  final int totalTimeSeconds;
+  final DateTime? updatedAt;
+
+  String get formattedTotalDistance {
+    if (totalDistanceKm <= 0) {
+      return '0 公里';
+    }
+    if (totalDistanceKm < 1) {
+      return '${(totalDistanceKm * 1000).toStringAsFixed(0)} 公尺';
+    }
+    if (totalDistanceKm == totalDistanceKm.roundToDouble()) {
+      return '${totalDistanceKm.toInt()} 公里';
+    }
+    return '${totalDistanceKm.toStringAsFixed(1)} 公里';
+  }
+
+  String get formattedTotalTime {
+    if (totalTimeSeconds <= 0) {
+      return '0 分鐘';
+    }
+    final hours = totalTimeSeconds ~/ 3600;
+    final minutes = (totalTimeSeconds % 3600) ~/ 60;
+    final seconds = totalTimeSeconds % 60;
+    if (hours > 0) {
+      return '${hours}小時${minutes}分';
+    }
+    if (minutes > 0) {
+      return '${minutes}分${seconds}秒';
+    }
+    return '${seconds}秒';
+  }
+}
+
+class RunCityBadge {
+  const RunCityBadge({
+    required this.id,
+    required this.name,
+    required this.pointIds,
+    required this.collectedPointIds,
+    required this.distanceMeters,
+  });
+
+  final String id;
+  final String name;
+  final List<String> pointIds;
+  final List<String> collectedPointIds;
+  final double distanceMeters;
+
+  int get totalPoints => pointIds.length;
+  int get collectedPoints => collectedPointIds.length;
+  List<String> get remainingPointIds =>
+      pointIds.where((id) => !collectedPointIds.contains(id)).toList();
+  bool get isCompleted => remainingPointIds.isEmpty;
+  double get completionRate =>
+      totalPoints == 0 ? 0 : collectedPoints / totalPoints;
+  double get distanceKm => distanceMeters / 1000;
+
+  RunCityBadge copyWith({
+    List<String>? collectedPointIds,
+    double? distanceMeters,
+  }) {
+    return RunCityBadge(
+      id: id,
+      name: name,
+      pointIds: pointIds,
+      collectedPointIds: collectedPointIds ?? this.collectedPointIds,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
+    );
+  }
+}
+
 /// 活動列表項目（用於歷史紀錄）
 class RunCityActivityItem {
   const RunCityActivityItem({
@@ -199,6 +286,151 @@ class RunCityActivityItem {
   String get formattedTimeRange {
     final startFormat = DateFormat('HH:mm');
     final endFormat = DateFormat('HH:mm');
-    return '${startFormat.format(startTime)}~${endFormat.format(endTime)}';
+    return '${startFormat.format(startTime)}～${endFormat.format(endTime)}';
+  }
+}
+
+/// 活動詳情中的點位紀錄
+class RunCityActivityLocationRecord {
+  const RunCityActivityLocationRecord({
+    required this.locationId,
+    required this.locationName,
+    required this.collectedAt,
+    required this.latitude,
+    required this.longitude,
+    this.area,
+  });
+
+  final String locationId;
+  final String locationName;
+  final DateTime collectedAt;
+  final double latitude;
+  final double longitude;
+  final String? area;
+
+  /// 格式化時間（HH:mm:ss）
+  String get formattedTime {
+    return DateFormat('HH:mm:ss').format(collectedAt);
+  }
+
+  /// 格式化位置（區域）
+  String get formattedLocation {
+    // 如果 area 為 null 或空字串，顯示為 "NaN"
+    return area?.isNotEmpty == true ? area! : 'NaN';
+  }
+
+  factory RunCityActivityLocationRecord.fromJson(Map<String, dynamic> json) {
+    return RunCityActivityLocationRecord(
+      locationId: json['id'] as String, // API 使用 'id' 而不是 'locationId'
+      locationName: json['name'] as String, // API 使用 'name' 而不是 'locationName'
+      collectedAt: DateTime.parse(json['collectedAt'] as String).toUtc(),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      area: json['area'] as String?, // API 會傳 area，但可能為 null
+    );
+  }
+}
+
+/// 活動詳情（包含用戶信息、路線、點位紀錄）
+class RunCityActivityDetail {
+  const RunCityActivityDetail({
+    required this.activityId,
+    required this.userId,
+    required this.userName,
+    this.userAvatar,
+    required this.startTime,
+    required this.endTime,
+    required this.distanceKm,
+    required this.durationSeconds,
+    required this.averageSpeedKmh,
+    required this.route,
+    required this.locationRecords,
+    required this.totalCoinsEarned,
+  });
+
+  final String activityId;
+  final String userId;
+  final String userName;
+  final String? userAvatar;
+  final DateTime startTime;
+  final DateTime endTime;
+  final double distanceKm;
+  final int durationSeconds;
+  final double averageSpeedKmh;
+  final List<RunCityTrackPoint> route;
+  final List<RunCityActivityLocationRecord> locationRecords;
+  final int totalCoinsEarned;
+
+  /// 格式化日期時間範圍
+  String get formattedDateTimeRange {
+    final dateFormat = DateFormat('yyyy/MM/dd');
+    final timeFormat = DateFormat('HH:mm');
+    final date = dateFormat.format(startTime);
+    final startTimeStr = timeFormat.format(startTime);
+    final endTimeStr = timeFormat.format(endTime);
+    return '$date $startTimeStr～$endTimeStr';
+  }
+
+  /// 格式化距離
+  String get formattedDistance {
+    if (distanceKm < 1) {
+      return '${(distanceKm * 1000).toStringAsFixed(0)} 公尺';
+    }
+    if (distanceKm == distanceKm.roundToDouble()) {
+      return '${distanceKm.toInt()} km';
+    }
+    return '${distanceKm.toStringAsFixed(1)} km';
+  }
+
+  /// 格式化時間
+  String get formattedDuration {
+    final hours = durationSeconds ~/ 3600;
+    final minutes = (durationSeconds % 3600) ~/ 60;
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    }
+    return '${minutes}m';
+  }
+
+  factory RunCityActivityDetail.fromJson(
+    Map<String, dynamic> json, {
+    String? userId,
+    String? userName,
+    String? userAvatar,
+  }) {
+    final route = (json['route'] as List<dynamic>? ?? <dynamic>[])
+        .map(
+          (dynamic item) => RunCityTrackPoint(
+            latitude: (item['latitude'] as num).toDouble(),
+            longitude: (item['longitude'] as num).toDouble(),
+            timestamp: DateTime.parse(item['timestamp'] as String).toUtc(),
+            accuracy: (item['accuracy'] as num?)?.toDouble(),
+          ),
+        )
+        .toList(growable: false);
+
+    // API 返回的是 'collectedLocations' 而不是 'locationRecords'
+    final locationRecords =
+        (json['collectedLocations'] as List<dynamic>? ?? <dynamic>[])
+            .map(
+              (dynamic item) =>
+                  RunCityActivityLocationRecord.fromJson(item as Map<String, dynamic>),
+            )
+            .toList(growable: false);
+
+    return RunCityActivityDetail(
+      activityId: json['activityId'] as String,
+      userId: userId ?? '', // API 沒有返回，需要從參數傳入
+      userName: userName ?? '', // API 沒有返回，需要從參數傳入
+      userAvatar: userAvatar, // API 沒有返回，需要從參數傳入
+      startTime: DateTime.parse(json['startTime'] as String).toUtc(),
+      endTime: DateTime.parse(json['endTime'] as String).toUtc(),
+      distanceKm: (json['distance'] as num?)?.toDouble() ?? 0,
+      durationSeconds: (json['duration'] as num?)?.toInt() ?? 0,
+      averageSpeedKmh: (json['averageSpeed'] as num?)?.toDouble() ?? 0,
+      route: route,
+      locationRecords: locationRecords,
+      totalCoinsEarned: (json['coinsEarned'] as num?)?.toInt() ?? 0, // API 使用 'coinsEarned'
+    );
   }
 }
