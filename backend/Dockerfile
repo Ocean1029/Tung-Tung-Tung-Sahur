@@ -26,7 +26,8 @@ COPY . .
 # Generate Prisma Client for development runtime.
 RUN npm run prisma:generate
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+# Generate Prisma Client on container start to ensure it's available after volume mount
+CMD ["sh", "-c", "npm run prisma:generate && npm run dev"]
 
 FROM base AS production
 # Prepare the minimal runtime image with prebuilt artifacts only.

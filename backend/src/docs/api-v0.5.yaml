@@ -1,0 +1,892 @@
+openapi: 3.1.0
+info:
+  title: Tung Tung Tung Sahur API v0.5
+  version: 0.5.0
+paths:
+  # Locations endpoints
+  /locations:
+    get:
+      summary: List all locations
+      description: Get a paginated list of locations with optional badge filter
+      tags:
+        - Locations
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+        - name: badge
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter locations by badge ID
+      responses:
+        "200":
+          description: Successfully retrieved locations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Location"
+    post:
+      summary: Create a new location
+      description: Create a new location point
+      tags:
+        - Locations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationCreate"
+      responses:
+        "201":
+          description: Location created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/Location"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /locations/{locationId}:
+    patch:
+      summary: Update a location
+      description: Update an existing location
+      tags:
+        - Locations
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationUpdate"
+      responses:
+        "200":
+          description: Location updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/Location"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    delete:
+      summary: Delete a location
+      description: Delete an existing location
+      tags:
+        - Locations
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Location deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "點位已成功刪除"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  # Users endpoints
+  /users:
+    get:
+      summary: Get all users
+      description: Get a paginated list of all users
+      tags:
+        - Users
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+      responses:
+        "200":
+          description: Successfully retrieved users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  count:
+                    type: integer
+                    description: Total number of users
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UserListItem"
+  # User Map endpoint
+  /users/{userId}/map:
+    get:
+      summary: Get user's map view
+      description: Get all locations with user's collection status for map display
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: badge
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter locations by badge ID
+        - name: bounds
+          in: query
+          schema:
+            type: string
+            pattern: "^-?\\d+\\.?\\d*,-?\\d+\\.?\\d*,-?\\d+\\.?\\d*,-?\\d+\\.?\\d*$"
+          description: Map bounds in format lat1,lng1,lat2,lng2
+      responses:
+        "200":
+          description: Successfully retrieved map data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  count:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      locations:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/LocationWithCollectionStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  # Activities endpoints
+  /users/{userId}/activities/start:
+    post:
+      summary: Start a new activity
+      description: Start a new activity session and begin tracking
+      tags:
+        - Activities
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityStart"
+      responses:
+        "201":
+          description: Activity started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      activityId:
+                        type: string
+                        format: uuid
+                      startTime:
+                        type: string
+                        format: date-time
+                      status:
+                        type: string
+                        example: "in_progress"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /users/{userId}/activities/{activityId}/track:
+    post:
+      summary: Add track points to activity
+      description: Add GPS track points to an ongoing activity
+      tags:
+        - Activities
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityTrack"
+      responses:
+        "200":
+          description: Track points added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "路線已更新"
+                  data:
+                    type: object
+                    properties:
+                      pointsAdded:
+                        type: integer
+                      totalPoints:
+                        type: integer
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /users/{userId}/activities/{activityId}/end:
+    post:
+      summary: End an activity
+      description: End an activity session and calculate collected locations, distance, and coins
+      tags:
+        - Activities
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityEnd"
+      responses:
+        "200":
+          description: Activity ended successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/ActivityEndResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /users/{userId}/activities:
+    get:
+      summary: Get user's activity list
+      description: Get a paginated list of user's activities with optional date filtering
+      tags:
+        - Activities
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter activities from this date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Filter activities until this date
+      responses:
+        "200":
+          description: Successfully retrieved activities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      activities:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ActivityListItem"
+                      pagination:
+                        $ref: "#/components/schemas/Pagination"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /users/{userId}/activities/{activityId}:
+    get:
+      summary: Get activity details
+      description: Get detailed information about a specific activity including route and collected locations
+      tags:
+        - Activities
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully retrieved activity details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/ActivityDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  # User Profile endpoints
+  /users/{userId}/profile:
+    get:
+      summary: Get user profile
+      description: Get user profile information with statistics
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully retrieved user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/UserProfile"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        description:
+          type: string
+          nullable: true
+        nfcId:
+          type: string
+          nullable: true
+        isNfcEnabled:
+          type: boolean
+        area:
+          type: string
+          nullable: true
+          description: Administrative area (e.g., "大安區", "中正區")
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    LocationCreate:
+      type: object
+      required:
+        - name
+        - latitude
+        - longitude
+      properties:
+        name:
+          type: string
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        description:
+          type: string
+        isNfcEnabled:
+          type: boolean
+          default: false
+        nfcId:
+          type: string
+          nullable: true
+    LocationUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+        description:
+          type: string
+        isNfcEnabled:
+          type: boolean
+        nfcId:
+          type: string
+          nullable: true
+    LocationWithCollectionStatus:
+      allOf:
+        - $ref: "#/components/schemas/Location"
+        - type: object
+          properties:
+            isCollected:
+              type: boolean
+            collectedAt:
+              type: string
+              format: date-time
+              nullable: true
+    ActivityStart:
+      type: object
+      required:
+        - startTime
+        - startLocation
+      properties:
+        startTime:
+          type: string
+          format: date-time
+        startLocation:
+          type: object
+          required:
+            - latitude
+            - longitude
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+    ActivityTrack:
+      type: object
+      required:
+        - points
+      properties:
+        points:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - latitude
+              - longitude
+              - timestamp
+            properties:
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
+              timestamp:
+                type: string
+                format: date-time
+              accuracy:
+                type: number
+                format: double
+    ActivityEnd:
+      type: object
+      required:
+        - endTime
+        - endLocation
+      properties:
+        endTime:
+          type: string
+          format: date-time
+        endLocation:
+          type: object
+          required:
+            - latitude
+            - longitude
+          properties:
+            latitude:
+              type: number
+              format: double
+            longitude:
+              type: number
+              format: double
+    ActivityEndResponse:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        distance:
+          type: number
+          format: double
+          description: Distance in kilometers
+        duration:
+          type: integer
+          description: Duration in seconds
+        averageSpeed:
+          type: number
+          format: double
+          description: Average speed in km/h
+        route:
+          type: array
+          items:
+            type: object
+            properties:
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
+              timestamp:
+                type: string
+                format: date-time
+        collectedLocations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
+              area:
+                type: string
+                nullable: true
+                description: Administrative area (e.g., "大安區", "中正區")
+              coinsEarned:
+                type: integer
+        totalCoinsEarned:
+          type: integer
+        newBadges:
+          type: array
+          items:
+            type: object
+          description: Empty array for v0.5
+    ActivityListItem:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date-time
+        distance:
+          type: number
+          format: double
+        duration:
+          type: integer
+        averageSpeed:
+          type: number
+          format: double
+        coinsEarned:
+          type: integer
+        collectedLocationsCount:
+          type: integer
+    ActivityDetail:
+      type: object
+      properties:
+        activityId:
+          type: string
+          format: uuid
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        distance:
+          type: number
+          format: double
+        duration:
+          type: integer
+        averageSpeed:
+          type: number
+          format: double
+        route:
+          type: array
+          items:
+            type: object
+            properties:
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
+              timestamp:
+                type: string
+                format: date-time
+        collectedLocations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              latitude:
+                type: number
+                format: double
+              longitude:
+                type: number
+                format: double
+              area:
+                type: string
+                nullable: true
+                description: Administrative area (e.g., "大安區", "中正區")
+              collectedAt:
+                type: string
+                format: date-time
+        coinsEarned:
+          type: integer
+    UserListItem:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        totalDistance:
+          type: number
+          format: double
+          description: Total distance in kilometers
+        totalCoins:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        totalPages:
+          type: integer
+        totalRecords:
+          type: integer
+        limit:
+          type: integer
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - INVALID_REQUEST
+            - UNAUTHORIZED
+            - NOT_FOUND
+            - ALREADY_COLLECTED
+            - SERVER_ERROR
+        message:
+          type: string
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                $ref: "#/components/schemas/Error"
+
