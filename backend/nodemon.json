@@ -2,7 +2,7 @@
   "watch": ["src", "prisma"],
   "ext": "ts,json",
   "ignore": ["src/**/*.test.ts", "dist"],
-  "exec": "tsx src/index.ts",
+  "exec": "npx tsx src/index.ts",
   "legacyWatch": true
 }
 
