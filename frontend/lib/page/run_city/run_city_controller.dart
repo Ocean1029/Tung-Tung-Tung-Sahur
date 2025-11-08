@@ -46,6 +46,10 @@ class RunCityController extends GetxController {
   Timer? _timer;
   BitmapDescriptor? _collectedMarkerIcon;
   BitmapDescriptor? _uncollectedMarkerIcon;
+  LatLng? _initialUserLocation; // 存儲用戶初始位置
+  LatLng? _currentUserLocation; // 當前用戶位置
+  final RxBool isUserLocationCentered = true.obs; // 用戶位置是否在地圖中心
+  CameraPosition? _lastCameraPosition; // 上次的相機位置
 
   // 路線記錄相關
   final List<RunCityTrackPoint> _pendingTrackPoints = [];
@@ -76,6 +80,9 @@ class RunCityController extends GetxController {
     errorMessage.value = null;
 
     try {
+      // 先請求定位權限並獲取用戶當前位置
+      await _requestLocationAndSetInitialPosition();
+      
       // 並行載入地圖點位和用戶資料
       await Future.wait([
         _loadMapPoints(),
@@ -89,6 +96,39 @@ class RunCityController extends GetxController {
       errorMessage.value = '載入資料失敗：${e.toString()}';
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// 請求定位權限並設置初始位置
+  Future<void> _requestLocationAndSetInitialPosition() async {
+    try {
+      final granted = await _ensurePermissionReady();
+      if (!granted) {
+        // 如果權限被拒絕，使用默認位置
+        return;
+      }
+
+      // 獲取用戶當前位置
+      final currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+      
+      _initialUserLocation = LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      );
+      _currentUserLocation = _initialUserLocation;
+
+      // 如果地圖控制器已經初始化，立即定位到用戶位置
+      if (mapController != null) {
+        await mapController!.animateCamera(
+          CameraUpdate.newLatLngZoom(_initialUserLocation!, 15),
+        );
+        isUserLocationCentered.value = true;
+      }
+    } catch (e) {
+      // 如果獲取位置失敗，使用默認位置（不顯示錯誤，因為這不是必須的）
+      print('無法獲取用戶位置：$e');
     }
   }
 
@@ -163,6 +203,111 @@ class RunCityController extends GetxController {
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
+    
+    // 如果已經獲取了用戶位置，立即定位到用戶位置
+    if (_initialUserLocation != null) {
+      controller.animateCamera(
+        CameraUpdate.newLatLngZoom(_initialUserLocation!, 15),
+      );
+      isUserLocationCentered.value = true;
+    }
+  }
+
+  /// 處理地圖相機移動
+  void onCameraMove(CameraPosition position) {
+    _lastCameraPosition = position;
+    // 實時檢查地圖中心是否與用戶位置一致
+    _checkIfUserLocationCentered();
+  }
+
+  /// 處理地圖相機移動完成（停止）
+  void onCameraIdle() {
+    // 地圖停止移動時再次確認狀態
+    if (_lastCameraPosition != null) {
+      _checkIfUserLocationCentered();
+    }
+  }
+
+  /// 檢查用戶位置是否在地圖中心
+  void _checkIfUserLocationCentered() {
+    if (_currentUserLocation == null || _lastCameraPosition == null) {
+      return;
+    }
+
+    final cameraCenter = _lastCameraPosition!.target;
+    final userLocation = _currentUserLocation!;
+    
+    // 計算距離（米）
+    final distance = Geolocator.distanceBetween(
+      cameraCenter.latitude,
+      cameraCenter.longitude,
+      userLocation.latitude,
+      userLocation.longitude,
+    );
+
+    // 如果距離小於 50 米，認為是居中的
+    final threshold = 50.0; // 50 米
+    final isCentered = distance < threshold;
+    
+    // 只在狀態改變時更新，避免不必要的重建
+    if (isUserLocationCentered.value != isCentered) {
+      isUserLocationCentered.value = isCentered;
+    }
+  }
+
+  /// 將地圖移動到用戶當前位置
+  Future<void> centerToUserLocation() async {
+    if (mapController == null) {
+      return;
+    }
+
+    // 總是重新獲取用戶當前位置
+    try {
+      final granted = await _ensurePermissionReady();
+      if (!granted) {
+        Get.snackbar(
+          '無法定位',
+          '需要定位權限才能使用此功能',
+          snackPosition: SnackPosition.BOTTOM,
+          colorText: Colors.white,
+          backgroundColor: Colors.black87,
+        );
+        return;
+      }
+
+      // 獲取最新的用戶當前位置
+      final currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+      );
+      final newUserLocation = LatLng(
+        currentPosition.latitude,
+        currentPosition.longitude,
+      );
+      
+      // 更新當前用戶位置
+      _currentUserLocation = newUserLocation;
+
+      // 移動地圖到用戶最新位置
+      await mapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(newUserLocation, 15),
+      );
+      
+      // 更新相機位置記錄，以便後續檢查
+      _lastCameraPosition = CameraPosition(
+        target: newUserLocation,
+        zoom: 15,
+      );
+      // 地圖移動過程中，onCameraMove 會持續檢查並更新狀態
+      // 當移動完成時，onCameraIdle 會最終確認狀態
+    } catch (e) {
+      Get.snackbar(
+        '無法獲取位置',
+        '請檢查定位服務是否開啟',
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.black87,
+      );
+    }
   }
 
   Future<void> updatePointCollected(String id, bool collected) async {
@@ -425,6 +570,8 @@ class RunCityController extends GetxController {
 
   void _onPositionUpdated(Position position) {
     final currentPoint = LatLng(position.latitude, position.longitude);
+    _currentUserLocation = currentPoint; // 更新當前用戶位置
+    _checkIfUserLocationCentered(); // 檢查是否居中
 
     final trackPoint = RunCityTrackPoint(
       latitude: position.latitude,
