@@ -37,6 +37,8 @@ import 'package:town_pass/page/run_city/run_city_view.dart';
 import 'package:town_pass/page/run_city/run_city_controller.dart';
 import 'package:town_pass/page/run_city/run_city_stats_view.dart';
 import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
+import 'package:town_pass/page/nfc_scan/nfc_scan_view.dart';
+import 'package:town_pass/page/nfc_scan/nfc_scan_controller.dart';
 import 'package:town_pass/util/tp_web_view.dart';
 
 abstract class TPRoute {
@@ -64,6 +66,7 @@ abstract class TPRoute {
   static const String suspendAccount = '/suspend_account';
   static const String runCity = '/run_city';
   static const String runCityStats = '/run_city_stats';
+  static const String nfcScan = '/nfc_scan';
   static const String webView = '/web_view';
 
   static final List<GetPage> page = [
@@ -203,6 +206,13 @@ abstract class TPRoute {
       page: () => const RunCityStatsView(),
       binding: BindingsBuilder(() {
         Get.put<RunCityStatsController>(RunCityStatsController());
+      }),
+    ),
+    GetPage(
+      name: nfcScan,
+      page: () => const NFCScanView(),
+      binding: BindingsBuilder(() {
+        Get.put<NFCScanController>(NFCScanController());
       }),
     ),
   ];

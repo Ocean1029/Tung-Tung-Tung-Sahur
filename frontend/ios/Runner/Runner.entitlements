@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- NFC capability 已暂时移除，因为个人开发团队不支持 -->
+	<!-- 如果需要 NFC 功能，请注册付费的 Apple Developer Program ($99/年) -->
+	<!-- 注册后可以重新添加以下配置： -->
+	<!--
+	<key>com.apple.developer.nfc.readersession.formats</key>
+	<array>
+		<string>NDEF</string>
+		<string>TAG</string>
+	</array>
+	-->
+</dict>
+</plist>
+
