@@ -6,6 +6,7 @@ import {
   activityEndSchema,
   activityListParamsSchema,
   activityListQuerySchema,
+  activityNfcCollectSchema,
   activityParamsSchema,
   activityStartSchema,
   activityTrackSchema
@@ -64,5 +65,15 @@ activitiesRouter.get(
     params: activityParamsSchema
   }),
   activitiesController.getActivityDetail
+);
+
+// POST /api/users/:userId/activities/:activityId/collect/nfc - Collect location via NFC
+activitiesRouter.post(
+  "/:userId/activities/:activityId/collect/nfc",
+  requestValidator({
+    params: activityParamsSchema,
+    body: activityNfcCollectSchema
+  }),
+  activitiesController.collectNfcLocation
 );
 

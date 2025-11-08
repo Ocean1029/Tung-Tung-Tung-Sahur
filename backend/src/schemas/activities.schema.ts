@@ -95,3 +95,9 @@ export const activityListQuerySchema = z
   })
   .strict();
 
+export const activityNfcCollectSchema = z
+  .object({
+    nfcId: z.string().trim().min(1, { message: "NFC ID is required" })
+  })
+  .strict();
+

@@ -4,6 +4,7 @@ import { activitiesService } from "../services/activities.service.js";
 import type {
   ActivityEndInput,
   ActivityListQuery,
+  ActivityNfcCollectInput,
   ActivityStartInput,
   ActivityTrackInput
 } from "../types/activities.types.js";
@@ -50,10 +51,18 @@ const getActivityDetail = async (req: Request, res: Response): Promise<void> => 
   res.status(200).json(result);
 };
 
+const collectNfcLocation = async (req: Request, res: Response): Promise<void> => {
+  const { userId, activityId } = req.params;
+  const input = req.body as ActivityNfcCollectInput;
+  const result = await activitiesService.collectNfcLocation(userId, activityId, input);
+  res.status(200).json(result);
+};
+
 export const activitiesController = {
   startActivity,
   trackActivity,
   endActivity,
+  collectNfcLocation,
   getActivities,
   getActivityDetail
 };

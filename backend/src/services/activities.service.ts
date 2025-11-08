@@ -4,13 +4,17 @@ import type {
   ActivityEndResponse,
   ActivityListQuery,
   ActivityListResponse,
+  ActivityNfcCollectInput,
+  ActivityNfcCollectResponse,
   ActivityStartInput,
   ActivityStartResponse,
   ActivityTrackInput,
   ActivityTrackResponse
 } from "../types/activities.types.js";
+import { ApiError, ErrorCodes } from "../utils/errors.js";
 import { prisma } from "../utils/prismaClient.js";
 
+import { badgesService } from "./badges.service.js";
 import { geocodingService } from "./geocoding.service.js";
 
 /**
@@ -238,7 +242,11 @@ const endActivity = async (
   }> = [];
 
   // Check each location if it's near the route
+  // Skip locations with NFC enabled (they must be collected via NFC)
   for (const location of allLocations) {
+    if (location.isNfcEnabled) {
+      continue; // Skip NFC-enabled locations, they must be collected via NFC endpoint
+    }
     if (isLocationNearRoute(location.latitude, location.longitude, routePoints)) {
       // Check if user has already collected this location
       const existingCollection = await prisma.userLocationCollection.findUnique({
@@ -360,6 +368,14 @@ const endActivity = async (
     coinsEarned: data.collected.coinsEarned
   }));
 
+  const badgeEvaluation = await badgesService.evaluateUserBadges(userId);
+  const newBadges = badgeEvaluation.newBadges.map((badge) => ({
+    badgeId: badge.badgeId,
+    name: badge.name,
+    imageUrl: badge.imageUrl,
+    unlockedAt: badge.unlockedAt.toISOString()
+  }));
+
   return {
     success: true,
     data: {
@@ -376,7 +392,7 @@ const endActivity = async (
       })),
       collectedLocations: collectedLocationDetails,
       totalCoinsEarned,
-      newBadges: [] // Empty for v0.5
+      newBadges
     }
   };
 };
@@ -545,10 +561,165 @@ const getActivityDetail = async (
   };
 };
 
+/**
+ * Collect a location via NFC during an activity
+ * @param userId - User ID
+ * @param activityId - Activity ID
+ * @param input - NFC collection input (nfcId only)
+ * @returns Collection result with coins earned and badge unlock status
+ */
+const collectNfcLocation = async (
+  userId: string,
+  activityId: string,
+  input: ActivityNfcCollectInput
+): Promise<ActivityNfcCollectResponse> => {
+  // Verify activity exists and belongs to user
+  const activity = await prisma.activity.findUnique({
+    where: { id: activityId }
+  });
+
+  if (!activity) {
+    throw new ApiError(ErrorCodes.NOT_FOUND, "Activity not found", 404);
+  }
+
+  if (activity.userId !== userId) {
+    throw new ApiError(ErrorCodes.UNAUTHORIZED, "Activity does not belong to user", 401);
+  }
+
+  // Find location by NFC ID
+  const location = await prisma.location.findUnique({
+    where: { nfcId: input.nfcId }
+  });
+
+  if (!location) {
+    throw new ApiError(ErrorCodes.NOT_FOUND, "Location with NFC ID not found", 404);
+  }
+
+  if (!location.isNfcEnabled) {
+    throw new ApiError(
+      ErrorCodes.INVALID_REQUEST,
+      "Location NFC is not enabled",
+      400
+    );
+  }
+
+  // Check if location is already collected by user
+  const existingCollection = await prisma.userLocationCollection.findUnique({
+    where: {
+      userId_locationId: {
+        userId,
+        locationId: location.id
+      }
+    }
+  });
+
+  const isFirstCollection = !existingCollection;
+  // Use current time as collectedAt
+  const collectedAt = new Date();
+
+  // Create or update user location collection
+  if (isFirstCollection) {
+    await prisma.userLocationCollection.create({
+      data: {
+        userId,
+        locationId: location.id,
+        collectedAt
+      }
+    });
+  }
+
+  // Check if already collected in this activity
+  const existingActivityCollection = await prisma.activityCollectedLocation.findFirst({
+    where: {
+      activityId,
+      locationId: location.id
+    }
+  });
+
+  if (!existingActivityCollection) {
+    // Record in activity collected locations
+    await prisma.activityCollectedLocation.create({
+      data: {
+        activityId,
+        locationId: location.id,
+        collectedAt,
+        coinsEarned: 1
+      }
+    });
+  }
+
+  // Update activity total coins
+  const activityCollectedCount = await prisma.activityCollectedLocation.count({
+    where: { activityId }
+  });
+
+  await prisma.activity.update({
+    where: { id: activityId },
+    data: {
+      totalCoins: activityCollectedCount
+    }
+  });
+
+  // Get area for location if needed
+  let area = location.area;
+  if (!area) {
+    const areaMap = await geocodingService.getAreasFromCoordinates([
+      {
+        latitude: location.latitude,
+        longitude: location.longitude
+      }
+    ]);
+    area = areaMap.get(`${location.latitude},${location.longitude}`) || null;
+
+    if (area) {
+      await prisma.location.update({
+        where: { id: location.id },
+        data: { area }
+      });
+    }
+  }
+
+  // Evaluate badges if this is first collection
+  let badgeUnlocked = null;
+  if (isFirstCollection) {
+    const badgeEvaluation = await badgesService.evaluateUserBadges(userId);
+    if (badgeEvaluation.newBadges.length > 0) {
+      const firstBadge = badgeEvaluation.newBadges[0];
+      badgeUnlocked = {
+        badgeId: firstBadge.badgeId,
+        name: firstBadge.name,
+        imageUrl: firstBadge.imageUrl,
+        unlockedAt: firstBadge.unlockedAt.toISOString()
+      };
+    }
+  }
+
+  // Get user's total coins from all activities
+  const userActivities = await prisma.activity.findMany({
+    where: { userId },
+    select: { totalCoins: true }
+  });
+  const totalCoins = userActivities.reduce((sum, act) => sum + (act.totalCoins || 0), 0);
+
+  return {
+    success: true,
+    data: {
+      locationId: location.id,
+      name: location.name,
+      area,
+      coinsEarned: 1,
+      totalCoins,
+      isFirstCollection,
+      badgeUnlocked
+    }
+  };
+};
+
 export const activitiesService = {
   startActivity,
   trackActivity,
   endActivity,
+  collectNfcLocation,
   getActivities,
   getActivityDetail
 };
