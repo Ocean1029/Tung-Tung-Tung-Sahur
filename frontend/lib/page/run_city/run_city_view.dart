@@ -143,11 +143,6 @@ class RunCityView extends GetView<RunCityController> {
               bottom: 24,
               child: _buildTrackingControls(),
             ),
-            Positioned(
-              right: 32,
-              bottom: 40,
-              child: _buildBadgeToggleButton(),
-            ),
           ],
         );
       }),
@@ -157,7 +152,8 @@ class RunCityView extends GetView<RunCityController> {
   /// 建立用戶資料卡片
   Widget _buildUserProfileCard(userData) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24), // 上下12px，左右24px
+      padding: const EdgeInsets.symmetric(
+          vertical: 12, horizontal: 24), // 上下12px，左右24px
       decoration: BoxDecoration(
         color: TPColors.white,
         borderRadius: BorderRadius.circular(12),
@@ -332,7 +328,8 @@ class RunCityView extends GetView<RunCityController> {
       final goButtonWidth = isTracking ? 96.0 : 88.0;
       final positionButtonWidth = 54.0;
       final spacing = 50.0;
-      
+      const badgeButtonSize = 54.0;
+
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -344,38 +341,38 @@ class RunCityView extends GetView<RunCityController> {
               children: [
                 // 位置按鈕（位於 GO 按鈕左側 50px 處）
                 Obx(() => GestureDetector(
-                  onTap: () {
-                    controller.centerToUserLocation();
-                  },
-                  child: Container(
-                    width: positionButtonWidth,
-                    height: positionButtonWidth,
-                    decoration: BoxDecoration(
-                      color: TPColors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x33000000),
-                          blurRadius: 16,
-                          offset: Offset(0, 8),
+                      onTap: () {
+                        controller.centerToUserLocation();
+                      },
+                      child: Container(
+                        width: positionButtonWidth,
+                        height: positionButtonWidth,
+                        decoration: BoxDecoration(
+                          color: TPColors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x33000000),
+                              blurRadius: 16,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    alignment: Alignment.center,
-                    child: SvgPicture.asset(
-                      'assets/svg/position.svg',
-                      width: 24,
-                      height: 24,
-                      colorFilter: ColorFilter.mode(
-                        controller.isUserLocationCentered.value
-                            ? const Color(0xFF5AB4C5) // 居中時為藍色
-                            : const Color(0xFF475259), // 未居中時為灰色
-                        BlendMode.srcIn,
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
+                          'assets/svg/position.svg',
+                          width: 24,
+                          height: 24,
+                          colorFilter: ColorFilter.mode(
+                            controller.isUserLocationCentered.value
+                                ? const Color(0xFF5AB4C5) // 居中時為藍色
+                                : const Color(0xFF475259), // 未居中時為灰色
+                            BlendMode.srcIn,
+                          ),
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                )),
+                    )),
                 SizedBox(width: spacing), // GO 按鈕左邊距離 50px
               ],
             ),
@@ -411,27 +408,35 @@ class RunCityView extends GetView<RunCityController> {
               ),
             ),
           ),
-          // 右側空白，用於平衡布局
           Expanded(
-            child: Container(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(width: spacing), // GO 按鈕右側距離 50px
+                _buildBadgeToggleButton(size: badgeButtonSize),
+                if (positionButtonWidth > badgeButtonSize)
+                  SizedBox(width: positionButtonWidth - badgeButtonSize),
+              ],
+            ),
           ),
         ],
       );
     });
   }
 
-  Widget _buildBadgeToggleButton() {
+  Widget _buildBadgeToggleButton({double size = 54}) {
     return Obx(() {
       final hasBadges = controller.badges.isNotEmpty;
       final backgroundColor = TPColors.white;
+      final iconSize = size * 0.6;
 
       return Opacity(
         opacity: hasBadges ? 1 : 0.4,
         child: GestureDetector(
           onTap: hasBadges ? controller.toggleBadgePanel : null,
           child: Container(
-            width: 48,
-            height: 48,
+            width: size,
+            height: size,
             decoration: BoxDecoration(
               color: backgroundColor,
               shape: BoxShape.circle,
@@ -443,10 +448,11 @@ class RunCityView extends GetView<RunCityController> {
                 ),
               ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
+            child: Center(
               child: SvgPicture.asset(
                 'assets/svg/badge_icon.svg',
+                width: iconSize,
+                height: iconSize,
                 colorFilter: const ColorFilter.mode(
                   _badgeBaseColor,
                   BlendMode.srcIn,

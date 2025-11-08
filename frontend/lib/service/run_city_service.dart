@@ -9,8 +9,11 @@ import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/service/account_service.dart';
 
 class RunCityService extends GetxService {
-  // 設定是否使用 Mock Data（後端串接後改為 false）
-  static const bool useMockData = false;
+  // 可透過 --dart-define=RUN_CITY_USE_MOCK_DATA=true 啟用 Mock 模式
+  static const bool useMockData = bool.fromEnvironment(
+    'RUN_CITY_USE_MOCK_DATA',
+    defaultValue: false,
+  );
 
   final AccountService _accountService = Get.find<AccountService>();
   final RunCityApiService _apiService = Get.find<RunCityApiService>();

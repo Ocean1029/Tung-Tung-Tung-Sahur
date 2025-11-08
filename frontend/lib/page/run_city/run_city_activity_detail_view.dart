@@ -9,7 +9,8 @@ import 'package:town_pass/util/tp_cached_network_image.dart';
 import 'package:town_pass/util/tp_colors.dart';
 import 'package:town_pass/util/tp_text.dart';
 
-class RunCityActivityDetailView extends GetView<RunCityActivityDetailController> {
+class RunCityActivityDetailView
+    extends GetView<RunCityActivityDetailController> {
   const RunCityActivityDetailView({super.key});
 
   @override
@@ -94,7 +95,10 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
       children: [
         // 用戶資訊
         Padding(
-          padding: const EdgeInsets.only(left: 8, top: 8), // avatar左側與白色方框相距24px (16px padding + 8px = 24px)，姓名與上方白框距離24px (16px padding + 8px = 24px)
+          padding: const EdgeInsets.only(
+              left: 8,
+              top:
+                  8), // avatar左側與白色方框相距24px (16px padding + 8px = 24px)，姓名與上方白框距離24px (16px padding + 8px = 24px)
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center, // 垂直置中
             children: [
@@ -171,7 +175,8 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
       alignment: Alignment.centerLeft,
       child: IntrinsicWidth(
         child: Padding(
-          padding: const EdgeInsets.only(left: 8), // 白色容器邊框到icon為24px (16px padding + 8px = 24px)
+          padding: const EdgeInsets.only(
+              left: 8), // 白色容器邊框到icon為24px (16px padding + 8px = 24px)
           child: Row(
             children: [
               _buildTotalStatItem(
@@ -249,7 +254,8 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
   /// 建立地圖區塊
   Widget _buildMapSection(detail) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16), // 地圖與上下的文字距離16px
+      padding: const EdgeInsets.symmetric(
+          horizontal: 0, vertical: 16), // 地圖與上下的文字距離16px
       child: Container(
         height: 300,
         decoration: BoxDecoration(
@@ -283,13 +289,16 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
     // 按照 collectedAt 時間排序（最早的在最上面）
     final sortedRecords = List<RunCityActivityLocationRecord>.from(records)
       ..sort((a, b) => a.collectedAt.compareTo(b.collectedAt));
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 標題 14px，與下方表格12px間距
         Padding(
-          padding: const EdgeInsets.only(left: 8, bottom: 12), // 「點位紀錄」左側與白色方框相距24px (16px padding + 8px = 24px)，與下方表格12px
+          padding: const EdgeInsets.only(
+              left: 8,
+              bottom:
+                  12), // 「點位紀錄」左側與白色方框相距24px (16px padding + 8px = 24px)，與下方表格12px
           child: TPText(
             '點位紀錄',
             style: TPTextStyles.h3SemiBold.copyWith(fontSize: 14), // 字體大小14px
@@ -310,7 +319,8 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
           )
         else
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0), // 表格使用白色容器的padding
+            padding:
+                const EdgeInsets.symmetric(horizontal: 0), // 表格使用白色容器的padding
             child: Column(
               children: [
                 // 表頭
@@ -420,4 +430,3 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
     );
   }
 }
-

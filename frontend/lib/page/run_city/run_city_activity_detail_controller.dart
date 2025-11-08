@@ -12,7 +12,8 @@ class RunCityActivityDetailController extends GetxController {
   final RunCityService _runCityService = Get.find<RunCityService>();
 
   final RxBool isLoading = false.obs;
-  final Rxn<RunCityActivityDetail> activityDetail = Rxn<RunCityActivityDetail>();
+  final Rxn<RunCityActivityDetail> activityDetail =
+      Rxn<RunCityActivityDetail>();
   final RxnString errorMessage = RxnString();
 
   // 地圖相關
@@ -58,7 +59,7 @@ class RunCityActivityDetailController extends GetxController {
       // 獲取用戶信息（用於顯示頭像和姓名）
       String? userName;
       String? userAvatar;
-      
+
       try {
         final userData = await _runCityService.getUserData();
         userName = userData.name;
@@ -98,7 +99,9 @@ class RunCityActivityDetailController extends GetxController {
     }
 
     // 建立路線 Polyline
-    final routePoints = detail.route.map((point) => LatLng(point.latitude, point.longitude)).toList();
+    final routePoints = detail.route
+        .map((point) => LatLng(point.latitude, point.longitude))
+        .toList();
     polylines.clear();
     polylines.add(
       Polyline(
@@ -170,4 +173,3 @@ class RunCityActivityDetailController extends GetxController {
     await loadActivityDetail();
   }
 }
-

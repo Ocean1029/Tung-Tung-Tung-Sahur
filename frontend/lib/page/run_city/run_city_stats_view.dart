@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
+import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/util/tp_app_bar.dart';
 import 'package:town_pass/util/tp_cached_network_image.dart';
@@ -114,12 +116,16 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
         children: [
           // 第一區：圖片、名字、金幣
           Padding(
-            padding: const EdgeInsets.only(left: 8, top: 8), // avatar左側與白色方框相距24px (16px padding + 8px = 24px)，姓名與上方白框距離24px (16px padding + 8px = 24px)
+            padding: const EdgeInsets.only(
+                left: 8,
+                top:
+                    8), // avatar左側與白色方框相距24px (16px padding + 8px = 24px)，姓名與上方白框距離24px (16px padding + 8px = 24px)
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center, // 垂直置中
               children: [
                 // 頭貼 64×64
-                if (userData.avatarUrl != null && userData.avatarUrl!.isNotEmpty)
+                if (userData.avatarUrl != null &&
+                    userData.avatarUrl!.isNotEmpty)
                   ClipOval(
                     child: TPCachedNetworkImage(
                       imageUrl: userData.avatarUrl!,
@@ -155,7 +161,8 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                       // 姓名 16px
                       TPText(
                         userData.name,
-                        style: TPTextStyles.titleSemiBold.copyWith(fontSize: 16),
+                        style:
+                            TPTextStyles.titleSemiBold.copyWith(fontSize: 16),
                         color: TPColors.grayscale950,
                       ),
                       const SizedBox(height: 8),
@@ -175,7 +182,8 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                           // 金幣數字 14px
                           TPText(
                             'x ${userData.totalCoins}',
-                            style: TPTextStyles.bodyRegular.copyWith(fontSize: 14),
+                            style:
+                                TPTextStyles.bodyRegular.copyWith(fontSize: 14),
                             color: TPColors.grayscale950,
                           ),
                           const SizedBox(width: 16),
@@ -188,7 +196,8 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                           const SizedBox(width: 4),
                           TPText(
                             'x 10',
-                            style: TPTextStyles.bodyRegular.copyWith(fontSize: 14),
+                            style:
+                                TPTextStyles.bodyRegular.copyWith(fontSize: 14),
                             color: TPColors.grayscale950,
                           ),
                         ],
@@ -224,7 +233,8 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
     required String distanceValue,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8), // 白色容器邊框到icon為24px (16px padding + 8px = 24px)
+      padding: const EdgeInsets.only(
+          left: 8), // 白色容器邊框到icon為24px (16px padding + 8px = 24px)
       child: Row(
         children: [
           _buildTotalStatItem(
@@ -297,32 +307,77 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
     );
   }
 
-  /// 建立徽章區塊（預留位置，未來實作）
+  /// 建立徽章區塊
   Widget _buildBadgeSection() {
-    return Container(
-      padding: const EdgeInsets.all(16), // 白色容器padding 16px
-      decoration: BoxDecoration(
-        color: TPColors.white,
-        borderRadius: BorderRadius.circular(16), // 圓角16px
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8), // 與左邊的白色方匡距離為24px (16px padding + 8px = 24px)
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Obx(() {
+      final allBadges = controller.badges.toList(growable: false);
+      final isExpanded = controller.areBadgesExpanded.value;
+      final canToggle = allBadges.length > 3;
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: TPColors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TPText(
-              '我的徽章',
-              style: TPTextStyles.h3SemiBold.copyWith(fontSize: 14), // 14px
-              color: TPColors.grayscale400,
+            Padding(
+              padding: const EdgeInsets.only(left: 8, bottom: 16),
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: canToggle ? controller.toggleBadgeExpansion : null,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TPText(
+                      '我的徽章',
+                      style: TPTextStyles.h3SemiBold.copyWith(fontSize: 14),
+                      color: TPColors.grayscale400,
+                    ),
+                    Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: canToggle
+                          ? TPColors.grayscale400
+                          : TPColors.grayscale200,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: TPColors.grayscale400,
-            ),
+            if (allBadges.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: TPText(
+                    '尚無徽章資料',
+                    style: TPTextStyles.bodyRegular,
+                    color: TPColors.grayscale600,
+                  ),
+                ),
+              )
+            else
+              _BadgeGrid(
+                badges: allBadges,
+                isExpanded: isExpanded,
+                onBadgeTap: (badge) {
+                  final badgePoints =
+                      controller.badgePointsSource.toList(growable: false);
+                  Get.toNamed(
+                    TPRoute.runCityBadgeDetail,
+                    arguments: {
+                      'badge': badge,
+                      'points': badgePoints,
+                    },
+                  );
+                },
+              ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 
   /// 建立運動紀錄區塊（表格格式）
@@ -340,7 +395,10 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
           children: [
             // 標題 14px，與下方表格12px間距，與左邊的白色方匡距離為24px
             Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 12), // 與左邊的白色方匡距離為24px (16px padding + 8px = 24px)，與下方表格12px
+              padding: const EdgeInsets.only(
+                  left: 8,
+                  bottom:
+                      12), // 與左邊的白色方匡距離為24px (16px padding + 8px = 24px)，與下方表格12px
               child: TPText(
                 '運動紀錄',
                 style: TPTextStyles.h3SemiBold.copyWith(fontSize: 14), // 14px
@@ -359,9 +417,10 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                   ),
                 ),
               )
-              else
+            else
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 0), // 表格與左側白匡為16px（使用容器的padding）
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 0), // 表格與左側白匡為16px（使用容器的padding）
                 child: Column(
                   children: [
                     // 表頭
@@ -508,6 +567,195 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
       ),
     );
   }
-
 }
 
+class _BadgeGrid extends StatelessWidget {
+  const _BadgeGrid({
+    required this.badges,
+    required this.isExpanded,
+    required this.onBadgeTap,
+  });
+
+  final List<RunCityBadge> badges;
+  final bool isExpanded;
+  final void Function(RunCityBadge badge) onBadgeTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (badges.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (!isExpanded) {
+      final collapsedBadges = List<RunCityBadge?>.generate(
+        3,
+        (index) => index < badges.length ? badges[index] : null,
+      );
+      return Row(
+        children: collapsedBadges
+            .map(
+              (badge) => Expanded(
+                child: _BadgeSummaryCard(
+                  badge: badge,
+                  onTap: badge != null ? () => onBadgeTap(badge) : null,
+                ),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    final List<Widget> rows = <Widget>[];
+    final totalRows = (badges.length / 3).ceil();
+
+    for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+      final start = rowIndex * 3;
+      var end = start + 3;
+      if (end > badges.length) {
+        end = badges.length;
+      }
+      final rowBadges = badges.sublist(start, end);
+      rows.add(
+        Row(
+          children: [
+            ...rowBadges.map(
+              (badge) => Expanded(
+                child: _BadgeSummaryCard(
+                  badge: badge,
+                  onTap: () => onBadgeTap(badge),
+                ),
+              ),
+            ),
+            ...List<Widget>.generate(
+              3 - rowBadges.length,
+              (_) => const Expanded(child: SizedBox()),
+            ),
+          ],
+        ),
+      );
+      if (rowIndex != totalRows - 1) {
+        rows.add(const SizedBox(height: 16));
+      }
+    }
+
+    return Column(
+      children: rows,
+    );
+  }
+}
+
+class _BadgeSummaryCard extends StatelessWidget {
+  const _BadgeSummaryCard({required this.badge, this.onTap});
+
+  final RunCityBadge? badge;
+  final VoidCallback? onTap;
+
+  static const Color _completedColor = Color(0xFF76A732);
+  static const Color _incompleteColor = Color(0xFFD5DDE5);
+
+  @override
+  Widget build(BuildContext context) {
+    if (badge == null) {
+      return Opacity(
+        opacity: 0.3,
+        child: _BadgeContainer(
+          iconColor: _incompleteColor,
+          title: '待解鎖',
+          progress: '--/--',
+        ),
+      );
+    }
+
+    final isCompleted = badge!.isCompleted;
+    final collected = badge!.collectedPoints;
+    final total = badge!.totalPoints;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: _BadgeContainer(
+        iconColor: isCompleted ? _completedColor : _incompleteColor,
+        title: badge!.name,
+        progress: '$collected/$total',
+        isCompleted: isCompleted,
+      ),
+    );
+  }
+}
+
+class _BadgeContainer extends StatelessWidget {
+  const _BadgeContainer({
+    required this.iconColor,
+    required this.title,
+    required this.progress,
+    this.isCompleted = false,
+  });
+
+  final Color iconColor;
+  final String title;
+  final String progress;
+  final bool isCompleted;
+
+  @override
+  Widget build(BuildContext context) {
+    final parts = progress.split('/');
+    final collectedText = parts.isNotEmpty ? parts.first : progress;
+    final totalText = parts.length > 1 ? parts.last : '';
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset(
+          'assets/svg/badge_icon.svg',
+          width: 56,
+          height: 56,
+          colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+        ),
+        const SizedBox(height: 8),
+        TPText(
+          title,
+          style: TPTextStyles.bodyRegular.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+          color: Color(0xFF91A0A8),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: TPColors.grayscale400,
+              width: 1,
+            ),
+          ),
+          child: TPText.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: collectedText,
+                  style: const TextStyle(color: Color(0xFF5AB4C5)),
+                ),
+                const TextSpan(
+                  text: '/',
+                  style: TextStyle(color: Color(0xFF91A0A8)),
+                ),
+                TextSpan(
+                  text: totalText,
+                  style: const TextStyle(color: Color(0xFF91A0A8)),
+                ),
+              ],
+              style: TPTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+}

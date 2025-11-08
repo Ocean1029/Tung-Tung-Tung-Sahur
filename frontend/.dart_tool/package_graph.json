@@ -29,6 +29,7 @@
         "intl",
         "json_annotation",
         "mobile_scanner",
+        "nfc_manager",
         "package_info_plus",
         "shared_preferences",
         "shimmer",
@@ -194,6 +195,14 @@
         "path",
         "web",
         "win32"
+      ]
+    },
+    {
+      "name": "nfc_manager",
+      "version": "4.1.1",
+      "dependencies": [
+        "flutter",
+        "ndef_record"
       ]
     },
     {
@@ -997,6 +1006,13 @@
       "name": "ffi",
       "version": "2.1.3",
       "dependencies": []
+    },
+    {
+      "name": "ndef_record",
+      "version": "1.3.3",
+      "dependencies": [
+        "collection"
+      ]
     },
     {
       "name": "plugin_platform_interface",

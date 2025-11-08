@@ -28,8 +28,10 @@ class RunCityApiException implements Exception {
 }
 
 class RunCityApiService extends GetxService {
-  // 設定是否使用 Mock Data（後端串接後改為 false）
-  static const bool useMockData = false;
+  static const bool useMockData = bool.fromEnvironment(
+    'RUN_CITY_USE_MOCK_DATA',
+    defaultValue: false,
+  );
 
   RunCityApiService({
     http.Client? httpClient,

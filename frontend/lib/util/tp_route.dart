@@ -39,6 +39,8 @@ import 'package:town_pass/page/run_city/run_city_stats_view.dart';
 import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
 import 'package:town_pass/page/run_city/run_city_activity_detail_view.dart';
 import 'package:town_pass/page/run_city/run_city_activity_detail_controller.dart';
+import 'package:town_pass/page/run_city/run_city_badge_detail_view.dart';
+import 'package:town_pass/page/run_city/run_city_badge_detail_controller.dart';
 import 'package:town_pass/page/nfc_scan/nfc_scan_view.dart';
 import 'package:town_pass/page/nfc_scan/nfc_scan_controller.dart';
 import 'package:town_pass/util/tp_web_view.dart';
@@ -69,6 +71,7 @@ abstract class TPRoute {
   static const String runCity = '/run_city';
   static const String runCityStats = '/run_city_stats';
   static const String runCityActivityDetail = '/run_city_activity_detail';
+  static const String runCityBadgeDetail = '/run_city_badge_detail';
   static const String nfcScan = '/nfc_scan';
   static const String webView = '/web_view';
 
@@ -216,6 +219,13 @@ abstract class TPRoute {
       page: () => const RunCityActivityDetailView(),
       binding: BindingsBuilder(() {
         Get.put<RunCityActivityDetailController>(RunCityActivityDetailController());
+      }),
+    ),
+    GetPage(
+      name: runCityBadgeDetail,
+      page: () => const RunCityBadgeDetailView(),
+      binding: BindingsBuilder(() {
+        Get.put<RunCityBadgeDetailController>(RunCityBadgeDetailController());
       }),
     ),
     GetPage(

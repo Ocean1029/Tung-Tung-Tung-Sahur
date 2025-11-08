@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 
 import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
+import 'package:town_pass/page/run_city/run_city_mock_data.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
 
@@ -86,7 +87,7 @@ class RunCityController extends GetxController {
     try {
       // 先請求定位權限並獲取用戶當前位置
       await _requestLocationAndSetInitialPosition();
-      
+
       // 並行載入地圖點位和用戶資料
       await Future.wait([
         _loadMapPoints(),
@@ -119,7 +120,7 @@ class RunCityController extends GetxController {
       final currentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.medium,
       );
-      
+
       _initialUserLocation = LatLng(
         currentPosition.latitude,
         currentPosition.longitude,
@@ -153,12 +154,18 @@ class RunCityController extends GetxController {
       return;
     }
 
+    if (RunCityService.useMockData) {
+      points.assignAll(mockRunCityPoints);
+      await _updateMarkers();
+      return;
+    }
+
     try {
       // 使用真實 API 獲取用戶的地圖點位
       final userLocations = await _apiService.fetchUserLocations(
         userId: account.id,
       );
-      
+
       points.assignAll(userLocations);
       await _updateMarkers();
     } catch (e) {
@@ -200,7 +207,7 @@ class RunCityController extends GetxController {
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    
+
     // 如果已經獲取了用戶位置，立即定位到用戶位置
     if (_initialUserLocation != null) {
       controller.animateCamera(
@@ -233,7 +240,7 @@ class RunCityController extends GetxController {
 
     final cameraCenter = _lastCameraPosition!.target;
     final userLocation = _currentUserLocation!;
-    
+
     // 計算距離（米）
     final distance = Geolocator.distanceBetween(
       cameraCenter.latitude,
@@ -245,7 +252,7 @@ class RunCityController extends GetxController {
     // 如果距離小於 50 米，認為是居中的
     final threshold = 50.0; // 50 米
     final isCentered = distance < threshold;
-    
+
     // 只在狀態改變時更新，避免不必要的重建
     if (isUserLocationCentered.value != isCentered) {
       isUserLocationCentered.value = isCentered;
@@ -280,7 +287,7 @@ class RunCityController extends GetxController {
         currentPosition.latitude,
         currentPosition.longitude,
       );
-      
+
       // 更新當前用戶位置
       _currentUserLocation = newUserLocation;
 
@@ -288,7 +295,7 @@ class RunCityController extends GetxController {
       await mapController!.animateCamera(
         CameraUpdate.newLatLngZoom(newUserLocation, 15),
       );
-      
+
       // 更新相機位置記錄，以便後續檢查
       _lastCameraPosition = CameraPosition(
         target: newUserLocation,
@@ -480,7 +487,7 @@ class RunCityController extends GetxController {
         );
         _applyCollectedLocations(summary.collectedLocations);
         _refreshBadgeProgress();
-        
+
         // 活動結束後，刷新用戶資料以更新金幣數量
         await _loadUserProfile();
       } on RunCityApiException catch (error) {
