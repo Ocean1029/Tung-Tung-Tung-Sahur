@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:town_pass/bean/run_city.dart';
+import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
 import 'run_city_point.dart';
@@ -46,9 +47,13 @@ class RunCityController extends GetxController {
   BitmapDescriptor? _collectedMarkerIcon;
   BitmapDescriptor? _uncollectedMarkerIcon;
 
+  // 路線記錄相關
+  final List<RunCityTrackPoint> _pendingTrackPoints = [];
+  String? _currentActivityId;
+  bool _isSendingTrackPoints = false;
+
   // 用戶資料相關
   final RunCityService _runCityService = Get.find<RunCityService>();
-  final AccountService _accountService = Get.find<AccountService>();
   final Rxn<RunCityUserData> userData = Rxn<RunCityUserData>();
   final RxnString errorMessage = RxnString();
 
@@ -76,6 +81,10 @@ class RunCityController extends GetxController {
         _loadMapPoints(),
         _loadUserData(),
       ]);
+    } on RunCityApiException catch (e) {
+      // 處理 API 錯誤
+      final errorText = e.code != null ? '${e.message} (${e.code})' : e.message;
+      errorMessage.value = errorText;
     } catch (e) {
       errorMessage.value = '載入資料失敗：${e.toString()}';
     } finally {
@@ -92,33 +101,33 @@ class RunCityController extends GetxController {
       RunCityPoint(
         id: 'xinyi-01',
         name: '象山登山口 NFC',
-        district: '信義區',
+        area: '信義區',
         location: const LatLng(25.027220, 121.576161),
         collected: true,
       ),
       RunCityPoint(
         id: 'xinyi-02',
         name: '信義國小 NFC',
-        district: '信義區',
+        area: '信義區',
         location: const LatLng(25.034571, 121.562600),
       ),
       RunCityPoint(
         id: 'daan-01',
         name: '大安森林公園 NFC',
-        district: '大安區',
+        area: '大安區',
         location: const LatLng(25.033024, 121.535154),
         collected: true,
       ),
       RunCityPoint(
         id: 'daan-02',
         name: '師大夜市 NFC',
-        district: '大安區',
+        area: '大安區',
         location: const LatLng(25.026173, 121.528164),
       ),
       RunCityPoint(
         id: 'zhongshan-01',
         name: '林森公園 NFC',
-        district: '中山區',
+        area: '中山區',
         location: const LatLng(25.045070, 121.525990),
       ),
     ];
@@ -131,16 +140,19 @@ class RunCityController extends GetxController {
   Future<void> _loadUserData() async {
     // 檢查用戶是否已登入
     if (_accountService.account == null) {
-      return;
+      throw Exception('請先登入以使用此功能');
     }
 
     try {
       // 從 Service 獲取用戶資料
       final data = await _runCityService.getUserData();
       userData.value = data;
+    } on RunCityApiException {
+      // 重新拋出 API 錯誤，讓 loadData 處理
+      rethrow;
     } catch (e) {
-      // 用戶資料載入失敗不影響地圖顯示
-      print('載入用戶資料失敗: $e');
+      // 其他錯誤也重新拋出
+      rethrow;
     }
   }
 
@@ -531,26 +543,9 @@ class RunCityController extends GetxController {
   }
 
   void _collectLocation(RunCityPoint point) {
-    final userId = _accountService.account?.id;
-    final activityId = _currentActivityId;
-    final nfcId = point.nfcId;
-
-    if (userId == null ||
-        activityId == null ||
-        nfcId == null ||
-        nfcId.isEmpty) {
-      return;
-    }
-
-    _apiService
-        .collectLocation(
-      userId: userId,
-      activityId: activityId,
-      nfcId: nfcId,
-    )
-        .catchError((error) {
-      debugPrint('RunCityController._collectLocation error: $error');
-    });
+    // 注意：根據 API 規格，點位收集是在結束活動時自動處理的
+    // 此方法保留作為佔位符，實際收集邏輯在 endActivity 回應中處理
+    debugPrint('RunCityController._collectLocation: 點位 ${point.id} 將在結束活動時處理');
   }
 
   Future<void> _flushTrackPoints({bool force = false}) async {

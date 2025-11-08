@@ -105,24 +105,11 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
             color: TPColors.grayscale900,
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatItem(
-                  icon: Icons.straighten,
-                  label: '累積距離',
-                  value: userData.formattedTotalDistance,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatItem(
-                  icon: Icons.access_time,
-                  label: '累積時間',
-                  value: userData.formattedTotalTime,
-                ),
-              ),
-            ],
+          _buildStatItem(
+            icon: Icons.monetization_on,
+            label: '累積金幣',
+            value: '${userData.totalCoins}',
+            isFullWidth: true,
           ),
         ],
       ),

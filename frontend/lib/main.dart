@@ -44,6 +44,7 @@ Future<void> initServices() async {
 
   Get.put<SubscriptionService>(SubscriptionService());
   Get.put<RunCityApiService>(RunCityApiService());
+  Get.put<RunCityService>(RunCityService());
 }
 
 class MyApp extends StatelessWidget {

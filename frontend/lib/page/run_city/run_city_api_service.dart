@@ -7,14 +7,23 @@ import 'package:http/http.dart' as http;
 import 'package:town_pass/page/run_city/run_city_point.dart';
 
 class RunCityApiException implements Exception {
-  const RunCityApiException(this.message, {this.statusCode});
+  const RunCityApiException(
+    this.message, {
+    this.code,
+    this.statusCode,
+  });
 
   final String message;
+  final String? code;
   final int? statusCode;
 
   @override
-  String toString() =>
-      'RunCityApiException(statusCode: $statusCode, message: $message)';
+  String toString() {
+    if (code != null) {
+      return '[$code] $message';
+    }
+    return 'RunCityApiException(statusCode: $statusCode, message: $message)';
+  }
 }
 
 class RunCityApiService extends GetxService {
@@ -112,9 +121,6 @@ class RunCityApiService extends GetxService {
     required String name,
     required double latitude,
     required double longitude,
-    String? description,
-    bool? isNFCEnabled,
-    String? nfcId,
   }) async {
     final response = await _patch(
       '/api/locations/$locationId',
@@ -122,9 +128,6 @@ class RunCityApiService extends GetxService {
         'name': name,
         'latitude': latitude,
         'longitude': longitude,
-        if (description != null) 'description': description,
-        if (isNFCEnabled != null) 'isNFCEnabled': isNFCEnabled,
-        if (nfcId != null) 'nfcId': nfcId,
       },
     );
 
@@ -233,15 +236,6 @@ class RunCityApiService extends GetxService {
     );
   }
 
-  Future<void> collectLocation({
-    required String userId,
-    required String activityId,
-    required String nfcId,
-  }) async {
-    await _post(
-      '/api/users/$userId/activities/$activityId/collect/$nfcId',
-    );
-  }
 
   Uri _buildUri(String path, {Map<String, String>? queryParameters}) {
     final normalizedBase =
@@ -313,20 +307,38 @@ class RunCityApiService extends GetxService {
       return <String, dynamic>{};
     }
 
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) {
-        final success = decoded['success'] as bool?;
-        if (success != null && !success) {
-          final message = decoded['message'] as String? ??
-              decoded['reason'] as String? ??
-              'Unknown API error';
-          throw RunCityApiException(message, statusCode: statusCode);
+      try {
+        final decoded = jsonDecode(body);
+        if (decoded is Map<String, dynamic>) {
+          final success = decoded['success'] as bool?;
+          if (success != null && !success) {
+            // 處理後端 API 錯誤格式
+            final error = decoded['error'] as Map<String, dynamic>?;
+            if (error != null) {
+              final code = error['code'] as String? ?? 'UNKNOWN_ERROR';
+              final message = error['message'] as String? ??
+                  decoded['message'] as String? ??
+                  decoded['reason'] as String? ??
+                  'Unknown API error';
+              throw RunCityApiException(
+                message,
+                code: code,
+                statusCode: statusCode,
+              );
+            }
+            // 如果沒有 error 物件，使用舊格式
+            final message = decoded['message'] as String? ??
+                decoded['reason'] as String? ??
+                'Unknown API error';
+            throw RunCityApiException(
+              message,
+              statusCode: statusCode,
+            );
+          }
+          return decoded;
         }
-        return decoded;
-      }
-      return <String, dynamic>{'data': decoded};
-    } catch (error, stackTrace) {
+        return <String, dynamic>{'data': decoded};
+      } catch (error, stackTrace) {
       debugPrint(
         'RunCityApiService: failed to decode response ($statusCode): $error\n$stackTrace',
       );

@@ -199,57 +199,6 @@ class RunCityView extends GetView<RunCityController> {
     );
   }
 
-  Widget _buildLegendCard({
-    required int collectedCount,
-    required int totalCount,
-  }) {
-    final remainingCount = totalCount - collectedCount;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: TPColors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: TPColors.grayscale900.withOpacity(0.08),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const TPText(
-            'NFC 跑點進度',
-            style: TPTextStyles.h3SemiBold,
-            color: TPColors.grayscale900,
-          ),
-          const SizedBox(height: 8),
-          TPText(
-            '已收集 $collectedCount / $totalCount 個點位 · 剩餘 $remainingCount 個',
-            style: TPTextStyles.bodyRegular,
-            color: TPColors.grayscale600,
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: const [
-              _LegendIndicator(
-                color: TPColors.primary100,
-                label: '已收集',
-              ),
-              SizedBox(width: 16),
-              _LegendIndicator(
-                color: TPColors.primary500,
-                label: '未收集',
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildTrackingControls() {
     return Center(
@@ -383,37 +332,6 @@ class RunCityView extends GetView<RunCityController> {
   }
 }
 
-class _LegendIndicator extends StatelessWidget {
-  const _LegendIndicator({
-    required this.color,
-    required this.label,
-  });
-
-  final Color color;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 8),
-        TPText(
-          label,
-          style: TPTextStyles.bodyRegular,
-          color: TPColors.grayscale700,
-        ),
-      ],
-    );
-  }
-}
 
 class _StatChip extends StatelessWidget {
   const _StatChip({

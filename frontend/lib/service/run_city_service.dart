@@ -74,7 +74,12 @@ class RunCityService extends GetxService {
       );
       final jsonData = jsonDecode(mockData);
       final response = RunCityUserDataResponse.fromJson(jsonData);
-      return response.data;
+      
+      if (!response.success || response.data == null) {
+        throw Exception('Mock 資料格式錯誤');
+      }
+      
+      return response.data!;
     } catch (e) {
       throw Exception('載入 Mock 資料失敗: $e');
     }
@@ -83,7 +88,7 @@ class RunCityService extends GetxService {
   // ========== 真實 API 方法（後端串接時使用）==========
 
   Future<RunCityUserData> _getApiUserData() async {
-    // TODO: 後端串接後實作
+    // TODO: 後端串接後取消註解以下程式碼
     // import 'package:http/http.dart' as http;
     //
     // final account = _accountService.account;
@@ -93,20 +98,32 @@ class RunCityService extends GetxService {
     //
     // try {
     //   final response = await http.get(
-    //     Uri.parse('$baseUrl/run-city/user-data?user_id=${account.id}'),
+    //     Uri.parse('$baseUrl/users/${account.id}/profile'),
     //     headers: {
     //       'Content-Type': 'application/json',
     //       // 'Authorization': 'Bearer ${token}', // 如果需要認證
     //     },
     //   );
     //
-    //   if (response.statusCode == 200) {
-    //     final jsonData = jsonDecode(response.body);
-    //     final userDataResponse = RunCityUserDataResponse.fromJson(jsonData);
-    //     return userDataResponse.data;
-    //   } else {
-    //     throw Exception('獲取用戶資料失敗: ${response.statusCode}');
-    //   }
+    //   final jsonData = jsonDecode(response.body);
+    //   final apiResponse = RunCityUserDataResponse.fromJson(jsonData);
+    //
+      //   // 處理錯誤回應
+      //   if (!apiResponse.success || apiResponse.data == null) {
+      //     final error = apiResponse.error;
+      //     if (error != null) {
+      //       throw RunCityApiException(
+      //         error.message,
+      //         code: error.code,
+      //         statusCode: response.statusCode,
+      //       );
+      //     }
+      //     throw Exception('獲取用戶資料失敗');
+      //   }
+    //
+    //   return apiResponse.data!;
+    // } on RunCityApiException {
+    //   rethrow;
     // } catch (e) {
     //   throw Exception('獲取用戶資料錯誤: $e');
     // }
