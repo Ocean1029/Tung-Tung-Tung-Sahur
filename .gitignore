@@ -1,104 +1,45 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+*.pem
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Visual Studio Code related
-.vscode/
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
 
-# Flutter/Dart/Pub related
-frontend/**/doc/api/
-frontend/**/ios/Flutter/.last_build_id
-frontend/.dart_tool/
-frontend/.flutter-plugins
-frontend/.flutter-plugins-dependencies
-frontend/.pub-cache/
-frontend/.pub/
-frontend/build/
+# vercel
+.vercel
 
-# Android related
-frontend/**/android/**/gradle-wrapper.jar
-frontend/**/android/app/.cxx/
-frontend/**/android/.gradle
-frontend/**/android/captures/
-frontend/**/android/gradlew
-frontend/**/android/gradlew.bat
-frontend/**/android/local.properties
-frontend/**/android/**/GeneratedPluginRegistrant.java
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
-# iOS/XCode related
-frontend/**/ios/**/*.mode1v3
-frontend/**/ios/**/*.mode2v3
-frontend/**/ios/**/*.moved-aside
-frontend/**/ios/**/*.pbxuser
-frontend/**/ios/**/*.perspectivev3
-frontend/**/ios/**/*sync/
-frontend/**/ios/**/.sconsign.dblite
-frontend/**/ios/**/.tags*
-frontend/**/ios/**/.vagrant/
-frontend/**/ios/**/DerivedData/
-frontend/**/ios/**/Icon?
-frontend/**/ios/**/Pods/
-frontend/**/ios/**/.symlinks/
-frontend/**/ios/**/profile
-frontend/**/ios/**/xcuserdata
-frontend/**/ios/.generated/
-frontend/**/ios/Flutter/App.framework
-frontend/**/ios/Flutter/Flutter.framework
-frontend/**/ios/Flutter/Generated.xcconfig
-frontend/**/ios/Flutter/app.flx
-frontend/**/ios/Flutter/app.zip
-frontend/**/ios/Flutter/flutter_assets/
-frontend/**/ios/ServiceDefinitions.json
-frontend/**/ios/Runner/GeneratedPluginRegistrant.*
 
-# Symbolication related
-frontend/app.*.symbols
-
-# Obfuscation related
-frontend/app.*.map.json
-
-# Android Studio will place build artifacts here
-frontend/android/app/debug
-frontend/android/app/profile
-frontend/android/app/release
-frontend/**/*.g.dart
-frontend/**/*.gen.dart
-
-# Exceptions to above rules.
-!**/ios/**/default.mode1v3
-!**/ios/**/default.mode2v3
-!**/ios/**/default.pbxuser
-!**/ios/**/default.perspectivev3
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-
-# FVM Version Cache
-frontend/.fvm/
-
-# Backend
-backend/node_modules/
-backend/.env
-backend/__pycache__/
-backend/.venv/
-backend/dist/
-backend/build/
-backend/.env.local
-
-# Other
-flutter_application_1/
-chathistory/
+# prisma
+prisma/migrations

@@ -1,0 +1,13 @@
+# Example OpenAPI extension to document the health endpoint.
+openapi: 3.1.0
+info:
+  title: Tung Tung Tung Sahur API Overlay
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Read the application health report
+      responses:
+        "200":
+          description: Application is healthy
+
