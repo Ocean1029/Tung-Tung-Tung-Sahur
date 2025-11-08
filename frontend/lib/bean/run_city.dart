@@ -70,6 +70,10 @@ class RunCityUserData {
   @JsonKey(name: 'totalCoins')
   final int totalCoins;
 
+  /// 累積距離（公尺）
+  @JsonKey(name: 'totalDistance')
+  final int? totalDistance;
+
   /// 建立時間
   @DateTimeStringConverter()
   @JsonKey(name: 'createdAt')
@@ -86,6 +90,7 @@ class RunCityUserData {
     this.email,
     this.avatar,
     required this.totalCoins,
+    this.totalDistance,
     this.createdAt,
     this.updatedAt,
   });
@@ -100,5 +105,21 @@ class RunCityUserData {
 
   /// 取得開通日期（使用 createdAt）
   DateTime? get activatedAt => createdAt;
+
+  /// 格式化累積距離
+  String get formattedTotalDistance {
+    if (totalDistance == null) {
+      return '0 公尺';
+    }
+    if (totalDistance! < 1000) {
+      return '$totalDistance 公尺';
+    }
+    final km = totalDistance! / 1000;
+    // 如果距離是整數，不顯示小數點
+    if (km == km.roundToDouble()) {
+      return '${km.toInt()} km';
+    }
+    return '${km.toStringAsFixed(1)} km';
+  }
 }
 

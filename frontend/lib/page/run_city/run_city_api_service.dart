@@ -27,6 +27,9 @@ class RunCityApiException implements Exception {
 }
 
 class RunCityApiService extends GetxService {
+  // 設定是否使用 Mock Data（後端串接後改為 false）
+  static const bool useMockData = true;
+
   RunCityApiService({
     http.Client? httpClient,
     String? baseUrl,
@@ -236,6 +239,73 @@ class RunCityApiService extends GetxService {
     );
   }
 
+  Future<List<RunCityActivityItem>> fetchActivities({
+    required String userId,
+    int? page,
+    int? limit,
+  }) async {
+    if (useMockData) {
+      return _getMockActivities();
+    }
+
+    final response = await _get(
+      '/api/users/$userId/activities',
+      queryParameters: <String, String>{
+        if (page != null) 'page': '$page',
+        if (limit != null) 'limit': '$limit',
+      },
+    );
+
+    final data = response['data'] as Map<String, dynamic>? ?? <String, dynamic>{};
+    final activities = data['activities'] as List<dynamic>? ?? <dynamic>[];
+    return activities
+        .map(
+          (dynamic json) =>
+              RunCityActivityItem.fromJson(json as Map<String, dynamic>),
+        )
+        .toList(growable: false);
+  }
+
+  /// Mock 活動列表資料
+  Future<List<RunCityActivityItem>> _getMockActivities() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    final now = DateTime.now();
+    
+    // Mock 資料：符合 API Response 9 格式
+    // date 欄位是開始時間，需要設定具體的時間（例如 10:00）
+    final mockActivities = <RunCityActivityItem>[
+      RunCityActivityItem(
+        activityId: 'act_001',
+        date: DateTime(now.year, now.month, now.day - 1, 10, 0), // 昨天 10:00
+        distance: 3.5,
+        duration: 1800, // 30 分鐘
+        averageSpeed: 7.0,
+        coinsEarned: 2,
+        collectedLocationsCount: 2,
+      ),
+      RunCityActivityItem(
+        activityId: 'act_002',
+        date: DateTime(now.year, now.month, now.day - 2, 9, 0), // 2天前 09:00
+        distance: 5.2,
+        duration: 2400, // 40 分鐘
+        averageSpeed: 7.8,
+        coinsEarned: 3,
+        collectedLocationsCount: 3,
+      ),
+      RunCityActivityItem(
+        activityId: 'act_003',
+        date: DateTime(now.year, now.month, now.day - 5, 14, 30), // 5天前 14:30
+        distance: 2.1,
+        duration: 1200, // 20 分鐘
+        averageSpeed: 6.3,
+        coinsEarned: 1,
+        collectedLocationsCount: 1,
+      ),
+    ];
+    
+    return mockActivities;
+  }
 
   Uri _buildUri(String path, {Map<String, String>? queryParameters}) {
     final normalizedBase =

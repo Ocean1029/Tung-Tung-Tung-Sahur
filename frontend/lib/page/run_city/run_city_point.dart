@@ -1,4 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 /// Represents one NFC location in the Run City experience.
 class RunCityPoint {
@@ -127,4 +128,77 @@ class RunCityActivitySummary {
   final List<RunCityTrackPoint> route;
   final List<RunCityPoint> collectedLocations;
   final int totalCoinsEarned;
+}
+
+/// 活動列表項目（用於歷史紀錄）
+class RunCityActivityItem {
+  const RunCityActivityItem({
+    required this.activityId,
+    required this.date,
+    required this.distance,
+    required this.duration,
+    required this.averageSpeed,
+    required this.coinsEarned,
+    required this.collectedLocationsCount,
+  });
+
+  final String activityId;
+  final DateTime date;
+  final double distance; // 公里
+  final int duration; // 秒
+  final double averageSpeed; // 公里/小時
+  final int coinsEarned;
+  final int collectedLocationsCount;
+
+  factory RunCityActivityItem.fromJson(Map<String, dynamic> json) {
+    return RunCityActivityItem(
+      activityId: json['activityId'] as String,
+      date: DateTime.parse(json['date'] as String).toUtc(),
+      distance: (json['distance'] as num).toDouble(),
+      duration: json['duration'] as int,
+      averageSpeed: (json['averageSpeed'] as num).toDouble(),
+      coinsEarned: json['coinsEarned'] as int,
+      collectedLocationsCount: json['collectedLocationsCount'] as int,
+    );
+  }
+
+  /// 格式化距離
+  String get formattedDistance {
+    if (distance < 1) {
+      return '${(distance * 1000).toStringAsFixed(0)} 公尺';
+    }
+    // 如果距離是整數，不顯示小數點
+    if (distance == distance.roundToDouble()) {
+      return '${distance.toInt()} km';
+    }
+    return '${distance.toStringAsFixed(1)} km';
+  }
+
+  /// 格式化時間
+  String get formattedDuration {
+    final hours = duration ~/ 3600;
+    final minutes = (duration % 3600) ~/ 60;
+    final seconds = duration % 60;
+
+    if (hours > 0) {
+      return '${hours}小時${minutes}分';
+    } else if (minutes > 0) {
+      return '${minutes}分${seconds}秒';
+    } else {
+      return '${seconds}秒';
+    }
+  }
+
+  /// 取得開始時間（date 就是開始時間）
+  DateTime get startTime => date;
+
+  /// 取得結束時間（開始時間 + duration）
+  DateTime get endTime => date.add(Duration(seconds: duration));
+
+  /// 格式化時間範圍（開始時間～結束時間）
+  String get formattedTimeRange {
+    final startFormat = DateFormat('HH:mm');
+    final endFormat = DateFormat('HH:mm');
+    return '${startFormat.format(startTime)}~${endFormat.format(endTime)}';
+  }
 }
