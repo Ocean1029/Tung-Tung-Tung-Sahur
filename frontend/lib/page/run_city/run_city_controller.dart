@@ -480,6 +480,9 @@ class RunCityController extends GetxController {
         );
         _applyCollectedLocations(summary.collectedLocations);
         _refreshBadgeProgress();
+        
+        // 活動結束後，刷新用戶資料以更新金幣數量
+        await _loadUserProfile();
       } on RunCityApiException catch (error) {
         Get.snackbar(
           '結束紀錄失敗',

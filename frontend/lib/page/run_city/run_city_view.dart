@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_controller.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
@@ -186,14 +185,20 @@ class RunCityView extends GetView<RunCityController> {
               ),
             )
           else
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: TPColors.grayscale200,
-                shape: BoxShape.circle,
+            ClipOval(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: TPColors.grayscale200,
+                  shape: BoxShape.circle,
+                ),
+                child: Assets.svg.logoIconTpe.svg(
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.contain,
+                ),
               ),
-              child: Assets.svg.user.svg(),
             ),
           const SizedBox(width: 16), // 圖片與右側文字距離16px
           // 用戶資訊（垂直置中）

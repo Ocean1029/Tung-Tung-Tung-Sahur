@@ -110,14 +110,20 @@ class RunCityActivityDetailView extends GetView<RunCityActivityDetailController>
                   ),
                 )
               else
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: TPColors.grayscale200,
-                    shape: BoxShape.circle,
+                ClipOval(
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: TPColors.grayscale200,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Assets.svg.logoIconTpe.svg(
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                  child: Assets.svg.user.svg(),
                 ),
               const SizedBox(width: 16),
               // 姓名和日期時間

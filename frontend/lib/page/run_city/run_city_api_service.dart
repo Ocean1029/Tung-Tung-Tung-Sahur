@@ -29,7 +29,7 @@ class RunCityApiException implements Exception {
 
 class RunCityApiService extends GetxService {
   // 設定是否使用 Mock Data（後端串接後改為 false）
-  static const bool useMockData = true;
+  static const bool useMockData = false;
 
   RunCityApiService({
     http.Client? httpClient,
@@ -38,7 +38,7 @@ class RunCityApiService extends GetxService {
         baseUrl = baseUrl ??
             const String.fromEnvironment(
               'RUN_CITY_API_BASE_URL',
-              defaultValue: 'https://api.townpass.dev',
+              defaultValue: 'http://localhost:3000',
             );
 
   final http.Client _httpClient;

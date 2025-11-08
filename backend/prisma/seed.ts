@@ -3,10 +3,11 @@ import { join } from "path";
 
 import { PrismaClient, UserBadgeStatus } from "@prisma/client";
 
-// Fix DATABASE_URL for local execution (replace 'db:' with 'localhost:')
+// Fix DATABASE_URL for local execution (replace 'db:5432' with 'localhost:5386')
 // This allows the seed script to work both locally and inside Docker containers
 if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes("db:")) {
-  process.env.DATABASE_URL = process.env.DATABASE_URL.replace("db:", "localhost:");
+  // Replace db:5432 with localhost:5386 (the mapped port in docker-compose)
+  process.env.DATABASE_URL = process.env.DATABASE_URL.replace("db:5432", "localhost:5386");
 }
 
 const prisma = new PrismaClient();
@@ -122,6 +123,20 @@ const seed = async () => {
 
   // Create users
   console.log("Creating users...");
+  // Create the specific user from frontend mock data first
+  const frontendUser = await prisma.user.upsert({
+    where: { id: "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250" },
+    update: {
+      avatarUrl: null,
+    },
+    create: {
+      id: "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250",
+      name: "金大森",
+      email: "ist83903@bcaoo.com",
+      avatarUrl: null,
+    },
+  });
+  
   const userNames = [
     "Alice Chen",
     "Bob Wang",
@@ -132,7 +147,7 @@ const seed = async () => {
     "Grace Wu",
     "Henry Chen",
   ];
-  const users = await Promise.all(
+  const otherUsers = await Promise.all(
     userNames.map((name, index) =>
       prisma.user.create({
         data: {
@@ -143,6 +158,7 @@ const seed = async () => {
       })
     )
   );
+  const users = [frontendUser, ...otherUsers];
   console.log(`Created ${users.length} users`);
 
   // Create user location collections

@@ -7,7 +7,12 @@ import { createLogger } from "../utils/logger.js";
 
 const logger = createLogger("error-handler");
 
-export const errorHandler: ErrorRequestHandler = (error, _req, res) => {
+export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
+  // Check if response has already been sent
+  if (res.headersSent) {
+    return;
+  }
+
   if (error instanceof ZodError) {
     // Respond with structured validation error feedback for clients.
     res.status(400).json({
@@ -34,7 +39,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res) => {
   }
 
   // Map common error messages to error codes
-  if (error.message === "User not found" || error.message === "Activity not found" || error.message === "Location not found") {
+  if (error?.message === "User not found" || error?.message === "Activity not found" || error?.message === "Location not found") {
     res.status(404).json({
       success: false,
       error: {
@@ -45,7 +50,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res) => {
     return;
   }
 
-  if (error.message === "NFC ID already exists" || error.message === "Activity has already ended") {
+  if (error?.message === "NFC ID already exists" || error?.message === "Activity has already ended") {
     res.status(400).json({
       success: false,
       error: {
