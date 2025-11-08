@@ -1,0 +1,15 @@
+{
+  "status": 200,
+  "message": "成功獲取用戶資料",
+  "data": {
+    "user_id": "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250",
+    "name": "金大森",
+    "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+    "activated_at": 1717430400000,
+    "total_distance": 125.5,
+    "total_time": 25200,
+    "total_coins": 1250,
+    "updated_at": 1717430400000
+  }
+}
+

@@ -7,6 +7,9 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'package:town_pass/bean/run_city.dart';
+import 'package:town_pass/service/account_service.dart';
+import 'package:town_pass/service/run_city_service.dart';
 import 'run_city_point.dart';
 
 class RunCityController extends GetxController {
@@ -17,6 +20,7 @@ class RunCityController extends GetxController {
     zoom: 12.5,
   );
 
+  // 地圖相關
   final RxBool isLoading = true.obs;
   final RxList<RunCityPoint> points = <RunCityPoint>[].obs;
   final RxList<Marker> markers = <Marker>[].obs;
@@ -35,6 +39,12 @@ class RunCityController extends GetxController {
   BitmapDescriptor? _collectedMarkerIcon;
   BitmapDescriptor? _uncollectedMarkerIcon;
 
+  // 用戶資料相關
+  final RunCityService _runCityService = Get.find<RunCityService>();
+  final AccountService _accountService = Get.find<AccountService>();
+  final Rxn<RunCityUserData> userData = Rxn<RunCityUserData>();
+  final RxnString errorMessage = RxnString();
+
   @override
   void onInit() {
     super.onInit();
@@ -48,9 +58,26 @@ class RunCityController extends GetxController {
     super.onClose();
   }
 
+  /// 載入資料（地圖點位和用戶資料）
   Future<void> loadData() async {
     isLoading.value = true;
+    errorMessage.value = null;
 
+    try {
+      // 並行載入地圖點位和用戶資料
+      await Future.wait([
+        _loadMapPoints(),
+        _loadUserData(),
+      ]);
+    } catch (e) {
+      errorMessage.value = '載入資料失敗：${e.toString()}';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// 載入地圖點位
+  Future<void> _loadMapPoints() async {
     // TODO: Replace with repository/service fetch once backend is ready.
     // Mock points help us validate UI and interactions while APIs are under development.
     await Future.delayed(const Duration(milliseconds: 400));
@@ -91,8 +118,28 @@ class RunCityController extends GetxController {
 
     points.assignAll(mockPoints);
     await _updateMarkers();
+  }
 
-    isLoading.value = false;
+  /// 載入用戶資料
+  Future<void> _loadUserData() async {
+    // 檢查用戶是否已登入
+    if (_accountService.account == null) {
+      return;
+    }
+
+    try {
+      // 從 Service 獲取用戶資料
+      final data = await _runCityService.getUserData();
+      userData.value = data;
+    } catch (e) {
+      // 用戶資料載入失敗不影響地圖顯示
+      print('載入用戶資料失敗: $e');
+    }
+  }
+
+  /// 刷新資料
+  Future<void> refresh() async {
+    await loadData();
   }
 
   void onMapCreated(GoogleMapController controller) {

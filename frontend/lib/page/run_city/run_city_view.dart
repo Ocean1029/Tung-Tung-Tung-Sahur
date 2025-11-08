@@ -3,9 +3,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_controller.dart';
+import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/util/tp_app_bar.dart';
+import 'package:town_pass/util/tp_cached_network_image.dart';
 import 'package:town_pass/util/tp_colors.dart';
+import 'package:town_pass/util/tp_route.dart';
 import 'package:town_pass/util/tp_text.dart';
 
 class RunCityView extends GetView<RunCityController> {
@@ -16,15 +20,54 @@ class RunCityView extends GetView<RunCityController> {
     return Scaffold(
       appBar: const TPAppBar(title: '跑城市'),
       body: Obx(() {
+        // 檢查用戶是否登入
+        if (Get.find<AccountService>().account == null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const TPText(
+                  '請先登入以使用此功能',
+                  style: TPTextStyles.bodyRegular,
+                  color: TPColors.grayscale600,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: const TPText('返回'),
+                ),
+              ],
+            ),
+          );
+        }
+
         if (controller.isLoading.value) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
 
-        final collectedCount =
-            controller.points.where((point) => point.collected).length;
-        final totalCount = controller.points.length;
+        if (controller.errorMessage.value != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TPText(
+                  controller.errorMessage.value ?? '發生錯誤',
+                  style: TPTextStyles.bodyRegular,
+                  color: TPColors.red500,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => controller.refresh(),
+                  child: const TPText('重試'),
+                ),
+              ],
+            ),
+          );
+        }
 
         return Stack(
           children: [
@@ -42,15 +85,21 @@ class RunCityView extends GetView<RunCityController> {
                 Factory<PanGestureRecognizer>(() => PanGestureRecognizer()),
               },
             ),
-            Positioned(
-              top: 16,
-              left: 16,
-              right: 16,
-              child: _buildLegendCard(
-                collectedCount: collectedCount,
-                totalCount: totalCount,
+            // 用戶資料卡片（可點擊，覆蓋在地圖上方）
+            if (controller.userData.value != null)
+              Positioned(
+                top: 16,
+                left: 16,
+                right: 16,
+                child: GestureDetector(
+                  onTap: () {
+                    Get.toNamed(TPRoute.runCityStats);
+                  },
+                  child: _buildUserProfileCard(controller.userData.value!),
+                ),
               ),
-            ),
+            
+            // 本次跑步紀錄卡片（如果有路線）
             if (!controller.isTracking.value && controller.routePath.isNotEmpty)
               Positioned(
                 left: 16,
@@ -63,6 +112,7 @@ class RunCityView extends GetView<RunCityController> {
                   visitedCount: controller.visitedPointIds.length,
                 ),
               ),
+            // 追蹤控制按鈕
             Positioned(
               left: 0,
               right: 0,
@@ -72,6 +122,86 @@ class RunCityView extends GetView<RunCityController> {
           ],
         );
       }),
+    );
+  }
+
+  /// 建立用戶資料卡片
+  Widget _buildUserProfileCard(userData) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: TPColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: TPColors.grayscale200.withOpacity(0.5),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // 頭貼
+          if (userData.avatarUrl != null && userData.avatarUrl!.isNotEmpty)
+            ClipOval(
+              child: TPCachedNetworkImage(
+                imageUrl: userData.avatarUrl!,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+                borderRadius: 0, // ClipOval 會處理圓形，不需要 borderRadius
+              ),
+            )
+          else
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: TPColors.grayscale200,
+                shape: BoxShape.circle,
+              ),
+              child: Assets.svg.user.svg(),
+            ),
+          const SizedBox(width: 16),
+          // 用戶資訊
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TPText(
+                  userData.name,
+                  style: TPTextStyles.h2SemiBold,
+                  color: TPColors.grayscale900,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.monetization_on,
+                      size: 20,
+                      color: TPColors.primary500,
+                    ),
+                    const SizedBox(width: 4),
+                    TPText(
+                      'x ${userData.totalCoins}',
+                      style: TPTextStyles.h3SemiBold,
+                      color: TPColors.grayscale900,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // 右側箭頭指示可點擊
+          const Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: TPColors.grayscale400,
+          ),
+        ],
+      ),
     );
   }
 
