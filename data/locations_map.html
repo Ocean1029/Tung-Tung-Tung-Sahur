@@ -1,0 +1,5233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7f780a24fa9457a3d4ef48185830c35f {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_7f780a24fa9457a3d4ef48185830c35f" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7f780a24fa9457a3d4ef48185830c35f = L.map(
+                "map_7f780a24fa9457a3d4ef48185830c35f",
+                {
+                    center: [25.0704965009434, 121.54927795754718],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_4c2e52b6f21fc71b8d70cff428559740 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_4c2e52b6f21fc71b8d70cff428559740.addTo(map_7f780a24fa9457a3d4ef48185830c35f);
+        
+    
+            var marker_cluster_a9e872ad7929d09609843904b75041bf = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var marker_43d8bc5020e645c49bf5e0f3afb1372e = L.marker(
+                [25.0174122, 121.5404968],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_06525b9a9d899d803650b3dec6cb392a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_07108d8a85db8c3de687c750d8259d00 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d162faeab4a11791a527e99ed6d020d9 = $(`<div id="html_d162faeab4a11791a527e99ed6d020d9" style="width: 100.0%; height: 100.0%;"><b>國立臺灣大學圖書館</b></div>`)[0];
+                popup_07108d8a85db8c3de687c750d8259d00.setContent(html_d162faeab4a11791a527e99ed6d020d9);
+            
+        
+
+        marker_43d8bc5020e645c49bf5e0f3afb1372e.bindPopup(popup_07108d8a85db8c3de687c750d8259d00)
+        ;
+
+        
+    
+    
+            marker_43d8bc5020e645c49bf5e0f3afb1372e.bindTooltip(
+                `<div>
+                     國立臺灣大學圖書館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_43d8bc5020e645c49bf5e0f3afb1372e.setIcon(icon_06525b9a9d899d803650b3dec6cb392a);
+            
+    
+            var marker_e8f6c2c47fb303451c769099fd1f3575 = L.marker(
+                [25.0216891, 121.5351162],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_656c48ec6b3522cb44a1fbcb8ce60c05 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5e24e7d1ea343105f277994075b7ae3e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5ea0cb79559bcf9fc5d016394d453c9d = $(`<div id="html_5ea0cb79559bcf9fc5d016394d453c9d" style="width: 100.0%; height: 100.0%;"><b>國立臺灣大學綜合體育館</b></div>`)[0];
+                popup_5e24e7d1ea343105f277994075b7ae3e.setContent(html_5ea0cb79559bcf9fc5d016394d453c9d);
+            
+        
+
+        marker_e8f6c2c47fb303451c769099fd1f3575.bindPopup(popup_5e24e7d1ea343105f277994075b7ae3e)
+        ;
+
+        
+    
+    
+            marker_e8f6c2c47fb303451c769099fd1f3575.bindTooltip(
+                `<div>
+                     國立臺灣大學綜合體育館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e8f6c2c47fb303451c769099fd1f3575.setIcon(icon_656c48ec6b3522cb44a1fbcb8ce60c05);
+            
+    
+            var marker_2815e94889d44c922a88d0211a9e110c = L.marker(
+                [25.0197178, 121.5378478],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_a7ecc23c52f8c9801279089a3374be74 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f393bd8a2d12fa4eb3e60a57b3474821 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_51fd620af7762c3a6fcf2855ce3ded80 = $(`<div id="html_51fd620af7762c3a6fcf2855ce3ded80" style="width: 100.0%; height: 100.0%;"><b>醉月湖</b></div>`)[0];
+                popup_f393bd8a2d12fa4eb3e60a57b3474821.setContent(html_51fd620af7762c3a6fcf2855ce3ded80);
+            
+        
+
+        marker_2815e94889d44c922a88d0211a9e110c.bindPopup(popup_f393bd8a2d12fa4eb3e60a57b3474821)
+        ;
+
+        
+    
+    
+            marker_2815e94889d44c922a88d0211a9e110c.bindTooltip(
+                `<div>
+                     醉月湖
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2815e94889d44c922a88d0211a9e110c.setIcon(icon_a7ecc23c52f8c9801279089a3374be74);
+            
+    
+            var marker_702ffadbb9cffe52248ddc8dd1febc85 = L.marker(
+                [25.0172877, 121.5358939],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_8f3a2172946bc056c45f765996df0644 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_572c9db38697c974628c90a2603531de = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d6439de242295dc0b1c382edbf606e15 = $(`<div id="html_d6439de242295dc0b1c382edbf606e15" style="width: 100.0%; height: 100.0%;"><b>106臺北市大安區椰林大道</b></div>`)[0];
+                popup_572c9db38697c974628c90a2603531de.setContent(html_d6439de242295dc0b1c382edbf606e15);
+            
+        
+
+        marker_702ffadbb9cffe52248ddc8dd1febc85.bindPopup(popup_572c9db38697c974628c90a2603531de)
+        ;
+
+        
+    
+    
+            marker_702ffadbb9cffe52248ddc8dd1febc85.bindTooltip(
+                `<div>
+                     106臺北市大安區椰林大道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_702ffadbb9cffe52248ddc8dd1febc85.setIcon(icon_8f3a2172946bc056c45f765996df0644);
+            
+    
+            var marker_766affa0516bc1b9b4c59fc8df66c8be = L.marker(
+                [25.017161, 121.536762],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_068e5dcec219da048a319240826a8a91 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fd4a6b3ea45259f0bcccf6bf40a6ef37 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_052c4ab26c923ae7dcc1e0dae7f21561 = $(`<div id="html_052c4ab26c923ae7dcc1e0dae7f21561" style="width: 100.0%; height: 100.0%;"><b>國立臺灣大學傅鐘</b></div>`)[0];
+                popup_fd4a6b3ea45259f0bcccf6bf40a6ef37.setContent(html_052c4ab26c923ae7dcc1e0dae7f21561);
+            
+        
+
+        marker_766affa0516bc1b9b4c59fc8df66c8be.bindPopup(popup_fd4a6b3ea45259f0bcccf6bf40a6ef37)
+        ;
+
+        
+    
+    
+            marker_766affa0516bc1b9b4c59fc8df66c8be.bindTooltip(
+                `<div>
+                     國立臺灣大學傅鐘
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_766affa0516bc1b9b4c59fc8df66c8be.setIcon(icon_068e5dcec219da048a319240826a8a91);
+            
+    
+            var marker_b2b4fcbe82b95433b0222b3fb31ad29f = L.marker(
+                [25.033976, 121.5645389],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_1f0fec07e240393b283762852c1d07a2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_eccc915dd92fb1b066bf1f8f4bddc41c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_42aaac567f82e22f71b2078f49ef9147 = $(`<div id="html_42aaac567f82e22f71b2078f49ef9147" style="width: 100.0%; height: 100.0%;"><b>Taipei 101</b></div>`)[0];
+                popup_eccc915dd92fb1b066bf1f8f4bddc41c.setContent(html_42aaac567f82e22f71b2078f49ef9147);
+            
+        
+
+        marker_b2b4fcbe82b95433b0222b3fb31ad29f.bindPopup(popup_eccc915dd92fb1b066bf1f8f4bddc41c)
+        ;
+
+        
+    
+    
+            marker_b2b4fcbe82b95433b0222b3fb31ad29f.bindTooltip(
+                `<div>
+                     Taipei 101
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b2b4fcbe82b95433b0222b3fb31ad29f.setIcon(icon_1f0fec07e240393b283762852c1d07a2);
+            
+    
+            var marker_fc34ea8b66461ef24df18a92fb61a1f4 = L.marker(
+                [25.0400306, 121.5602452],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_edc04522ce66bf1f892b518079a11b5d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e965dd3b9b9dfb468ebf67d83d45e26d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_088af763d9e5f1226d3294dc7cd8b560 = $(`<div id="html_088af763d9e5f1226d3294dc7cd8b560" style="width: 100.0%; height: 100.0%;"><b>國立國父紀念館</b></div>`)[0];
+                popup_e965dd3b9b9dfb468ebf67d83d45e26d.setContent(html_088af763d9e5f1226d3294dc7cd8b560);
+            
+        
+
+        marker_fc34ea8b66461ef24df18a92fb61a1f4.bindPopup(popup_e965dd3b9b9dfb468ebf67d83d45e26d)
+        ;
+
+        
+    
+    
+            marker_fc34ea8b66461ef24df18a92fb61a1f4.bindTooltip(
+                `<div>
+                     國立國父紀念館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fc34ea8b66461ef24df18a92fb61a1f4.setIcon(icon_edc04522ce66bf1f892b518079a11b5d);
+            
+    
+            var marker_f4d6dba2ee84ac856821cc1d0019b9a4 = L.marker(
+                [25.025249, 121.5792578],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_e0d4a4d4d5d9170943f39ce7d10576bb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_14442d5c5bd6923c82630fe632709865 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3653b9c22af36b45da8680189bac1b6f = $(`<div id="html_3653b9c22af36b45da8680189bac1b6f" style="width: 100.0%; height: 100.0%;"><b>象山步道</b></div>`)[0];
+                popup_14442d5c5bd6923c82630fe632709865.setContent(html_3653b9c22af36b45da8680189bac1b6f);
+            
+        
+
+        marker_f4d6dba2ee84ac856821cc1d0019b9a4.bindPopup(popup_14442d5c5bd6923c82630fe632709865)
+        ;
+
+        
+    
+    
+            marker_f4d6dba2ee84ac856821cc1d0019b9a4.bindTooltip(
+                `<div>
+                     象山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f4d6dba2ee84ac856821cc1d0019b9a4.setIcon(icon_e0d4a4d4d5d9170943f39ce7d10576bb);
+            
+    
+            var marker_4259929a61f44b6a8b244681ddda210e = L.marker(
+                [25.0438366, 121.5606383],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_c44ea5fa12a8cf4d4df7e68697eed761 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_14d333f29834d5ce1d7e73261b478231 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f2d2cd51c77a02b329407b78b039c065 = $(`<div id="html_f2d2cd51c77a02b329407b78b039c065" style="width: 100.0%; height: 100.0%;"><b>松山文創園區</b></div>`)[0];
+                popup_14d333f29834d5ce1d7e73261b478231.setContent(html_f2d2cd51c77a02b329407b78b039c065);
+            
+        
+
+        marker_4259929a61f44b6a8b244681ddda210e.bindPopup(popup_14d333f29834d5ce1d7e73261b478231)
+        ;
+
+        
+    
+    
+            marker_4259929a61f44b6a8b244681ddda210e.bindTooltip(
+                `<div>
+                     松山文創園區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4259929a61f44b6a8b244681ddda210e.setIcon(icon_c44ea5fa12a8cf4d4df7e68697eed761);
+            
+    
+            var marker_c5667ab52c552c6651b118cde0a82103 = L.marker(
+                [25.1023554, 121.5484925],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_f26b9591e0f4ad8bbcd71eb5f721c146 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_879edc16595e7117bec50d2c208f11a3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f443d6b0c331b786590f5fd9e34cfa42 = $(`<div id="html_f443d6b0c331b786590f5fd9e34cfa42" style="width: 100.0%; height: 100.0%;"><b>國立故宮博物院</b></div>`)[0];
+                popup_879edc16595e7117bec50d2c208f11a3.setContent(html_f443d6b0c331b786590f5fd9e34cfa42);
+            
+        
+
+        marker_c5667ab52c552c6651b118cde0a82103.bindPopup(popup_879edc16595e7117bec50d2c208f11a3)
+        ;
+
+        
+    
+    
+            marker_c5667ab52c552c6651b118cde0a82103.bindTooltip(
+                `<div>
+                     國立故宮博物院
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c5667ab52c552c6651b118cde0a82103.setIcon(icon_f26b9591e0f4ad8bbcd71eb5f721c146);
+            
+    
+            var marker_20521277259ace0ee59a67b66dc76a8a = L.marker(
+                [25.035502, 121.5201832],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_e73b5a30f9f1ada630ff0f8f89a6fe6b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4066a3e23e64124a236d5dc92db8ea4d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a18ce1f9b4bfd5818c229064b7470ad3 = $(`<div id="html_a18ce1f9b4bfd5818c229064b7470ad3" style="width: 100.0%; height: 100.0%;"><b>國立中正紀念堂</b></div>`)[0];
+                popup_4066a3e23e64124a236d5dc92db8ea4d.setContent(html_a18ce1f9b4bfd5818c229064b7470ad3);
+            
+        
+
+        marker_20521277259ace0ee59a67b66dc76a8a.bindPopup(popup_4066a3e23e64124a236d5dc92db8ea4d)
+        ;
+
+        
+    
+    
+            marker_20521277259ace0ee59a67b66dc76a8a.bindTooltip(
+                `<div>
+                     國立中正紀念堂
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_20521277259ace0ee59a67b66dc76a8a.setIcon(icon_e73b5a30f9f1ada630ff0f8f89a6fe6b);
+            
+    
+            var marker_8a17ce7eb3fa3e22b3ad6bb7310e057f = L.marker(
+                [25.0373106, 121.4998654],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_71034e475022e8dab59907dd8aefe985 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_aacc96633812289df616c2d91bfcedef = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9741b2036eb58369cb6f33dfcf6a75ac = $(`<div id="html_9741b2036eb58369cb6f33dfcf6a75ac" style="width: 100.0%; height: 100.0%;"><b>艋舺龍山寺</b></div>`)[0];
+                popup_aacc96633812289df616c2d91bfcedef.setContent(html_9741b2036eb58369cb6f33dfcf6a75ac);
+            
+        
+
+        marker_8a17ce7eb3fa3e22b3ad6bb7310e057f.bindPopup(popup_aacc96633812289df616c2d91bfcedef)
+        ;
+
+        
+    
+    
+            marker_8a17ce7eb3fa3e22b3ad6bb7310e057f.bindTooltip(
+                `<div>
+                     艋舺龍山寺
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8a17ce7eb3fa3e22b3ad6bb7310e057f.setIcon(icon_71034e475022e8dab59907dd8aefe985);
+            
+    
+            var marker_294208c4521c54fc8d20e0c2d2603f10 = L.marker(
+                [25.0446664, 121.5063096],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_16605da05d28870cae6c1629bf41d5ee = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_de68293d48aa5219facdc683fbef5047 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_faee1009235103daf95525c03a489d3e = $(`<div id="html_faee1009235103daf95525c03a489d3e" style="width: 100.0%; height: 100.0%;"><b>西門町</b></div>`)[0];
+                popup_de68293d48aa5219facdc683fbef5047.setContent(html_faee1009235103daf95525c03a489d3e);
+            
+        
+
+        marker_294208c4521c54fc8d20e0c2d2603f10.bindPopup(popup_de68293d48aa5219facdc683fbef5047)
+        ;
+
+        
+    
+    
+            marker_294208c4521c54fc8d20e0c2d2603f10.bindTooltip(
+                `<div>
+                     西門町
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_294208c4521c54fc8d20e0c2d2603f10.setIcon(icon_16605da05d28870cae6c1629bf41d5ee);
+            
+    
+            var marker_53a22206f6fb37ac0c89aaf71e2e38ce = L.marker(
+                [25.0884972, 121.5243504],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_127acda35d9529696704710d3f03bd5d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_11cee1e3c78629305ea9b748b8484293 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ef880726d468a4e9c5fd6dfd6b5b56ef = $(`<div id="html_ef880726d468a4e9c5fd6dfd6b5b56ef" style="width: 100.0%; height: 100.0%;"><b>士林夜市</b></div>`)[0];
+                popup_11cee1e3c78629305ea9b748b8484293.setContent(html_ef880726d468a4e9c5fd6dfd6b5b56ef);
+            
+        
+
+        marker_53a22206f6fb37ac0c89aaf71e2e38ce.bindPopup(popup_11cee1e3c78629305ea9b748b8484293)
+        ;
+
+        
+    
+    
+            marker_53a22206f6fb37ac0c89aaf71e2e38ce.bindTooltip(
+                `<div>
+                     士林夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_53a22206f6fb37ac0c89aaf71e2e38ce.setIcon(icon_127acda35d9529696704710d3f03bd5d);
+            
+    
+            var marker_821d98df79ee7e92b3ef7fc09d39141c = L.marker(
+                [25.0508854, 121.5774891],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_360c8bb3198365b1bc21fefaa061f699 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8ff2de5bc449375a6b6336e06b5dfb7f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ad65cac6ea86cb936da782a1c6171a78 = $(`<div id="html_ad65cac6ea86cb936da782a1c6171a78" style="width: 100.0%; height: 100.0%;"><b>饒河街 觀光夜市</b></div>`)[0];
+                popup_8ff2de5bc449375a6b6336e06b5dfb7f.setContent(html_ad65cac6ea86cb936da782a1c6171a78);
+            
+        
+
+        marker_821d98df79ee7e92b3ef7fc09d39141c.bindPopup(popup_8ff2de5bc449375a6b6336e06b5dfb7f)
+        ;
+
+        
+    
+    
+            marker_821d98df79ee7e92b3ef7fc09d39141c.bindTooltip(
+                `<div>
+                     饒河街 觀光夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_821d98df79ee7e92b3ef7fc09d39141c.setIcon(icon_360c8bb3198365b1bc21fefaa061f699);
+            
+    
+            var marker_98b42a7985c3e0cd242613627ece43a8 = L.marker(
+                [25.0566808, 121.5153641],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_85d394cf4bbe500aa655ac9997b9c086 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_66e8da5e8073c69621e932295b640897 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7e1b6c93f7d59419c51f75fc31e2e4a8 = $(`<div id="html_7e1b6c93f7d59419c51f75fc31e2e4a8" style="width: 100.0%; height: 100.0%;"><b>寧夏夜市</b></div>`)[0];
+                popup_66e8da5e8073c69621e932295b640897.setContent(html_7e1b6c93f7d59419c51f75fc31e2e4a8);
+            
+        
+
+        marker_98b42a7985c3e0cd242613627ece43a8.bindPopup(popup_66e8da5e8073c69621e932295b640897)
+        ;
+
+        
+    
+    
+            marker_98b42a7985c3e0cd242613627ece43a8.bindTooltip(
+                `<div>
+                     寧夏夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_98b42a7985c3e0cd242613627ece43a8.setIcon(icon_85d394cf4bbe500aa655ac9997b9c086);
+            
+    
+            var marker_9b2670e1444532063d60e3047eddc982 = L.marker(
+                [25.0385988, 121.4984426],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_e5cc011ab52128f6da7d1d13dcfcd724 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e5e69acc88c61288ecb31f591e2ed555 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_044b373115dcfd20f2d4b9c981ebf76b = $(`<div id="html_044b373115dcfd20f2d4b9c981ebf76b" style="width: 100.0%; height: 100.0%;"><b>臺北華西街夜市</b></div>`)[0];
+                popup_e5e69acc88c61288ecb31f591e2ed555.setContent(html_044b373115dcfd20f2d4b9c981ebf76b);
+            
+        
+
+        marker_9b2670e1444532063d60e3047eddc982.bindPopup(popup_e5e69acc88c61288ecb31f591e2ed555)
+        ;
+
+        
+    
+    
+            marker_9b2670e1444532063d60e3047eddc982.bindTooltip(
+                `<div>
+                     臺北華西街夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9b2670e1444532063d60e3047eddc982.setIcon(icon_e5cc011ab52128f6da7d1d13dcfcd724);
+            
+    
+            var marker_0ea2df44d5ad78209138d7c7bfca164c = L.marker(
+                [25.0301412, 121.5542672],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_3c7ab4b86640463a06097b5de0186c33 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5e0841f3c9f5410e81abf9086aa88e65 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_31a58e7676103be7129e61a419e5e5c9 = $(`<div id="html_31a58e7676103be7129e61a419e5e5c9" style="width: 100.0%; height: 100.0%;"><b>臨江街觀光夜市</b></div>`)[0];
+                popup_5e0841f3c9f5410e81abf9086aa88e65.setContent(html_31a58e7676103be7129e61a419e5e5c9);
+            
+        
+
+        marker_0ea2df44d5ad78209138d7c7bfca164c.bindPopup(popup_5e0841f3c9f5410e81abf9086aa88e65)
+        ;
+
+        
+    
+    
+            marker_0ea2df44d5ad78209138d7c7bfca164c.bindTooltip(
+                `<div>
+                     臨江街觀光夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0ea2df44d5ad78209138d7c7bfca164c.setIcon(icon_3c7ab4b86640463a06097b5de0186c33);
+            
+    
+            var marker_b23179c6a7363fc92808168db73de619 = L.marker(
+                [25.0245042, 121.5293123],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_c401a70de7971ea690c2c7127f4bcc95 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9987a5d07f5e247569dddd28432716f3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e2a24f8140a149baf5f29aa83c25141c = $(`<div id="html_e2a24f8140a149baf5f29aa83c25141c" style="width: 100.0%; height: 100.0%;"><b>師大夜市</b></div>`)[0];
+                popup_9987a5d07f5e247569dddd28432716f3.setContent(html_e2a24f8140a149baf5f29aa83c25141c);
+            
+        
+
+        marker_b23179c6a7363fc92808168db73de619.bindPopup(popup_9987a5d07f5e247569dddd28432716f3)
+        ;
+
+        
+    
+    
+            marker_b23179c6a7363fc92808168db73de619.bindTooltip(
+                `<div>
+                     師大夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b23179c6a7363fc92808168db73de619.setIcon(icon_c401a70de7971ea690c2c7127f4bcc95);
+            
+    
+            var marker_4d181ad3cc230589f01e1ece4a4196f4 = L.marker(
+                [25.0137201, 121.5347221],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_62011d8d1a65506bcc03a497ae7703e7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8c5be7f257d39d7661c689af5cd698ab = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5bbcb9725221d6873d81890b5db0f4bc = $(`<div id="html_5bbcb9725221d6873d81890b5db0f4bc" style="width: 100.0%; height: 100.0%;"><b>臺北市公館觀光夜市</b></div>`)[0];
+                popup_8c5be7f257d39d7661c689af5cd698ab.setContent(html_5bbcb9725221d6873d81890b5db0f4bc);
+            
+        
+
+        marker_4d181ad3cc230589f01e1ece4a4196f4.bindPopup(popup_8c5be7f257d39d7661c689af5cd698ab)
+        ;
+
+        
+    
+    
+            marker_4d181ad3cc230589f01e1ece4a4196f4.bindTooltip(
+                `<div>
+                     臺北市公館觀光夜市
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4d181ad3cc230589f01e1ece4a4196f4.setIcon(icon_62011d8d1a65506bcc03a497ae7703e7);
+            
+    
+            var marker_d77427a8e737149b09d60b381eb33dbc = L.marker(
+                [25.0561283, 121.5074276],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_6226b8eb07da81f8ecbf636f6ca8bddd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2d9f8c75eebdd55d8f30e71f1dc1f60e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f96c7ac3638d4219481596eecabf0969 = $(`<div id="html_f96c7ac3638d4219481596eecabf0969" style="width: 100.0%; height: 100.0%;"><b>大稻埕碼頭貨櫃市集</b></div>`)[0];
+                popup_2d9f8c75eebdd55d8f30e71f1dc1f60e.setContent(html_f96c7ac3638d4219481596eecabf0969);
+            
+        
+
+        marker_d77427a8e737149b09d60b381eb33dbc.bindPopup(popup_2d9f8c75eebdd55d8f30e71f1dc1f60e)
+        ;
+
+        
+    
+    
+            marker_d77427a8e737149b09d60b381eb33dbc.bindTooltip(
+                `<div>
+                     大稻埕碼頭貨櫃市集
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d77427a8e737149b09d60b381eb33dbc.setIcon(icon_6226b8eb07da81f8ecbf636f6ca8bddd);
+            
+    
+            var marker_2eb72d8582a91c05d297a0ec5ffb3a34 = L.marker(
+                [25.0585055, 121.5095956],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_cb45f3ade6023ea63ba4291fb4a40611 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b7486cab855eb8e9b5aac9ec0b08f59f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6614403c73bc5d32eb35ca81ba9469fb = $(`<div id="html_6614403c73bc5d32eb35ca81ba9469fb" style="width: 100.0%; height: 100.0%;"><b>103臺北市大同區迪化街一段</b></div>`)[0];
+                popup_b7486cab855eb8e9b5aac9ec0b08f59f.setContent(html_6614403c73bc5d32eb35ca81ba9469fb);
+            
+        
+
+        marker_2eb72d8582a91c05d297a0ec5ffb3a34.bindPopup(popup_b7486cab855eb8e9b5aac9ec0b08f59f)
+        ;
+
+        
+    
+    
+            marker_2eb72d8582a91c05d297a0ec5ffb3a34.bindTooltip(
+                `<div>
+                     103臺北市大同區迪化街一段
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2eb72d8582a91c05d297a0ec5ffb3a34.setIcon(icon_cb45f3ade6023ea63ba4291fb4a40611);
+            
+    
+            var marker_56bbf1aeeb82ea168dacd6a3755eeba0 = L.marker(
+                [25.0401547, 121.5167496],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_454c4e0093984713a5d9ced71276cec6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b7edc799e3f6bca7ada958d8f9da7240 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b444ffe41cbbbef511c7cdbef2f4b1fc = $(`<div id="html_b444ffe41cbbbef511c7cdbef2f4b1fc" style="width: 100.0%; height: 100.0%;"><b>臺北賓館</b></div>`)[0];
+                popup_b7edc799e3f6bca7ada958d8f9da7240.setContent(html_b444ffe41cbbbef511c7cdbef2f4b1fc);
+            
+        
+
+        marker_56bbf1aeeb82ea168dacd6a3755eeba0.bindPopup(popup_b7edc799e3f6bca7ada958d8f9da7240)
+        ;
+
+        
+    
+    
+            marker_56bbf1aeeb82ea168dacd6a3755eeba0.bindTooltip(
+                `<div>
+                     臺北賓館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_56bbf1aeeb82ea168dacd6a3755eeba0.setIcon(icon_454c4e0093984713a5d9ced71276cec6);
+            
+    
+            var marker_59b35228cf98dba84a0fea130bf3686c = L.marker(
+                [25.0399991, 121.5119507],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_1cd1aae0f5d1088701bce97878bbc50d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8ca4f3037deb2335ca060234929d0664 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_168e7d57d050ce90777d103ee391cd98 = $(`<div id="html_168e7d57d050ce90777d103ee391cd98" style="width: 100.0%; height: 100.0%;"><b>總統府</b></div>`)[0];
+                popup_8ca4f3037deb2335ca060234929d0664.setContent(html_168e7d57d050ce90777d103ee391cd98);
+            
+        
+
+        marker_59b35228cf98dba84a0fea130bf3686c.bindPopup(popup_8ca4f3037deb2335ca060234929d0664)
+        ;
+
+        
+    
+    
+            marker_59b35228cf98dba84a0fea130bf3686c.bindTooltip(
+                `<div>
+                     總統府
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_59b35228cf98dba84a0fea130bf3686c.setIcon(icon_1cd1aae0f5d1088701bce97878bbc50d);
+            
+    
+            var marker_b401cacb5f5e691a85b1b9dad480accf = L.marker(
+                [25.0415717, 121.5150295],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_558a016d66eba4934da434988b8f416c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8e4dd119f61ed5c647cc63bf9edfafe8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_36e5688c35b7c0f30d9d2f33550fa9ae = $(`<div id="html_36e5688c35b7c0f30d9d2f33550fa9ae" style="width: 100.0%; height: 100.0%;"><b>二二八和平公園</b></div>`)[0];
+                popup_8e4dd119f61ed5c647cc63bf9edfafe8.setContent(html_36e5688c35b7c0f30d9d2f33550fa9ae);
+            
+        
+
+        marker_b401cacb5f5e691a85b1b9dad480accf.bindPopup(popup_8e4dd119f61ed5c647cc63bf9edfafe8)
+        ;
+
+        
+    
+    
+            marker_b401cacb5f5e691a85b1b9dad480accf.bindTooltip(
+                `<div>
+                     二二八和平公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b401cacb5f5e691a85b1b9dad480accf.setIcon(icon_558a016d66eba4934da434988b8f416c);
+            
+    
+            var marker_b462d142425a1bff0937ad5d7b9a9818 = L.marker(
+                [25.0318511, 121.5094593],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_3a502bb1cdd0c7e32b261f7fcaf4067c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_db29002f28e0f34a94e3344d0a74bb4b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8985f1072d8ecccfcc0253a5a82bc994 = $(`<div id="html_8985f1072d8ecccfcc0253a5a82bc994" style="width: 100.0%; height: 100.0%;"><b>臺北植物園</b></div>`)[0];
+                popup_db29002f28e0f34a94e3344d0a74bb4b.setContent(html_8985f1072d8ecccfcc0253a5a82bc994);
+            
+        
+
+        marker_b462d142425a1bff0937ad5d7b9a9818.bindPopup(popup_db29002f28e0f34a94e3344d0a74bb4b)
+        ;
+
+        
+    
+    
+            marker_b462d142425a1bff0937ad5d7b9a9818.bindTooltip(
+                `<div>
+                     臺北植物園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b462d142425a1bff0937ad5d7b9a9818.setIcon(icon_3a502bb1cdd0c7e32b261f7fcaf4067c);
+            
+    
+            var marker_393e1347f2e2026a69c7df35b34dbec3 = L.marker(
+                [25.0296587, 121.5362867],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_43ddda610cabaa5917f31391ee4885a8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_22f43a2a7301c4c6ed5392372f80a03e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7ac99e7756d305620c19e122f517387a = $(`<div id="html_7ac99e7756d305620c19e122f517387a" style="width: 100.0%; height: 100.0%;"><b>大安森林公園</b></div>`)[0];
+                popup_22f43a2a7301c4c6ed5392372f80a03e.setContent(html_7ac99e7756d305620c19e122f517387a);
+            
+        
+
+        marker_393e1347f2e2026a69c7df35b34dbec3.bindPopup(popup_22f43a2a7301c4c6ed5392372f80a03e)
+        ;
+
+        
+    
+    
+            marker_393e1347f2e2026a69c7df35b34dbec3.bindTooltip(
+                `<div>
+                     大安森林公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_393e1347f2e2026a69c7df35b34dbec3.setIcon(icon_43ddda610cabaa5917f31391ee4885a8);
+            
+    
+            var marker_a6a56e1bfff9b3ddf6767ab48107cd7c = L.marker(
+                [25.1942462, 121.5609363],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_32938fc79d4a2da132d6bd5dad700ab4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d6bbf0436e1f77c3d318d188ed84604b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_df91d456a0453b94cdd490f103b1275d = $(`<div id="html_df91d456a0453b94cdd490f103b1275d" style="width: 100.0%; height: 100.0%;"><b>陽明山國家公園</b></div>`)[0];
+                popup_d6bbf0436e1f77c3d318d188ed84604b.setContent(html_df91d456a0453b94cdd490f103b1275d);
+            
+        
+
+        marker_a6a56e1bfff9b3ddf6767ab48107cd7c.bindPopup(popup_d6bbf0436e1f77c3d318d188ed84604b)
+        ;
+
+        
+    
+    
+            marker_a6a56e1bfff9b3ddf6767ab48107cd7c.bindTooltip(
+                `<div>
+                     陽明山國家公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a6a56e1bfff9b3ddf6767ab48107cd7c.setIcon(icon_32938fc79d4a2da132d6bd5dad700ab4);
+            
+    
+            var marker_2f068668f5949039acfb756921fe29e5 = L.marker(
+                [25.165756, 121.5753508],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_5045e2b33995498388c90328e11a34f3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2bb714ed816328a7993f54fe01fffd3b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_86864fbc301ebe204a7ae2f1236ad79a = $(`<div id="html_86864fbc301ebe204a7ae2f1236ad79a" style="width: 100.0%; height: 100.0%;"><b>擎天崗</b></div>`)[0];
+                popup_2bb714ed816328a7993f54fe01fffd3b.setContent(html_86864fbc301ebe204a7ae2f1236ad79a);
+            
+        
+
+        marker_2f068668f5949039acfb756921fe29e5.bindPopup(popup_2bb714ed816328a7993f54fe01fffd3b)
+        ;
+
+        
+    
+    
+            marker_2f068668f5949039acfb756921fe29e5.bindTooltip(
+                `<div>
+                     擎天崗
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2f068668f5949039acfb756921fe29e5.setIcon(icon_5045e2b33995498388c90328e11a34f3);
+            
+    
+            var marker_e96647923250bcffe7e2ee14cd1efc3f = L.marker(
+                [25.1655401, 121.5639373],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_11c180dfd45921e783a8cba0061a6201 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5d0597404045f2b9d41e166a21f0be03 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_50d8ee2bd8e604ad2f49dc9e9b2bc8ce = $(`<div id="html_50d8ee2bd8e604ad2f49dc9e9b2bc8ce" style="width: 100.0%; height: 100.0%;"><b>冷水坑</b></div>`)[0];
+                popup_5d0597404045f2b9d41e166a21f0be03.setContent(html_50d8ee2bd8e604ad2f49dc9e9b2bc8ce);
+            
+        
+
+        marker_e96647923250bcffe7e2ee14cd1efc3f.bindPopup(popup_5d0597404045f2b9d41e166a21f0be03)
+        ;
+
+        
+    
+    
+            marker_e96647923250bcffe7e2ee14cd1efc3f.bindTooltip(
+                `<div>
+                     冷水坑
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e96647923250bcffe7e2ee14cd1efc3f.setIcon(icon_11c180dfd45921e783a8cba0061a6201);
+            
+    
+            var marker_205e6e57db03c070cdfa4b1756ec95c6 = L.marker(
+                [25.1766629, 121.5471008],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_dfa069ac547fa4822251346133bc58e5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c1f0421d04cbe1e83c4c5b66d01c265f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_df0cad81eafcb9f7195375ce448c067d = $(`<div id="html_df0cad81eafcb9f7195375ce448c067d" style="width: 100.0%; height: 100.0%;"><b>小油坑遊憩區</b></div>`)[0];
+                popup_c1f0421d04cbe1e83c4c5b66d01c265f.setContent(html_df0cad81eafcb9f7195375ce448c067d);
+            
+        
+
+        marker_205e6e57db03c070cdfa4b1756ec95c6.bindPopup(popup_c1f0421d04cbe1e83c4c5b66d01c265f)
+        ;
+
+        
+    
+    
+            marker_205e6e57db03c070cdfa4b1756ec95c6.bindTooltip(
+                `<div>
+                     小油坑遊憩區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_205e6e57db03c070cdfa4b1756ec95c6.setIcon(icon_dfa069ac547fa4822251346133bc58e5);
+            
+    
+            var marker_bf6f92bd06d23c15a561437732e6988b = L.marker(
+                [25.1726423, 121.5333316],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_f696aab534549d3fc883cf0a190e8551 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_11789ea89bf3539bfd55b3dc2812b9f8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a66668f76ad3e84b869ffd3d6b6d05f4 = $(`<div id="html_a66668f76ad3e84b869ffd3d6b6d05f4" style="width: 100.0%; height: 100.0%;"><b>竹子湖</b></div>`)[0];
+                popup_11789ea89bf3539bfd55b3dc2812b9f8.setContent(html_a66668f76ad3e84b869ffd3d6b6d05f4);
+            
+        
+
+        marker_bf6f92bd06d23c15a561437732e6988b.bindPopup(popup_11789ea89bf3539bfd55b3dc2812b9f8)
+        ;
+
+        
+    
+    
+            marker_bf6f92bd06d23c15a561437732e6988b.bindTooltip(
+                `<div>
+                     竹子湖
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bf6f92bd06d23c15a561437732e6988b.setIcon(icon_f696aab534549d3fc883cf0a190e8551);
+            
+    
+            var marker_61231051cbbb37dee4ed48498aa2e5f8 = L.marker(
+                [25.1585011, 121.5391877],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_a38150de3b2e9b698f5e20035bf46118 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c3f8faa94266ea926b21a55d922151be = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_89f144d2be518a0640f12f8131a49363 = $(`<div id="html_89f144d2be518a0640f12f8131a49363" style="width: 100.0%; height: 100.0%;"><b>陽明山花鐘</b></div>`)[0];
+                popup_c3f8faa94266ea926b21a55d922151be.setContent(html_89f144d2be518a0640f12f8131a49363);
+            
+        
+
+        marker_61231051cbbb37dee4ed48498aa2e5f8.bindPopup(popup_c3f8faa94266ea926b21a55d922151be)
+        ;
+
+        
+    
+    
+            marker_61231051cbbb37dee4ed48498aa2e5f8.bindTooltip(
+                `<div>
+                     陽明山花鐘
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_61231051cbbb37dee4ed48498aa2e5f8.setIcon(icon_a38150de3b2e9b698f5e20035bf46118);
+            
+    
+            var marker_8fa3fb6a156eb7fd266ab696834bfe2b = L.marker(
+                [25.1365694, 121.50715],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_bb3863ecb19bf9af2293a73de3d21adc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b8d4abd8cf78d0672dff2c0fc5efad4f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_740951c991907ec879fb14c571e8f117 = $(`<div id="html_740951c991907ec879fb14c571e8f117" style="width: 100.0%; height: 100.0%;"><b>北投溫泉博物館</b></div>`)[0];
+                popup_b8d4abd8cf78d0672dff2c0fc5efad4f.setContent(html_740951c991907ec879fb14c571e8f117);
+            
+        
+
+        marker_8fa3fb6a156eb7fd266ab696834bfe2b.bindPopup(popup_b8d4abd8cf78d0672dff2c0fc5efad4f)
+        ;
+
+        
+    
+    
+            marker_8fa3fb6a156eb7fd266ab696834bfe2b.bindTooltip(
+                `<div>
+                     北投溫泉博物館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8fa3fb6a156eb7fd266ab696834bfe2b.setIcon(icon_bb3863ecb19bf9af2293a73de3d21adc);
+            
+    
+            var marker_b9981aec06742f41d82914570715bedd = L.marker(
+                [25.1363559, 121.5062331],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_61fa8c13cc6e9279744d2b531722c728 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d8f8500ca1d4f0f9bbab4e573c4f8db2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_221791f7a632b434df5bcde89ce5859c = $(`<div id="html_221791f7a632b434df5bcde89ce5859c" style="width: 100.0%; height: 100.0%;"><b>臺北市立圖書館 北投分館</b></div>`)[0];
+                popup_d8f8500ca1d4f0f9bbab4e573c4f8db2.setContent(html_221791f7a632b434df5bcde89ce5859c);
+            
+        
+
+        marker_b9981aec06742f41d82914570715bedd.bindPopup(popup_d8f8500ca1d4f0f9bbab4e573c4f8db2)
+        ;
+
+        
+    
+    
+            marker_b9981aec06742f41d82914570715bedd.bindTooltip(
+                `<div>
+                     臺北市立圖書館 北投分館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b9981aec06742f41d82914570715bedd.setIcon(icon_61fa8c13cc6e9279744d2b531722c728);
+            
+    
+            var marker_34a4c58d94667c96e8861fa34c68493d = L.marker(
+                [25.137894, 121.5118863],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_c3577a5837e1850f3f7652aee8ec72cd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3d7377593130945462c032d8658c6b46 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7ad9bebdb5ca3ebad2a13c0d79d4c6ca = $(`<div id="html_7ad9bebdb5ca3ebad2a13c0d79d4c6ca" style="width: 100.0%; height: 100.0%;"><b>地熱谷</b></div>`)[0];
+                popup_3d7377593130945462c032d8658c6b46.setContent(html_7ad9bebdb5ca3ebad2a13c0d79d4c6ca);
+            
+        
+
+        marker_34a4c58d94667c96e8861fa34c68493d.bindPopup(popup_3d7377593130945462c032d8658c6b46)
+        ;
+
+        
+    
+    
+            marker_34a4c58d94667c96e8861fa34c68493d.bindTooltip(
+                `<div>
+                     地熱谷
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_34a4c58d94667c96e8861fa34c68493d.setIcon(icon_c3577a5837e1850f3f7652aee8ec72cd);
+            
+    
+            var marker_ebcbc7025172bbf5267666e6c03451e8 = L.marker(
+                [25.1176791, 121.4639554],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_4c603f40c7fe997752cab4fcf5e0068c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1a949a345298b22e70f2a0bdd22a907a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e6c3b27e82cf468de81f234f02f650eb = $(`<div id="html_e6c3b27e82cf468de81f234f02f650eb" style="width: 100.0%; height: 100.0%;"><b>關渡宮</b></div>`)[0];
+                popup_1a949a345298b22e70f2a0bdd22a907a.setContent(html_e6c3b27e82cf468de81f234f02f650eb);
+            
+        
+
+        marker_ebcbc7025172bbf5267666e6c03451e8.bindPopup(popup_1a949a345298b22e70f2a0bdd22a907a)
+        ;
+
+        
+    
+    
+            marker_ebcbc7025172bbf5267666e6c03451e8.bindTooltip(
+                `<div>
+                     關渡宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ebcbc7025172bbf5267666e6c03451e8.setIcon(icon_4c603f40c7fe997752cab4fcf5e0068c);
+            
+    
+            var marker_434aa7efe86356ad39c5114f621ac5e2 = L.marker(
+                [25.1188889, 121.4708333],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_faf34faf35fa7906e6dc30c1fd86d822 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0d2602b683bacbceedefcac626777bf3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b163e85efa3f6959f5077460441a8875 = $(`<div id="html_b163e85efa3f6959f5077460441a8875" style="width: 100.0%; height: 100.0%;"><b>關渡自然公園</b></div>`)[0];
+                popup_0d2602b683bacbceedefcac626777bf3.setContent(html_b163e85efa3f6959f5077460441a8875);
+            
+        
+
+        marker_434aa7efe86356ad39c5114f621ac5e2.bindPopup(popup_0d2602b683bacbceedefcac626777bf3)
+        ;
+
+        
+    
+    
+            marker_434aa7efe86356ad39c5114f621ac5e2.bindTooltip(
+                `<div>
+                     關渡自然公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_434aa7efe86356ad39c5114f621ac5e2.setIcon(icon_faf34faf35fa7906e6dc30c1fd86d822);
+            
+    
+            var marker_4174a4a8abf93971664f895e7862595c = L.marker(
+                [25.168927, 121.4440921],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_0d6f36e5c7269eabaf854107f3eb891f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e0d45ae686a6cf40fc7eff476c441981 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e19833ed3531fd272f181daddb697027 = $(`<div id="html_e19833ed3531fd272f181daddb697027" style="width: 100.0%; height: 100.0%;"><b>淡水老街</b></div>`)[0];
+                popup_e0d45ae686a6cf40fc7eff476c441981.setContent(html_e19833ed3531fd272f181daddb697027);
+            
+        
+
+        marker_4174a4a8abf93971664f895e7862595c.bindPopup(popup_e0d45ae686a6cf40fc7eff476c441981)
+        ;
+
+        
+    
+    
+            marker_4174a4a8abf93971664f895e7862595c.bindTooltip(
+                `<div>
+                     淡水老街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4174a4a8abf93971664f895e7862595c.setIcon(icon_0d6f36e5c7269eabaf854107f3eb891f);
+            
+    
+            var marker_ad6bff9857da90268c8c5bbbd8170358 = L.marker(
+                [25.1830092, 121.4121084],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_3db1e7cf69ce6e2718638506035d7ba6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_34dcb71d4d12761cf4ff80011a2dbc2a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_174ea9a2b970fb1527c28928f3742568 = $(`<div id="html_174ea9a2b970fb1527c28928f3742568" style="width: 100.0%; height: 100.0%;"><b>淡水漁人碼頭</b></div>`)[0];
+                popup_34dcb71d4d12761cf4ff80011a2dbc2a.setContent(html_174ea9a2b970fb1527c28928f3742568);
+            
+        
+
+        marker_ad6bff9857da90268c8c5bbbd8170358.bindPopup(popup_34dcb71d4d12761cf4ff80011a2dbc2a)
+        ;
+
+        
+    
+    
+            marker_ad6bff9857da90268c8c5bbbd8170358.bindTooltip(
+                `<div>
+                     淡水漁人碼頭
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ad6bff9857da90268c8c5bbbd8170358.setIcon(icon_3db1e7cf69ce6e2718638506035d7ba6);
+            
+    
+            var marker_4d50a5b249144decc6e7cb17acb2127f = L.marker(
+                [25.1754077, 121.433021],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_6b3a32829e923988bd7d8e08bbfbe81e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1814fae09aa8a4b157cd0fbc7c892761 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4e03f76f771c53cbb0296a80ea6b5f3f = $(`<div id="html_4e03f76f771c53cbb0296a80ea6b5f3f" style="width: 100.0%; height: 100.0%;"><b>淡水紅毛城</b></div>`)[0];
+                popup_1814fae09aa8a4b157cd0fbc7c892761.setContent(html_4e03f76f771c53cbb0296a80ea6b5f3f);
+            
+        
+
+        marker_4d50a5b249144decc6e7cb17acb2127f.bindPopup(popup_1814fae09aa8a4b157cd0fbc7c892761)
+        ;
+
+        
+    
+    
+            marker_4d50a5b249144decc6e7cb17acb2127f.bindTooltip(
+                `<div>
+                     淡水紅毛城
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4d50a5b249144decc6e7cb17acb2127f.setIcon(icon_6b3a32829e923988bd7d8e08bbfbe81e);
+            
+    
+            var marker_f9462d5a64beb23db53e4e64efc0335b = L.marker(
+                [25.1767715, 121.434879],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_803bddcddc1bb7030776d8a1d18ae583 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_07757ddc0da9e0e9e8ad728f05f4c071 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c592e7df404167f7105d31ffe2fea788 = $(`<div id="html_c592e7df404167f7105d31ffe2fea788" style="width: 100.0%; height: 100.0%;"><b>真理大學</b></div>`)[0];
+                popup_07757ddc0da9e0e9e8ad728f05f4c071.setContent(html_c592e7df404167f7105d31ffe2fea788);
+            
+        
+
+        marker_f9462d5a64beb23db53e4e64efc0335b.bindPopup(popup_07757ddc0da9e0e9e8ad728f05f4c071)
+        ;
+
+        
+    
+    
+            marker_f9462d5a64beb23db53e4e64efc0335b.bindTooltip(
+                `<div>
+                     真理大學
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f9462d5a64beb23db53e4e64efc0335b.setIcon(icon_803bddcddc1bb7030776d8a1d18ae583);
+            
+    
+            var marker_f3e567267e6aa0275a0267aac60f9917 = L.marker(
+                [25.1762402, 121.4369985],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_71e63778a2189643fa4db9b10dd46077 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_352b8b59f291600467b0adb53f244a63 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1baa58606b9142456bcfcf92da8daafb = $(`<div id="html_1baa58606b9142456bcfcf92da8daafb" style="width: 100.0%; height: 100.0%;"><b>新北市私立淡江高級中學</b></div>`)[0];
+                popup_352b8b59f291600467b0adb53f244a63.setContent(html_1baa58606b9142456bcfcf92da8daafb);
+            
+        
+
+        marker_f3e567267e6aa0275a0267aac60f9917.bindPopup(popup_352b8b59f291600467b0adb53f244a63)
+        ;
+
+        
+    
+    
+            marker_f3e567267e6aa0275a0267aac60f9917.bindTooltip(
+                `<div>
+                     新北市私立淡江高級中學
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f3e567267e6aa0275a0267aac60f9917.setIcon(icon_71e63778a2189643fa4db9b10dd46077);
+            
+    
+            var marker_d074a237e61d557167ed33051df8d2f5 = L.marker(
+                [25.033521, 121.5161514],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_26acce84cd6d293154e712c4527bde1e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e9ec819099948c8f76f1f4262cce1f66 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_22b691deac833b89a9160085e880e62f = $(`<div id="html_22b691deac833b89a9160085e880e62f" style="width: 100.0%; height: 100.0%;"><b>小白宮 - 原物品倉庫</b></div>`)[0];
+                popup_e9ec819099948c8f76f1f4262cce1f66.setContent(html_22b691deac833b89a9160085e880e62f);
+            
+        
+
+        marker_d074a237e61d557167ed33051df8d2f5.bindPopup(popup_e9ec819099948c8f76f1f4262cce1f66)
+        ;
+
+        
+    
+    
+            marker_d074a237e61d557167ed33051df8d2f5.bindTooltip(
+                `<div>
+                     小白宮 - 原物品倉庫
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d074a237e61d557167ed33051df8d2f5.setIcon(icon_26acce84cd6d293154e712c4527bde1e);
+            
+    
+            var marker_9da7a577b24a79412d373bcc842994e2 = L.marker(
+                [25.1616574, 121.429278],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_b1bc916dae82d09bd6638efcece24e42 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_63d4cdc88a1cb8a1671c12e431349f33 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6ea633a39e4fa995944ecfec9ad8c3fd = $(`<div id="html_6ea633a39e4fa995944ecfec9ad8c3fd" style="width: 100.0%; height: 100.0%;"><b>八里左岸公園</b></div>`)[0];
+                popup_63d4cdc88a1cb8a1671c12e431349f33.setContent(html_6ea633a39e4fa995944ecfec9ad8c3fd);
+            
+        
+
+        marker_9da7a577b24a79412d373bcc842994e2.bindPopup(popup_63d4cdc88a1cb8a1671c12e431349f33)
+        ;
+
+        
+    
+    
+            marker_9da7a577b24a79412d373bcc842994e2.bindTooltip(
+                `<div>
+                     八里左岸公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9da7a577b24a79412d373bcc842994e2.setIcon(icon_b1bc916dae82d09bd6638efcece24e42);
+            
+    
+            var marker_e5ecfee46b71868e3336d2d8d964dcbd = L.marker(
+                [25.1568739, 121.4048561],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_9f94b355a75342c7de1816c6b4e995b7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_731226cb41938061256ceb7edaee3168 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_74e025822e3de9d51f3a1bfad97ff872 = $(`<div id="html_74e025822e3de9d51f3a1bfad97ff872" style="width: 100.0%; height: 100.0%;"><b>新北市立十三行博物館</b></div>`)[0];
+                popup_731226cb41938061256ceb7edaee3168.setContent(html_74e025822e3de9d51f3a1bfad97ff872);
+            
+        
+
+        marker_e5ecfee46b71868e3336d2d8d964dcbd.bindPopup(popup_731226cb41938061256ceb7edaee3168)
+        ;
+
+        
+    
+    
+            marker_e5ecfee46b71868e3336d2d8d964dcbd.bindTooltip(
+                `<div>
+                     新北市立十三行博物館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e5ecfee46b71868e3336d2d8d964dcbd.setIcon(icon_9f94b355a75342c7de1816c6b4e995b7);
+            
+    
+            var marker_4274b3e7d399c1099059a4ecbe0a237d = L.marker(
+                [24.9559849, 121.5365043],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_5fcddfe96e41e9c113f368f9117b009d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4b629715d26d83f6cc8ec621b894218b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_34ed66f0930d57cd1834e13b80244739 = $(`<div id="html_34ed66f0930d57cd1834e13b80244739" style="width: 100.0%; height: 100.0%;"><b>碧潭風景區</b></div>`)[0];
+                popup_4b629715d26d83f6cc8ec621b894218b.setContent(html_34ed66f0930d57cd1834e13b80244739);
+            
+        
+
+        marker_4274b3e7d399c1099059a4ecbe0a237d.bindPopup(popup_4b629715d26d83f6cc8ec621b894218b)
+        ;
+
+        
+    
+    
+            marker_4274b3e7d399c1099059a4ecbe0a237d.bindTooltip(
+                `<div>
+                     碧潭風景區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4274b3e7d399c1099059a4ecbe0a237d.setIcon(icon_5fcddfe96e41e9c113f368f9117b009d);
+            
+    
+            var marker_fa77fc3f46100066c2842de610688093 = L.marker(
+                [24.9985635, 121.5809857],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_e33b8845f78e81faab015f643d019c1c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_97d75ec0830901d342b771310bfb2e55 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_56f17fa2455e0305efa56bde1f73ceb4 = $(`<div id="html_56f17fa2455e0305efa56bde1f73ceb4" style="width: 100.0%; height: 100.0%;"><b>臺北市立動物園</b></div>`)[0];
+                popup_97d75ec0830901d342b771310bfb2e55.setContent(html_56f17fa2455e0305efa56bde1f73ceb4);
+            
+        
+
+        marker_fa77fc3f46100066c2842de610688093.bindPopup(popup_97d75ec0830901d342b771310bfb2e55)
+        ;
+
+        
+    
+    
+            marker_fa77fc3f46100066c2842de610688093.bindTooltip(
+                `<div>
+                     臺北市立動物園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fa77fc3f46100066c2842de610688093.setIcon(icon_e33b8845f78e81faab015f643d019c1c);
+            
+    
+            var marker_ee736189230136586c1a735dababa075 = L.marker(
+                [24.9959318, 121.5763329],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_8f118a80512d55acc3fa7d66291aecce = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d8a038ff56d993fc46acdb28e94c9cb4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a2abce0a1bcd7cb5583f85e55695a1fb = $(`<div id="html_a2abce0a1bcd7cb5583f85e55695a1fb" style="width: 100.0%; height: 100.0%;"><b>貓空纜車</b></div>`)[0];
+                popup_d8a038ff56d993fc46acdb28e94c9cb4.setContent(html_a2abce0a1bcd7cb5583f85e55695a1fb);
+            
+        
+
+        marker_ee736189230136586c1a735dababa075.bindPopup(popup_d8a038ff56d993fc46acdb28e94c9cb4)
+        ;
+
+        
+    
+    
+            marker_ee736189230136586c1a735dababa075.bindTooltip(
+                `<div>
+                     貓空纜車
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ee736189230136586c1a735dababa075.setIcon(icon_8f118a80512d55acc3fa7d66291aecce);
+            
+    
+            var marker_2827130a9a51c1509fb8088a49d63ac2 = L.marker(
+                [24.969788, 121.5978809],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_36630371efb433148f60a1bcf66bc603 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_79319ca67810c188d1e85ebd63755b14 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_614fcd87821041cf787fb216de785417 = $(`<div id="html_614fcd87821041cf787fb216de785417" style="width: 100.0%; height: 100.0%;"><b>貓空觀光茶園</b></div>`)[0];
+                popup_79319ca67810c188d1e85ebd63755b14.setContent(html_614fcd87821041cf787fb216de785417);
+            
+        
+
+        marker_2827130a9a51c1509fb8088a49d63ac2.bindPopup(popup_79319ca67810c188d1e85ebd63755b14)
+        ;
+
+        
+    
+    
+            marker_2827130a9a51c1509fb8088a49d63ac2.bindTooltip(
+                `<div>
+                     貓空觀光茶園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2827130a9a51c1509fb8088a49d63ac2.setIcon(icon_36630371efb433148f60a1bcf66bc603);
+            
+    
+            var marker_14cd857ff2a25c6706c4b865834bb1ff = L.marker(
+                [24.979824, 121.586626],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_504bd049003597e45e6d43bd2b9d8327 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_962cb7cf014fbcc5ad90063cbe9f87c8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1cb053122f39123adfa2f2a2a925a633 = $(`<div id="html_1cb053122f39123adfa2f2a2a925a633" style="width: 100.0%; height: 100.0%;"><b>指南宮</b></div>`)[0];
+                popup_962cb7cf014fbcc5ad90063cbe9f87c8.setContent(html_1cb053122f39123adfa2f2a2a925a633);
+            
+        
+
+        marker_14cd857ff2a25c6706c4b865834bb1ff.bindPopup(popup_962cb7cf014fbcc5ad90063cbe9f87c8)
+        ;
+
+        
+    
+    
+            marker_14cd857ff2a25c6706c4b865834bb1ff.bindTooltip(
+                `<div>
+                     指南宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_14cd857ff2a25c6706c4b865834bb1ff.setIcon(icon_504bd049003597e45e6d43bd2b9d8327);
+            
+    
+            var marker_318b3945f17c897f08948f3c0fc58d2d = L.marker(
+                [25.0016916, 121.6147377],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_8723352c431dbc0a5a163d986776489d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a053a1c4cdec74d2b9a480877dd4c6d3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d899d95e3260ffc1745f3441c972dd05 = $(`<div id="html_d899d95e3260ffc1745f3441c972dd05" style="width: 100.0%; height: 100.0%;"><b>222新北市深坑區深坑街</b></div>`)[0];
+                popup_a053a1c4cdec74d2b9a480877dd4c6d3.setContent(html_d899d95e3260ffc1745f3441c972dd05);
+            
+        
+
+        marker_318b3945f17c897f08948f3c0fc58d2d.bindPopup(popup_a053a1c4cdec74d2b9a480877dd4c6d3)
+        ;
+
+        
+    
+    
+            marker_318b3945f17c897f08948f3c0fc58d2d.bindTooltip(
+                `<div>
+                     222新北市深坑區深坑街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_318b3945f17c897f08948f3c0fc58d2d.setIcon(icon_8723352c431dbc0a5a163d986776489d);
+            
+    
+            var marker_b6cf51b84306e7eef84520f64887218d = L.marker(
+                [24.9907256, 121.660808],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_56bd0557f44cc58073675bd147f28eef = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f21a766f9bb19f4a5a0b095ccabee70f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_29a0e094a125e35ee085cefbe0eea483 = $(`<div id="html_29a0e094a125e35ee085cefbe0eea483" style="width: 100.0%; height: 100.0%;"><b>石碇老街</b></div>`)[0];
+                popup_f21a766f9bb19f4a5a0b095ccabee70f.setContent(html_29a0e094a125e35ee085cefbe0eea483);
+            
+        
+
+        marker_b6cf51b84306e7eef84520f64887218d.bindPopup(popup_f21a766f9bb19f4a5a0b095ccabee70f)
+        ;
+
+        
+    
+    
+            marker_b6cf51b84306e7eef84520f64887218d.bindTooltip(
+                `<div>
+                     石碇老街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b6cf51b84306e7eef84520f64887218d.setIcon(icon_56bd0557f44cc58073675bd147f28eef);
+            
+    
+            var marker_1b2996fd2b3448c011c0e0d140e37688 = L.marker(
+                [25.0426687, 121.7766757],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_4ca040eb2e70a18ae3d431e3304ea77b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0abe79f2dee6f469e10470b3dd24e6e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e5d1142de988f89075b5f4670d8b8d41 = $(`<div id="html_e5d1142de988f89075b5f4670d8b8d41" style="width: 100.0%; height: 100.0%;"><b>十分老街</b></div>`)[0];
+                popup_0abe79f2dee6f469e10470b3dd24e6e8.setContent(html_e5d1142de988f89075b5f4670d8b8d41);
+            
+        
+
+        marker_1b2996fd2b3448c011c0e0d140e37688.bindPopup(popup_0abe79f2dee6f469e10470b3dd24e6e8)
+        ;
+
+        
+    
+    
+            marker_1b2996fd2b3448c011c0e0d140e37688.bindTooltip(
+                `<div>
+                     十分老街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1b2996fd2b3448c011c0e0d140e37688.setIcon(icon_4ca040eb2e70a18ae3d431e3304ea77b);
+            
+    
+            var marker_bc29c16cabdd4f9e39b01535901bd9d6 = L.marker(
+                [25.0237927, 121.723513],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_500e3a1cdb71daab775e200835adcac7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c7132ca9bb7704d6ac981be309288495 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_aa043ba13ca51a80f397c9612496bb1f = $(`<div id="html_aa043ba13ca51a80f397c9612496bb1f" style="width: 100.0%; height: 100.0%;"><b>菁桐老街</b></div>`)[0];
+                popup_c7132ca9bb7704d6ac981be309288495.setContent(html_aa043ba13ca51a80f397c9612496bb1f);
+            
+        
+
+        marker_bc29c16cabdd4f9e39b01535901bd9d6.bindPopup(popup_c7132ca9bb7704d6ac981be309288495)
+        ;
+
+        
+    
+    
+            marker_bc29c16cabdd4f9e39b01535901bd9d6.bindTooltip(
+                `<div>
+                     菁桐老街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bc29c16cabdd4f9e39b01535901bd9d6.setIcon(icon_500e3a1cdb71daab775e200835adcac7);
+            
+    
+            var marker_e3b0d88d1e887ebaccf90b31abc0752f = L.marker(
+                [25.0489711, 121.7874553],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_06953b9e5e65fbc8945acc337030a7c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ce8ac3d8eed385e4a39c67d981e2902b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1a7731c49a810a6f328c1b2f28b6c2a2 = $(`<div id="html_1a7731c49a810a6f328c1b2f28b6c2a2" style="width: 100.0%; height: 100.0%;"><b>十分瀑布</b></div>`)[0];
+                popup_ce8ac3d8eed385e4a39c67d981e2902b.setContent(html_1a7731c49a810a6f328c1b2f28b6c2a2);
+            
+        
+
+        marker_e3b0d88d1e887ebaccf90b31abc0752f.bindPopup(popup_ce8ac3d8eed385e4a39c67d981e2902b)
+        ;
+
+        
+    
+    
+            marker_e3b0d88d1e887ebaccf90b31abc0752f.bindTooltip(
+                `<div>
+                     十分瀑布
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e3b0d88d1e887ebaccf90b31abc0752f.setIcon(icon_06953b9e5e65fbc8945acc337030a7c3);
+            
+    
+            var marker_5bb87531fa1ac3cfd7ef8f41051bb8d2 = L.marker(
+                [25.1098079, 121.845228],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_9925cb95a7716ea6f8c8d9a74cd2eeb4 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0e20ec11414165c2c734ad0bdc087813 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_358d4d972531a393ad03c5b5dda4c52c = $(`<div id="html_358d4d972531a393ad03c5b5dda4c52c" style="width: 100.0%; height: 100.0%;"><b>九份老街</b></div>`)[0];
+                popup_0e20ec11414165c2c734ad0bdc087813.setContent(html_358d4d972531a393ad03c5b5dda4c52c);
+            
+        
+
+        marker_5bb87531fa1ac3cfd7ef8f41051bb8d2.bindPopup(popup_0e20ec11414165c2c734ad0bdc087813)
+        ;
+
+        
+    
+    
+            marker_5bb87531fa1ac3cfd7ef8f41051bb8d2.bindTooltip(
+                `<div>
+                     九份老街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5bb87531fa1ac3cfd7ef8f41051bb8d2.setIcon(icon_9925cb95a7716ea6f8c8d9a74cd2eeb4);
+            
+    
+            var marker_a397f38c39660153f58404a519af9951 = L.marker(
+                [25.1009411, 121.8545499],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_e76b21f945121d384b05b353771b8105 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_aad1045b9711297d0be2d6a7f44085a1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_678be5d56a141c00a9b195d5c3d85c03 = $(`<div id="html_678be5d56a141c00a9b195d5c3d85c03" style="width: 100.0%; height: 100.0%;"><b>金瓜石地質公園</b></div>`)[0];
+                popup_aad1045b9711297d0be2d6a7f44085a1.setContent(html_678be5d56a141c00a9b195d5c3d85c03);
+            
+        
+
+        marker_a397f38c39660153f58404a519af9951.bindPopup(popup_aad1045b9711297d0be2d6a7f44085a1)
+        ;
+
+        
+    
+    
+            marker_a397f38c39660153f58404a519af9951.bindTooltip(
+                `<div>
+                     金瓜石地質公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a397f38c39660153f58404a519af9951.setIcon(icon_e76b21f945121d384b05b353771b8105);
+            
+    
+            var marker_13bcfe7eee36b42447e00c0fb4b4170c = L.marker(
+                [25.1061358, 121.8596365],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_4afe3397bbb27dd9a309c197764d29bb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_91964206224d5e8ee7d97171725b2aa9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_86130818f47cb75dd6e75a0ebf719b15 = $(`<div id="html_86130818f47cb75dd6e75a0ebf719b15" style="width: 100.0%; height: 100.0%;"><b>新北市立黃金博物館</b></div>`)[0];
+                popup_91964206224d5e8ee7d97171725b2aa9.setContent(html_86130818f47cb75dd6e75a0ebf719b15);
+            
+        
+
+        marker_13bcfe7eee36b42447e00c0fb4b4170c.bindPopup(popup_91964206224d5e8ee7d97171725b2aa9)
+        ;
+
+        
+    
+    
+            marker_13bcfe7eee36b42447e00c0fb4b4170c.bindTooltip(
+                `<div>
+                     新北市立黃金博物館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_13bcfe7eee36b42447e00c0fb4b4170c.setIcon(icon_4afe3397bbb27dd9a309c197764d29bb);
+            
+    
+            var marker_ea729d95e327e917a8f986763a370832 = L.marker(
+                [25.027375, 121.5709619],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_d94f4968f8d90d06eb306b1b2e82854e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1a72bd15bdb8c3fc81e82786ba7b1a93 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a6598497da14d1710a23450851551a07 = $(`<div id="html_a6598497da14d1710a23450851551a07" style="width: 100.0%; height: 100.0%;"><b>象山步道</b></div>`)[0];
+                popup_1a72bd15bdb8c3fc81e82786ba7b1a93.setContent(html_a6598497da14d1710a23450851551a07);
+            
+        
+
+        marker_ea729d95e327e917a8f986763a370832.bindPopup(popup_1a72bd15bdb8c3fc81e82786ba7b1a93)
+        ;
+
+        
+    
+    
+            marker_ea729d95e327e917a8f986763a370832.bindTooltip(
+                `<div>
+                     象山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ea729d95e327e917a8f986763a370832.setIcon(icon_d94f4968f8d90d06eb306b1b2e82854e);
+            
+    
+            var marker_ae05d47af1b5ee312404443f42e181e1 = L.marker(
+                [25.0320167, 121.5874881],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_d6d38e185900022e46f7dfd72f26100d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fa439321bdbf2d46fa627240c67f2bab = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_75507ececa6658dfae3246a8b1bc903d = $(`<div id="html_75507ececa6658dfae3246a8b1bc903d" style="width: 100.0%; height: 100.0%;"><b>虎山親山步道</b></div>`)[0];
+                popup_fa439321bdbf2d46fa627240c67f2bab.setContent(html_75507ececa6658dfae3246a8b1bc903d);
+            
+        
+
+        marker_ae05d47af1b5ee312404443f42e181e1.bindPopup(popup_fa439321bdbf2d46fa627240c67f2bab)
+        ;
+
+        
+    
+    
+            marker_ae05d47af1b5ee312404443f42e181e1.bindTooltip(
+                `<div>
+                     虎山親山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ae05d47af1b5ee312404443f42e181e1.setIcon(icon_d6d38e185900022e46f7dfd72f26100d);
+            
+    
+            var marker_fdd613f9c115e21bbfe739c2784d742d = L.marker(
+                [25.0793713, 121.5252601],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_a289e9e51fde9f73d5538128d93f875c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8f15ff3439084e91fea96afa74bfc044 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_89a1e52f246cd5251322111dfac01ff8 = $(`<div id="html_89a1e52f246cd5251322111dfac01ff8" style="width: 100.0%; height: 100.0%;"><b>劍潭山親山步道</b></div>`)[0];
+                popup_8f15ff3439084e91fea96afa74bfc044.setContent(html_89a1e52f246cd5251322111dfac01ff8);
+            
+        
+
+        marker_fdd613f9c115e21bbfe739c2784d742d.bindPopup(popup_8f15ff3439084e91fea96afa74bfc044)
+        ;
+
+        
+    
+    
+            marker_fdd613f9c115e21bbfe739c2784d742d.bindTooltip(
+                `<div>
+                     劍潭山親山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fdd613f9c115e21bbfe739c2784d742d.setIcon(icon_a289e9e51fde9f73d5538128d93f875c);
+            
+    
+            var marker_99545a2be91bcb9cdae8aed66f72869f = L.marker(
+                [25.0886636, 121.5678841],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_9afacda3ee246815dc27b5f5269458d2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2fc9367633122854d905a37939193596 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1f851fc722b6bc99a04d03768407fa62 = $(`<div id="html_1f851fc722b6bc99a04d03768407fa62" style="width: 100.0%; height: 100.0%;"><b>金面山步道</b></div>`)[0];
+                popup_2fc9367633122854d905a37939193596.setContent(html_1f851fc722b6bc99a04d03768407fa62);
+            
+        
+
+        marker_99545a2be91bcb9cdae8aed66f72869f.bindPopup(popup_2fc9367633122854d905a37939193596)
+        ;
+
+        
+    
+    
+            marker_99545a2be91bcb9cdae8aed66f72869f.bindTooltip(
+                `<div>
+                     金面山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_99545a2be91bcb9cdae8aed66f72869f.setIcon(icon_9afacda3ee246815dc27b5f5269458d2);
+            
+    
+            var marker_20436d0b84360f105a3b7859ecf80d81 = L.marker(
+                [25.0981564, 121.5853896],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_20c792629bfed5e3d449cf5148ccd4c1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3085feed6059f453d9e1b692ded7733a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ff54f4f4be308d74e6aa929b1c20e39a = $(`<div id="html_ff54f4f4be308d74e6aa929b1c20e39a" style="width: 100.0%; height: 100.0%;"><b>忠勇山步道</b></div>`)[0];
+                popup_3085feed6059f453d9e1b692ded7733a.setContent(html_ff54f4f4be308d74e6aa929b1c20e39a);
+            
+        
+
+        marker_20436d0b84360f105a3b7859ecf80d81.bindPopup(popup_3085feed6059f453d9e1b692ded7733a)
+        ;
+
+        
+    
+    
+            marker_20436d0b84360f105a3b7859ecf80d81.bindTooltip(
+                `<div>
+                     忠勇山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_20436d0b84360f105a3b7859ecf80d81.setIcon(icon_20c792629bfed5e3d449cf5148ccd4c1);
+            
+    
+            var marker_61001f0db175792df47bfc4e7706c9d6 = L.marker(
+                [25.1317552, 121.5145907],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_cf2b6375bcc65c2226172fba59b96d0a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9bb8489c93a466897bd27707b5a7829b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2da4ebcec3ac47ec92dd174204ad46db = $(`<div id="html_2da4ebcec3ac47ec92dd174204ad46db" style="width: 100.0%; height: 100.0%;"><b>軍艦岩親山步道</b></div>`)[0];
+                popup_9bb8489c93a466897bd27707b5a7829b.setContent(html_2da4ebcec3ac47ec92dd174204ad46db);
+            
+        
+
+        marker_61001f0db175792df47bfc4e7706c9d6.bindPopup(popup_9bb8489c93a466897bd27707b5a7829b)
+        ;
+
+        
+    
+    
+            marker_61001f0db175792df47bfc4e7706c9d6.bindTooltip(
+                `<div>
+                     軍艦岩親山步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_61001f0db175792df47bfc4e7706c9d6.setIcon(icon_cf2b6375bcc65c2226172fba59b96d0a);
+            
+    
+            var marker_1ad216720b8019b02aa95d5a9ad9dfd9 = L.marker(
+                [25.1119064, 121.5846632],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_deda1b53785b050dea6b288bcf288768 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cf55d41a7365c89be1a051323d06d9ec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_083327c46b7a636bbd95b166dffea415 = $(`<div id="html_083327c46b7a636bbd95b166dffea415" style="width: 100.0%; height: 100.0%;"><b>大崙頭山森林步道</b></div>`)[0];
+                popup_cf55d41a7365c89be1a051323d06d9ec.setContent(html_083327c46b7a636bbd95b166dffea415);
+            
+        
+
+        marker_1ad216720b8019b02aa95d5a9ad9dfd9.bindPopup(popup_cf55d41a7365c89be1a051323d06d9ec)
+        ;
+
+        
+    
+    
+            marker_1ad216720b8019b02aa95d5a9ad9dfd9.bindTooltip(
+                `<div>
+                     大崙頭山森林步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1ad216720b8019b02aa95d5a9ad9dfd9.setIcon(icon_deda1b53785b050dea6b288bcf288768);
+            
+    
+            var marker_c9efb5c0d26265a8a0c14c06d307ef06 = L.marker(
+                [25.0789293, 121.5265151],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_47de5cab8059d157dba784a2556219ca = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_af28857a42c573cf8f5c52afaaa88c6d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6d6d22dbf498295023170d62b029063f = $(`<div id="html_6d6d22dbf498295023170d62b029063f" style="width: 100.0%; height: 100.0%;"><b>圓山大飯店</b></div>`)[0];
+                popup_af28857a42c573cf8f5c52afaaa88c6d.setContent(html_6d6d22dbf498295023170d62b029063f);
+            
+        
+
+        marker_c9efb5c0d26265a8a0c14c06d307ef06.bindPopup(popup_af28857a42c573cf8f5c52afaaa88c6d)
+        ;
+
+        
+    
+    
+            marker_c9efb5c0d26265a8a0c14c06d307ef06.bindTooltip(
+                `<div>
+                     圓山大飯店
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c9efb5c0d26265a8a0c14c06d307ef06.setIcon(icon_47de5cab8059d157dba784a2556219ca);
+            
+    
+            var marker_3a2ef8f333b04f05ed91680c3a7da977 = L.marker(
+                [25.0723739, 121.5303543],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_94c2be557ede478a1575b90d7dc57bf9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f3354eeb538c232b1b4f6adc7c1d355d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0f1744f3e10c6a0f50f8c3ee1a5943e3 = $(`<div id="html_0f1744f3e10c6a0f50f8c3ee1a5943e3" style="width: 100.0%; height: 100.0%;"><b>林安泰古厝</b></div>`)[0];
+                popup_f3354eeb538c232b1b4f6adc7c1d355d.setContent(html_0f1744f3e10c6a0f50f8c3ee1a5943e3);
+            
+        
+
+        marker_3a2ef8f333b04f05ed91680c3a7da977.bindPopup(popup_f3354eeb538c232b1b4f6adc7c1d355d)
+        ;
+
+        
+    
+    
+            marker_3a2ef8f333b04f05ed91680c3a7da977.bindTooltip(
+                `<div>
+                     林安泰古厝
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3a2ef8f333b04f05ed91680c3a7da977.setIcon(icon_94c2be557ede478a1575b90d7dc57bf9);
+            
+    
+            var marker_25f2984b7c1ec7c5f7e2915907e48a61 = L.marker(
+                [25.0829319, 121.5577484],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_6e0d70c07cf6499d674a1a76c588c9a0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3125b8944c0c8acd9ff9527a90531681 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5c614f9afa4a272d1abe8eb951fb4d5f = $(`<div id="html_5c614f9afa4a272d1abe8eb951fb4d5f" style="width: 100.0%; height: 100.0%;"><b>美麗華百樂園摩天輪</b></div>`)[0];
+                popup_3125b8944c0c8acd9ff9527a90531681.setContent(html_5c614f9afa4a272d1abe8eb951fb4d5f);
+            
+        
+
+        marker_25f2984b7c1ec7c5f7e2915907e48a61.bindPopup(popup_3125b8944c0c8acd9ff9527a90531681)
+        ;
+
+        
+    
+    
+            marker_25f2984b7c1ec7c5f7e2915907e48a61.bindTooltip(
+                `<div>
+                     美麗華百樂園摩天輪
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_25f2984b7c1ec7c5f7e2915907e48a61.setIcon(icon_6e0d70c07cf6499d674a1a76c588c9a0);
+            
+    
+            var marker_42072935b9aaac1506aa9a145e7d4a31 = L.marker(
+                [25.072136, 121.5244037],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_995dec9d896911f74b484e882a974883 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fb63345e2a9b02cca0742005de349949 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ce4516adaa6b1ca8bcd043fba96060b = $(`<div id="html_0ce4516adaa6b1ca8bcd043fba96060b" style="width: 100.0%; height: 100.0%;"><b>臺北市立美術館</b></div>`)[0];
+                popup_fb63345e2a9b02cca0742005de349949.setContent(html_0ce4516adaa6b1ca8bcd043fba96060b);
+            
+        
+
+        marker_42072935b9aaac1506aa9a145e7d4a31.bindPopup(popup_fb63345e2a9b02cca0742005de349949)
+        ;
+
+        
+    
+    
+            marker_42072935b9aaac1506aa9a145e7d4a31.bindTooltip(
+                `<div>
+                     臺北市立美術館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_42072935b9aaac1506aa9a145e7d4a31.setIcon(icon_995dec9d896911f74b484e882a974883);
+            
+    
+            var marker_9fc530a701305858c9f04dbc5d632a65 = L.marker(
+                [25.0716662, 121.5221637],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_66c9a1279c71604a49297eba76b68cc6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7f71172e4da0f2fb371235e8d0f253ad = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fbecd6cdb9cfba02d9ae665e8934f140 = $(`<div id="html_fbecd6cdb9cfba02d9ae665e8934f140" style="width: 100.0%; height: 100.0%;"><b>花博公園圓山園區</b></div>`)[0];
+                popup_7f71172e4da0f2fb371235e8d0f253ad.setContent(html_fbecd6cdb9cfba02d9ae665e8934f140);
+            
+        
+
+        marker_9fc530a701305858c9f04dbc5d632a65.bindPopup(popup_7f71172e4da0f2fb371235e8d0f253ad)
+        ;
+
+        
+    
+    
+            marker_9fc530a701305858c9f04dbc5d632a65.bindTooltip(
+                `<div>
+                     花博公園圓山園區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9fc530a701305858c9f04dbc5d632a65.setIcon(icon_66c9a1279c71604a49297eba76b68cc6);
+            
+    
+            var marker_6a7a0a42aa9c5079a188955ddc1a5b1b = L.marker(
+                [25.0709271, 121.5317769],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_975a7e12e31d1f1913b46bb614c4fd9b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1a01e1098c5d3732e4aa0a8dac7f44cc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2f17935b3a51fdbef6a630d552cb28f7 = $(`<div id="html_2f17935b3a51fdbef6a630d552cb28f7" style="width: 100.0%; height: 100.0%;"><b>臺北典藏植物園</b></div>`)[0];
+                popup_1a01e1098c5d3732e4aa0a8dac7f44cc.setContent(html_2f17935b3a51fdbef6a630d552cb28f7);
+            
+        
+
+        marker_6a7a0a42aa9c5079a188955ddc1a5b1b.bindPopup(popup_1a01e1098c5d3732e4aa0a8dac7f44cc)
+        ;
+
+        
+    
+    
+            marker_6a7a0a42aa9c5079a188955ddc1a5b1b.bindTooltip(
+                `<div>
+                     臺北典藏植物園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6a7a0a42aa9c5079a188955ddc1a5b1b.setIcon(icon_975a7e12e31d1f1913b46bb614c4fd9b);
+            
+    
+            var marker_751e0b2877355d4b970cc8c37b70e694 = L.marker(
+                [25.0699787, 121.531228],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_26b26d26d376ab73fe7eed8e55830885 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c20869ac0bc1dbc90a645eaea7f80ad0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_72f2f119e81d77c830896327fa1b1d44 = $(`<div id="html_72f2f119e81d77c830896327fa1b1d44" style="width: 100.0%; height: 100.0%;"><b>花博公園新生園區</b></div>`)[0];
+                popup_c20869ac0bc1dbc90a645eaea7f80ad0.setContent(html_72f2f119e81d77c830896327fa1b1d44);
+            
+        
+
+        marker_751e0b2877355d4b970cc8c37b70e694.bindPopup(popup_c20869ac0bc1dbc90a645eaea7f80ad0)
+        ;
+
+        
+    
+    
+            marker_751e0b2877355d4b970cc8c37b70e694.bindTooltip(
+                `<div>
+                     花博公園新生園區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_751e0b2877355d4b970cc8c37b70e694.setIcon(icon_26b26d26d376ab73fe7eed8e55830885);
+            
+    
+            var marker_a73183751bceac111edec8dae4ed6878 = L.marker(
+                [25.0634668, 121.5391412],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_1af150f9ba60eea5c60bc07cfd9697a9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9203d21fc76ee11981378141ea18fd69 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_649037f3f091a1811ba06a427edab2f2 = $(`<div id="html_649037f3f091a1811ba06a427edab2f2" style="width: 100.0%; height: 100.0%;"><b>榮星花園公園</b></div>`)[0];
+                popup_9203d21fc76ee11981378141ea18fd69.setContent(html_649037f3f091a1811ba06a427edab2f2);
+            
+        
+
+        marker_a73183751bceac111edec8dae4ed6878.bindPopup(popup_9203d21fc76ee11981378141ea18fd69)
+        ;
+
+        
+    
+    
+            marker_a73183751bceac111edec8dae4ed6878.bindTooltip(
+                `<div>
+                     榮星花園公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a73183751bceac111edec8dae4ed6878.setIcon(icon_1af150f9ba60eea5c60bc07cfd9697a9);
+            
+    
+            var marker_5766f8682faef2fd858b51a62bd0938c = L.marker(
+                [25.0230556, 121.5052778],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_c05a8e3c5e4accd84efe98dbaf5e63e0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b392d9e91fb5a5dee851a304c087d3b7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_02e4215fffea94ec924bbcd5cebfae39 = $(`<div id="html_02e4215fffea94ec924bbcd5cebfae39" style="width: 100.0%; height: 100.0%;"><b>青年公園</b></div>`)[0];
+                popup_b392d9e91fb5a5dee851a304c087d3b7.setContent(html_02e4215fffea94ec924bbcd5cebfae39);
+            
+        
+
+        marker_5766f8682faef2fd858b51a62bd0938c.bindPopup(popup_b392d9e91fb5a5dee851a304c087d3b7)
+        ;
+
+        
+    
+    
+            marker_5766f8682faef2fd858b51a62bd0938c.bindTooltip(
+                `<div>
+                     青年公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5766f8682faef2fd858b51a62bd0938c.setIcon(icon_c05a8e3c5e4accd84efe98dbaf5e63e0);
+            
+    
+            var marker_46e8296775508d55515e7d6f750c03ed = L.marker(
+                [25.0307722, 121.5295026],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_af05e2b6aff56fcfcaec7129523dcc7d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_25aeefb4c8d6d53623c23c0aa78eeb8d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4501369de8fbb6e8c84e14a12bf1d463 = $(`<div id="html_4501369de8fbb6e8c84e14a12bf1d463" style="width: 100.0%; height: 100.0%;"><b>106臺北市大安區永康街</b></div>`)[0];
+                popup_25aeefb4c8d6d53623c23c0aa78eeb8d.setContent(html_4501369de8fbb6e8c84e14a12bf1d463);
+            
+        
+
+        marker_46e8296775508d55515e7d6f750c03ed.bindPopup(popup_25aeefb4c8d6d53623c23c0aa78eeb8d)
+        ;
+
+        
+    
+    
+            marker_46e8296775508d55515e7d6f750c03ed.bindTooltip(
+                `<div>
+                     106臺北市大安區永康街
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_46e8296775508d55515e7d6f750c03ed.setIcon(icon_af05e2b6aff56fcfcaec7129523dcc7d);
+            
+    
+            var marker_2db12756273ece2df8895caaf20abdbc = L.marker(
+                [25.0427193, 121.5462632],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_325dea2851d32cbea1904853f5591304 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_22f6d1b6c8b96b578300ff346af20712 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_34550399cc35be1bc60b9055193c9568 = $(`<div id="html_34550399cc35be1bc60b9055193c9568" style="width: 100.0%; height: 100.0%;"><b>東區商圈</b></div>`)[0];
+                popup_22f6d1b6c8b96b578300ff346af20712.setContent(html_34550399cc35be1bc60b9055193c9568);
+            
+        
+
+        marker_2db12756273ece2df8895caaf20abdbc.bindPopup(popup_22f6d1b6c8b96b578300ff346af20712)
+        ;
+
+        
+    
+    
+            marker_2db12756273ece2df8895caaf20abdbc.bindTooltip(
+                `<div>
+                     東區商圈
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2db12756273ece2df8895caaf20abdbc.setIcon(icon_325dea2851d32cbea1904853f5591304);
+            
+    
+            var marker_b32c83f220ca76360877c7de12f9c805 = L.marker(
+                [25.0372425, 121.5669885],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_d9f0b7bffb775c942198c629e5d4aca7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e3163ec48f67f3db3d6f1c9e0046143d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_58c1ee025189c1ce99752ce70780077b = $(`<div id="html_58c1ee025189c1ce99752ce70780077b" style="width: 100.0%; height: 100.0%;"><b>香堤大道廣場</b></div>`)[0];
+                popup_e3163ec48f67f3db3d6f1c9e0046143d.setContent(html_58c1ee025189c1ce99752ce70780077b);
+            
+        
+
+        marker_b32c83f220ca76360877c7de12f9c805.bindPopup(popup_e3163ec48f67f3db3d6f1c9e0046143d)
+        ;
+
+        
+    
+    
+            marker_b32c83f220ca76360877c7de12f9c805.bindTooltip(
+                `<div>
+                     香堤大道廣場
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b32c83f220ca76360877c7de12f9c805.setIcon(icon_d9f0b7bffb775c942198c629e5d4aca7);
+            
+    
+            var marker_6a4565947cb670071be29745b8d114bf = L.marker(
+                [25.0566019, 121.6181159],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_914ef8d7bd70405fcc3f6c288d8a5d60 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b7d8fb816bf8880eefcbcdac79c9faf5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3585743ff25c7b8a4d98333a9cfd94f6 = $(`<div id="html_3585743ff25c7b8a4d98333a9cfd94f6" style="width: 100.0%; height: 100.0%;"><b>台北南港展覽館1館</b></div>`)[0];
+                popup_b7d8fb816bf8880eefcbcdac79c9faf5.setContent(html_3585743ff25c7b8a4d98333a9cfd94f6);
+            
+        
+
+        marker_6a4565947cb670071be29745b8d114bf.bindPopup(popup_b7d8fb816bf8880eefcbcdac79c9faf5)
+        ;
+
+        
+    
+    
+            marker_6a4565947cb670071be29745b8d114bf.bindTooltip(
+                `<div>
+                     台北南港展覽館1館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6a4565947cb670071be29745b8d114bf.setIcon(icon_914ef8d7bd70405fcc3f6c288d8a5d60);
+            
+    
+            var marker_ebce3422f662f9e5bcb282c0bfcfc7cd = L.marker(
+                [25.0526926, 121.599042],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_6a708302da85f788a974ae150eab9c70 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3278956106131677c34713739a82e816 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fca535d82999bcacfefcb54bce465071 = $(`<div id="html_fca535d82999bcacfefcb54bce465071" style="width: 100.0%; height: 100.0%;"><b>臺北流行音樂中心</b></div>`)[0];
+                popup_3278956106131677c34713739a82e816.setContent(html_fca535d82999bcacfefcb54bce465071);
+            
+        
+
+        marker_ebce3422f662f9e5bcb282c0bfcfc7cd.bindPopup(popup_3278956106131677c34713739a82e816)
+        ;
+
+        
+    
+    
+            marker_ebce3422f662f9e5bcb282c0bfcfc7cd.bindTooltip(
+                `<div>
+                     臺北流行音樂中心
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ebce3422f662f9e5bcb282c0bfcfc7cd.setIcon(icon_6a708302da85f788a974ae150eab9c70);
+            
+    
+            var marker_6fa75b07456da8964e94db2d48750018 = L.marker(
+                [25.0440698, 121.5293583],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_66d022e912416ff8365cab53e2ac7408 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_03e13f35853177adfe2fa476962b2d62 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fed03c8d68f65b98caeeb4292beac0d0 = $(`<div id="html_fed03c8d68f65b98caeeb4292beac0d0" style="width: 100.0%; height: 100.0%;"><b>華山1914文化創意產業園區</b></div>`)[0];
+                popup_03e13f35853177adfe2fa476962b2d62.setContent(html_fed03c8d68f65b98caeeb4292beac0d0);
+            
+        
+
+        marker_6fa75b07456da8964e94db2d48750018.bindPopup(popup_03e13f35853177adfe2fa476962b2d62)
+        ;
+
+        
+    
+    
+            marker_6fa75b07456da8964e94db2d48750018.bindTooltip(
+                `<div>
+                     華山1914文化創意產業園區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6fa75b07456da8964e94db2d48750018.setIcon(icon_66d022e912416ff8365cab53e2ac7408);
+            
+    
+            var marker_dc0e5a916377b43fd2ca7bf9f913c0df = L.marker(
+                [25.053279, 121.5221609],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_fac4ab259e660f3a4f8003c29344bcc1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cb7ba533e2d4b78104a4a41f236b22af = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b89102a87e299d3f4a0ccb405f0dec81 = $(`<div id="html_b89102a87e299d3f4a0ccb405f0dec81" style="width: 100.0%; height: 100.0%;"><b>光點台北（台北之家）</b></div>`)[0];
+                popup_cb7ba533e2d4b78104a4a41f236b22af.setContent(html_b89102a87e299d3f4a0ccb405f0dec81);
+            
+        
+
+        marker_dc0e5a916377b43fd2ca7bf9f913c0df.bindPopup(popup_cb7ba533e2d4b78104a4a41f236b22af)
+        ;
+
+        
+    
+    
+            marker_dc0e5a916377b43fd2ca7bf9f913c0df.bindTooltip(
+                `<div>
+                     光點台北（台北之家）
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dc0e5a916377b43fd2ca7bf9f913c0df.setIcon(icon_fac4ab259e660f3a4f8003c29344bcc1);
+            
+    
+            var marker_e1cedc47dc699d839a9667f94d02c369 = L.marker(
+                [25.0508047, 121.5189766],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_65f37c2541f2204c9c3a3a9d9907dba1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d94ec66399b475c31065e8a4730a4568 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_59967579a62284eba419959087671b23 = $(`<div id="html_59967579a62284eba419959087671b23" style="width: 100.0%; height: 100.0%;"><b>台北當代藝術館</b></div>`)[0];
+                popup_d94ec66399b475c31065e8a4730a4568.setContent(html_59967579a62284eba419959087671b23);
+            
+        
+
+        marker_e1cedc47dc699d839a9667f94d02c369.bindPopup(popup_d94ec66399b475c31065e8a4730a4568)
+        ;
+
+        
+    
+    
+            marker_e1cedc47dc699d839a9667f94d02c369.bindTooltip(
+                `<div>
+                     台北當代藝術館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e1cedc47dc699d839a9667f94d02c369.setIcon(icon_65f37c2541f2204c9c3a3a9d9907dba1);
+            
+    
+            var marker_e5862bc13951ce4a74f4f4b0686fc152 = L.marker(
+                [25.0503212, 121.5363081],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_e303f54b8b6e6f9d2143b7e737d1845f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f7615b8d980744177a955c50dc0a56e1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_eb5353a3c5c70ba8f5fd053069edcec0 = $(`<div id="html_eb5353a3c5c70ba8f5fd053069edcec0" style="width: 100.0%; height: 100.0%;"><b>袖珍博物館</b></div>`)[0];
+                popup_f7615b8d980744177a955c50dc0a56e1.setContent(html_eb5353a3c5c70ba8f5fd053069edcec0);
+            
+        
+
+        marker_e5862bc13951ce4a74f4f4b0686fc152.bindPopup(popup_f7615b8d980744177a955c50dc0a56e1)
+        ;
+
+        
+    
+    
+            marker_e5862bc13951ce4a74f4f4b0686fc152.bindTooltip(
+                `<div>
+                     袖珍博物館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e5862bc13951ce4a74f4f4b0686fc152.setIcon(icon_e303f54b8b6e6f9d2143b7e737d1845f);
+            
+    
+            var marker_f7684c891ac904a8d1d6cd8323cb8b74 = L.marker(
+                [25.0974613, 121.5241173],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_fff15335814f9fc90418818eceb97f01 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_be7350f047374ceaf029ccaf3bcc94a9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2b09319e138e93e85e6adaa0433ac92f = $(`<div id="html_2b09319e138e93e85e6adaa0433ac92f" style="width: 100.0%; height: 100.0%;"><b>郭元益糕餅博物館 台北士林館</b></div>`)[0];
+                popup_be7350f047374ceaf029ccaf3bcc94a9.setContent(html_2b09319e138e93e85e6adaa0433ac92f);
+            
+        
+
+        marker_f7684c891ac904a8d1d6cd8323cb8b74.bindPopup(popup_be7350f047374ceaf029ccaf3bcc94a9)
+        ;
+
+        
+    
+    
+            marker_f7684c891ac904a8d1d6cd8323cb8b74.bindTooltip(
+                `<div>
+                     郭元益糕餅博物館 台北士林館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f7684c891ac904a8d1d6cd8323cb8b74.setIcon(icon_fff15335814f9fc90418818eceb97f01);
+            
+    
+            var marker_8c41d54cd1d3920b0a7947323627ac52 = L.marker(
+                [25.0375506, 121.5637857],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_2c846435d43688c4745e0b37103e55ab = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_937cad150ddb421fc656384bf8e26d89 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3a2ade4f4bcc2b1bdae6a372bdffe59f = $(`<div id="html_3a2ade4f4bcc2b1bdae6a372bdffe59f" style="width: 100.0%; height: 100.0%;"><b>台北探索館</b></div>`)[0];
+                popup_937cad150ddb421fc656384bf8e26d89.setContent(html_3a2ade4f4bcc2b1bdae6a372bdffe59f);
+            
+        
+
+        marker_8c41d54cd1d3920b0a7947323627ac52.bindPopup(popup_937cad150ddb421fc656384bf8e26d89)
+        ;
+
+        
+    
+    
+            marker_8c41d54cd1d3920b0a7947323627ac52.bindTooltip(
+                `<div>
+                     台北探索館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8c41d54cd1d3920b0a7947323627ac52.setIcon(icon_2c846435d43688c4745e0b37103e55ab);
+            
+    
+            var marker_c0074f452d219ccf7bd7263a7f9a0219 = L.marker(
+                [25.0477863, 121.5110318],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_94fddcdcc14059f52a25eaeccf14e10e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5199a0c93603d574fcd20b65a134fb20 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_90f77807cabda37ea98f31b03c831d9e = $(`<div id="html_90f77807cabda37ea98f31b03c831d9e" style="width: 100.0%; height: 100.0%;"><b>北門廣場</b></div>`)[0];
+                popup_5199a0c93603d574fcd20b65a134fb20.setContent(html_90f77807cabda37ea98f31b03c831d9e);
+            
+        
+
+        marker_c0074f452d219ccf7bd7263a7f9a0219.bindPopup(popup_5199a0c93603d574fcd20b65a134fb20)
+        ;
+
+        
+    
+    
+            marker_c0074f452d219ccf7bd7263a7f9a0219.bindTooltip(
+                `<div>
+                     北門廣場
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c0074f452d219ccf7bd7263a7f9a0219.setIcon(icon_94fddcdcc14059f52a25eaeccf14e10e);
+            
+    
+            var marker_89eee89e6192990f8bd0859a134e8809 = L.marker(
+                [25.033942, 121.529955],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_028749d401bff2aeb60fad8e5f64f613 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a54e430eef4b51f4ebbdfab2593d93ab = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7dfaea9b5b4433112441ab0e9b8bccbe = $(`<div id="html_7dfaea9b5b4433112441ab0e9b8bccbe" style="width: 100.0%; height: 100.0%;"><b>小南門傳統豆花東門店</b></div>`)[0];
+                popup_a54e430eef4b51f4ebbdfab2593d93ab.setContent(html_7dfaea9b5b4433112441ab0e9b8bccbe);
+            
+        
+
+        marker_89eee89e6192990f8bd0859a134e8809.bindPopup(popup_a54e430eef4b51f4ebbdfab2593d93ab)
+        ;
+
+        
+    
+    
+            marker_89eee89e6192990f8bd0859a134e8809.bindTooltip(
+                `<div>
+                     小南門傳統豆花東門店
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_89eee89e6192990f8bd0859a134e8809.setIcon(icon_028749d401bff2aeb60fad8e5f64f613);
+            
+    
+            var marker_c5a4432044512a8c404bcb19056490a3 = L.marker(
+                [25.0390959, 121.5176551],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_8046f42e19d88604407dfe3cc476e127 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a837bbd28a5b6e3b8da3de137146ac92 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_de8b4bd66dcfa53828cf80d06a040dfd = $(`<div id="html_de8b4bd66dcfa53828cf80d06a040dfd" style="width: 100.0%; height: 100.0%;"><b>臺北府城 東門(景福門)</b></div>`)[0];
+                popup_a837bbd28a5b6e3b8da3de137146ac92.setContent(html_de8b4bd66dcfa53828cf80d06a040dfd);
+            
+        
+
+        marker_c5a4432044512a8c404bcb19056490a3.bindPopup(popup_a837bbd28a5b6e3b8da3de137146ac92)
+        ;
+
+        
+    
+    
+            marker_c5a4432044512a8c404bcb19056490a3.bindTooltip(
+                `<div>
+                     臺北府城 東門(景福門)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c5a4432044512a8c404bcb19056490a3.setIcon(icon_8046f42e19d88604407dfe3cc476e127);
+            
+    
+            var marker_28709e70f1eeabe99c27b7b4d1d9ca2e = L.marker(
+                [25.0555941, 121.5102169],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_3dd9ec1f7eda68464f707c1709d02867 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_925f132562f312c1f07eb07dfa796ab3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_52ed489a2500d8cb81706c87ad235892 = $(`<div id="html_52ed489a2500d8cb81706c87ad235892" style="width: 100.0%; height: 100.0%;"><b>台北霞海城隍廟</b></div>`)[0];
+                popup_925f132562f312c1f07eb07dfa796ab3.setContent(html_52ed489a2500d8cb81706c87ad235892);
+            
+        
+
+        marker_28709e70f1eeabe99c27b7b4d1d9ca2e.bindPopup(popup_925f132562f312c1f07eb07dfa796ab3)
+        ;
+
+        
+    
+    
+            marker_28709e70f1eeabe99c27b7b4d1d9ca2e.bindTooltip(
+                `<div>
+                     台北霞海城隍廟
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_28709e70f1eeabe99c27b7b4d1d9ca2e.setIcon(icon_3dd9ec1f7eda68464f707c1709d02867);
+            
+    
+            var marker_e5badf5442ef47a1efa2cc75be08e5ae = L.marker(
+                [25.0628658, 121.5338733],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_2b7d351321f523630033177a5ac4b025 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_542d780b9fb2ec828cc1bbade9544b69 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f93d834c51d00efb24e9bddacfaac78a = $(`<div id="html_f93d834c51d00efb24e9bddacfaac78a" style="width: 100.0%; height: 100.0%;"><b>行天宮</b></div>`)[0];
+                popup_542d780b9fb2ec828cc1bbade9544b69.setContent(html_f93d834c51d00efb24e9bddacfaac78a);
+            
+        
+
+        marker_e5badf5442ef47a1efa2cc75be08e5ae.bindPopup(popup_542d780b9fb2ec828cc1bbade9544b69)
+        ;
+
+        
+    
+    
+            marker_e5badf5442ef47a1efa2cc75be08e5ae.bindTooltip(
+                `<div>
+                     行天宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e5badf5442ef47a1efa2cc75be08e5ae.setIcon(icon_2b7d351321f523630033177a5ac4b025);
+            
+    
+            var marker_f1840183773828ff8af2781076d056b4 = L.marker(
+                [25.0731088, 121.5155703],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_b7a62370295690bae908ad88e4561b9d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f4662362bb2013ee9fa7f6e9b2082353 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d775801eaca7a753663084e8e2ff9495 = $(`<div id="html_d775801eaca7a753663084e8e2ff9495" style="width: 100.0%; height: 100.0%;"><b>大龍峒保安宮</b></div>`)[0];
+                popup_f4662362bb2013ee9fa7f6e9b2082353.setContent(html_d775801eaca7a753663084e8e2ff9495);
+            
+        
+
+        marker_f1840183773828ff8af2781076d056b4.bindPopup(popup_f4662362bb2013ee9fa7f6e9b2082353)
+        ;
+
+        
+    
+    
+            marker_f1840183773828ff8af2781076d056b4.bindTooltip(
+                `<div>
+                     大龍峒保安宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f1840183773828ff8af2781076d056b4.setIcon(icon_b7a62370295690bae908ad88e4561b9d);
+            
+    
+            var marker_ba9448cf7e6c056b0837fde7f297d52b = L.marker(
+                [25.0761447, 121.5136571],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_d84ab23b8b73a46d3b95dfe1d1590da9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0631a8506ebbf69930d7ceac72c9d313 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3823908572b45de9652f1716c711fb53 = $(`<div id="html_3823908572b45de9652f1716c711fb53" style="width: 100.0%; height: 100.0%;"><b>台北覺修宮</b></div>`)[0];
+                popup_0631a8506ebbf69930d7ceac72c9d313.setContent(html_3823908572b45de9652f1716c711fb53);
+            
+        
+
+        marker_ba9448cf7e6c056b0837fde7f297d52b.bindPopup(popup_0631a8506ebbf69930d7ceac72c9d313)
+        ;
+
+        
+    
+    
+            marker_ba9448cf7e6c056b0837fde7f297d52b.bindTooltip(
+                `<div>
+                     台北覺修宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ba9448cf7e6c056b0837fde7f297d52b.setIcon(icon_d84ab23b8b73a46d3b95dfe1d1590da9);
+            
+    
+            var marker_919a03e42e1619c44a9538dde5b0e933 = L.marker(
+                [25.0400088, 121.4995371],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_376b3fe84d43a8ba0658a0bf30ca56dd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_966759b10a226042c79708a2a3f0cd5d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b4f39643fe53c24891f769876cfec5ba = $(`<div id="html_b4f39643fe53c24891f769876cfec5ba" style="width: 100.0%; height: 100.0%;"><b>市定古蹟-艋舺青山宮</b></div>`)[0];
+                popup_966759b10a226042c79708a2a3f0cd5d.setContent(html_b4f39643fe53c24891f769876cfec5ba);
+            
+        
+
+        marker_919a03e42e1619c44a9538dde5b0e933.bindPopup(popup_966759b10a226042c79708a2a3f0cd5d)
+        ;
+
+        
+    
+    
+            marker_919a03e42e1619c44a9538dde5b0e933.bindTooltip(
+                `<div>
+                     市定古蹟-艋舺青山宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_919a03e42e1619c44a9538dde5b0e933.setIcon(icon_376b3fe84d43a8ba0658a0bf30ca56dd);
+            
+    
+            var marker_9471c147bb7fd5500e969bc2badfa906 = L.marker(
+                [25.0402142, 121.5025947],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_30759ea56235f6046474c73793f36ba6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_88450ff6b94bd15b0479c308f2eddd74 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7380af6ab48318b4bd975daadf77f39d = $(`<div id="html_7380af6ab48318b4bd975daadf77f39d" style="width: 100.0%; height: 100.0%;"><b>市定古蹟-艋舺清水巖</b></div>`)[0];
+                popup_88450ff6b94bd15b0479c308f2eddd74.setContent(html_7380af6ab48318b4bd975daadf77f39d);
+            
+        
+
+        marker_9471c147bb7fd5500e969bc2badfa906.bindPopup(popup_88450ff6b94bd15b0479c308f2eddd74)
+        ;
+
+        
+    
+    
+            marker_9471c147bb7fd5500e969bc2badfa906.bindTooltip(
+                `<div>
+                     市定古蹟-艋舺清水巖
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9471c147bb7fd5500e969bc2badfa906.setIcon(icon_30759ea56235f6046474c73793f36ba6);
+            
+    
+            var marker_3e2e90a51e03a930a8314f9edd9f88ab = L.marker(
+                [25.0591874, 121.5209944],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_36e8700b8a6cb74f17090d6c88adea81 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1c4ecb52c83f6a5bdbf170250207e0f3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_53ee57c0ad0f467cd5a2f4b3c4865a0e = $(`<div id="html_53ee57c0ad0f467cd5a2f4b3c4865a0e" style="width: 100.0%; height: 100.0%;"><b>台北市文昌宮</b></div>`)[0];
+                popup_1c4ecb52c83f6a5bdbf170250207e0f3.setContent(html_53ee57c0ad0f467cd5a2f4b3c4865a0e);
+            
+        
+
+        marker_3e2e90a51e03a930a8314f9edd9f88ab.bindPopup(popup_1c4ecb52c83f6a5bdbf170250207e0f3)
+        ;
+
+        
+    
+    
+            marker_3e2e90a51e03a930a8314f9edd9f88ab.bindTooltip(
+                `<div>
+                     台北市文昌宮
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3e2e90a51e03a930a8314f9edd9f88ab.setIcon(icon_36e8700b8a6cb74f17090d6c88adea81);
+            
+    
+            var marker_3c9015a6d0e736097a953c6d05a90c49 = L.marker(
+                [25.0727623, 121.5161793],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_a473cb869a3f76dca079fa1864ff2deb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a86734f767a138b9710a84dd23b95fed = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3846c079a0d97f0cca4b408c239ee583 = $(`<div id="html_3846c079a0d97f0cca4b408c239ee583" style="width: 100.0%; height: 100.0%;"><b>臺北孔子廟</b></div>`)[0];
+                popup_a86734f767a138b9710a84dd23b95fed.setContent(html_3846c079a0d97f0cca4b408c239ee583);
+            
+        
+
+        marker_3c9015a6d0e736097a953c6d05a90c49.bindPopup(popup_a86734f767a138b9710a84dd23b95fed)
+        ;
+
+        
+    
+    
+            marker_3c9015a6d0e736097a953c6d05a90c49.bindTooltip(
+                `<div>
+                     臺北孔子廟
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3c9015a6d0e736097a953c6d05a90c49.setIcon(icon_a473cb869a3f76dca079fa1864ff2deb);
+            
+    
+            var marker_9182938831228f90f2e6cc71963b63ce = L.marker(
+                [25.078854, 121.5694758],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_38a78107e4417fe60f7aabc52679c34f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e37664cd253cc445d49e676989e2d7b4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cb36ec0e7aff7e4c0963e1dd5e3dbbe4 = $(`<div id="html_cb36ec0e7aff7e4c0963e1dd5e3dbbe4" style="width: 100.0%; height: 100.0%;"><b>內湖科技園區</b></div>`)[0];
+                popup_e37664cd253cc445d49e676989e2d7b4.setContent(html_cb36ec0e7aff7e4c0963e1dd5e3dbbe4);
+            
+        
+
+        marker_9182938831228f90f2e6cc71963b63ce.bindPopup(popup_e37664cd253cc445d49e676989e2d7b4)
+        ;
+
+        
+    
+    
+            marker_9182938831228f90f2e6cc71963b63ce.bindTooltip(
+                `<div>
+                     內湖科技園區
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9182938831228f90f2e6cc71963b63ce.setIcon(icon_38a78107e4417fe60f7aabc52679c34f);
+            
+    
+            var marker_1a80fc05dfd1b1087e07f6ca9e03ea85 = L.marker(
+                [25.0831288, 121.5834051],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_75a331173f7fe8b2140f40467199d5d3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9c7dfbe6b49949bdaf6a3d436035ffc0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2d02b61190e29549ccd9d66bf0af6505 = $(`<div id="html_2d02b61190e29549ccd9d66bf0af6505" style="width: 100.0%; height: 100.0%;"><b>碧湖公園</b></div>`)[0];
+                popup_9c7dfbe6b49949bdaf6a3d436035ffc0.setContent(html_2d02b61190e29549ccd9d66bf0af6505);
+            
+        
+
+        marker_1a80fc05dfd1b1087e07f6ca9e03ea85.bindPopup(popup_9c7dfbe6b49949bdaf6a3d436035ffc0)
+        ;
+
+        
+    
+    
+            marker_1a80fc05dfd1b1087e07f6ca9e03ea85.bindTooltip(
+                `<div>
+                     碧湖公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1a80fc05dfd1b1087e07f6ca9e03ea85.setIcon(icon_75a331173f7fe8b2140f40467199d5d3);
+            
+    
+            var marker_e7289b526a137bc4fecefb8602dbe34b = L.marker(
+                [25.0825351, 121.603164],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_ba65b07774d2f525ddbaacb2cfaee989 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_82ff886410b3f37aa0bc72a39fa6cf10 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bdc624a2fa25d8616f68fbca13477f91 = $(`<div id="html_bdc624a2fa25d8616f68fbca13477f91" style="width: 100.0%; height: 100.0%;"><b>大湖公園</b></div>`)[0];
+                popup_82ff886410b3f37aa0bc72a39fa6cf10.setContent(html_bdc624a2fa25d8616f68fbca13477f91);
+            
+        
+
+        marker_e7289b526a137bc4fecefb8602dbe34b.bindPopup(popup_82ff886410b3f37aa0bc72a39fa6cf10)
+        ;
+
+        
+    
+    
+            marker_e7289b526a137bc4fecefb8602dbe34b.bindTooltip(
+                `<div>
+                     大湖公園
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e7289b526a137bc4fecefb8602dbe34b.setIcon(icon_ba65b07774d2f525ddbaacb2cfaee989);
+            
+    
+            var marker_1944fa2b6ef8df0717c66c2f594e986c = L.marker(
+                [25.099682, 121.5873607],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_ad719526c6de753c8f88215c54357871 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5708607d317d18da680a33163dbf339e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e7f3bc5573f5520ffade00edc8287488 = $(`<div id="html_e7f3bc5573f5520ffade00edc8287488" style="width: 100.0%; height: 100.0%;"><b>白石湖吊橋</b></div>`)[0];
+                popup_5708607d317d18da680a33163dbf339e.setContent(html_e7f3bc5573f5520ffade00edc8287488);
+            
+        
+
+        marker_1944fa2b6ef8df0717c66c2f594e986c.bindPopup(popup_5708607d317d18da680a33163dbf339e)
+        ;
+
+        
+    
+    
+            marker_1944fa2b6ef8df0717c66c2f594e986c.bindTooltip(
+                `<div>
+                     白石湖吊橋
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1944fa2b6ef8df0717c66c2f594e986c.setIcon(icon_ad719526c6de753c8f88215c54357871);
+            
+    
+            var marker_dd8d46af1e4cbbf454f138f44f982564 = L.marker(
+                [25.0968921, 121.5877127],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_115a6fa5d667fb4f116112e14a6fc1f8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6e7e8aee4176ef687cddcb78824408b3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3ae022520bfe103cb0bb31649a7e60ac = $(`<div id="html_3ae022520bfe103cb0bb31649a7e60ac" style="width: 100.0%; height: 100.0%;"><b>內湖 碧山巖</b></div>`)[0];
+                popup_6e7e8aee4176ef687cddcb78824408b3.setContent(html_3ae022520bfe103cb0bb31649a7e60ac);
+            
+        
+
+        marker_dd8d46af1e4cbbf454f138f44f982564.bindPopup(popup_6e7e8aee4176ef687cddcb78824408b3)
+        ;
+
+        
+    
+    
+            marker_dd8d46af1e4cbbf454f138f44f982564.bindTooltip(
+                `<div>
+                     內湖 碧山巖
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dd8d46af1e4cbbf454f138f44f982564.setIcon(icon_115a6fa5d667fb4f116112e14a6fc1f8);
+            
+    
+            var marker_28c45fe04cdf84132895566b83630c86 = L.marker(
+                [25.0860221, 121.5523169],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_87a1f421ed80f0bb41069f0543721ea0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a36349ecb087d5c41b1a9a47a6ae162f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fac996dbc8ede9e61f043e91b2fa9e38 = $(`<div id="html_fac996dbc8ede9e61f043e91b2fa9e38" style="width: 100.0%; height: 100.0%;"><b>劍南蝶園步道</b></div>`)[0];
+                popup_a36349ecb087d5c41b1a9a47a6ae162f.setContent(html_fac996dbc8ede9e61f043e91b2fa9e38);
+            
+        
+
+        marker_28c45fe04cdf84132895566b83630c86.bindPopup(popup_a36349ecb087d5c41b1a9a47a6ae162f)
+        ;
+
+        
+    
+    
+            marker_28c45fe04cdf84132895566b83630c86.bindTooltip(
+                `<div>
+                     劍南蝶園步道
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_28c45fe04cdf84132895566b83630c86.setIcon(icon_87a1f421ed80f0bb41069f0543721ea0);
+            
+    
+            var marker_cdd35a8f37bbc10ad81aab7caf8aebd8 = L.marker(
+                [25.0873088, 121.6228307],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_8cb1b0681411c3c44aa802f30ea9b08c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bbb6ab3652dade9c05cd32bf57adf3b3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_09d5f2e88940b55c517aa57337fdfb6e = $(`<div id="html_09d5f2e88940b55c517aa57337fdfb6e" style="width: 100.0%; height: 100.0%;"><b>內溝溪生態展示館</b></div>`)[0];
+                popup_bbb6ab3652dade9c05cd32bf57adf3b3.setContent(html_09d5f2e88940b55c517aa57337fdfb6e);
+            
+        
+
+        marker_cdd35a8f37bbc10ad81aab7caf8aebd8.bindPopup(popup_bbb6ab3652dade9c05cd32bf57adf3b3)
+        ;
+
+        
+    
+    
+            marker_cdd35a8f37bbc10ad81aab7caf8aebd8.bindTooltip(
+                `<div>
+                     內溝溪生態展示館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cdd35a8f37bbc10ad81aab7caf8aebd8.setIcon(icon_8cb1b0681411c3c44aa802f30ea9b08c);
+            
+    
+            var marker_4c1f0454be4cf731bc4a4d825fa5b035 = L.marker(
+                [25.1379481, 121.5116771],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_b95cd30132760fa7ce34a27c13adfc5e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b74697a2bbf782520d8052fbc65d61d0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_455ce5ea1c7bf88a584a77b24001b00d = $(`<div id="html_455ce5ea1c7bf88a584a77b24001b00d" style="width: 100.0%; height: 100.0%;"><b>地熱谷</b><br>北投區中山路30號之10</div>`)[0];
+                popup_b74697a2bbf782520d8052fbc65d61d0.setContent(html_455ce5ea1c7bf88a584a77b24001b00d);
+            
+        
+
+        marker_4c1f0454be4cf731bc4a4d825fa5b035.bindPopup(popup_b74697a2bbf782520d8052fbc65d61d0)
+        ;
+
+        
+    
+    
+            marker_4c1f0454be4cf731bc4a4d825fa5b035.bindTooltip(
+                `<div>
+                     地熱谷
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4c1f0454be4cf731bc4a4d825fa5b035.setIcon(icon_b95cd30132760fa7ce34a27c13adfc5e);
+            
+    
+            var marker_466ffd470c08c0db1e094fab345bc119 = L.marker(
+                [25.0962609, 121.5164742],
+                {
+}
+            ).addTo(marker_cluster_a9e872ad7929d09609843904b75041bf);
+        
+    
+            var icon_36095fabac5e433c626056ba4cd2e8e0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_1696be9911e77693e17975a50d3841f1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_041709ebc89b3317573548b9a2470258 = $(`<div id="html_041709ebc89b3317573548b9a2470258" style="width: 100.0%; height: 100.0%;"><b>國立臺灣科學教育館</b><br>士林區士商路189號</div>`)[0];
+                popup_1696be9911e77693e17975a50d3841f1.setContent(html_041709ebc89b3317573548b9a2470258);
+            
+        
+
+        marker_466ffd470c08c0db1e094fab345bc119.bindPopup(popup_1696be9911e77693e17975a50d3841f1)
+        ;
+
+        
+    
+    
+            marker_466ffd470c08c0db1e094fab345bc119.bindTooltip(
+                `<div>
+                     國立臺灣科學教育館
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_466ffd470c08c0db1e094fab345bc119.setIcon(icon_36095fabac5e433c626056ba4cd2e8e0);
+            
+    
+            marker_cluster_a9e872ad7929d09609843904b75041bf.addTo(map_7f780a24fa9457a3d4ef48185830c35f);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_7f780a24fa9457a3d4ef48185830c35f);
+        
+    
+            var layer_control_a7958dc33e330eda783254ad6e02a400_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_4c2e52b6f21fc71b8d70cff428559740,
+                },
+                overlays :  {
+                    "macro_element_a9e872ad7929d09609843904b75041bf" : marker_cluster_a9e872ad7929d09609843904b75041bf,
+                },
+            };
+            let layer_control_a7958dc33e330eda783254ad6e02a400 = L.control.layers(
+                layer_control_a7958dc33e330eda783254ad6e02a400_layers.base_layers,
+                layer_control_a7958dc33e330eda783254ad6e02a400_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_7f780a24fa9457a3d4ef48185830c35f);
+
+        
+</script>
+</html>

@@ -1,0 +1,850 @@
+[
+  {
+    "name": "國立臺灣大學圖書館",
+    "latitude": 25.0174122,
+    "longitude": 121.5404968,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "國立臺灣大學綜合體育館",
+    "latitude": 25.0216891,
+    "longitude": 121.5351162,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "醉月湖",
+    "latitude": 25.0197178,
+    "longitude": 121.5378478,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "106臺北市大安區椰林大道",
+    "latitude": 25.0172877,
+    "longitude": 121.5358939,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "國立臺灣大學傅鐘",
+    "latitude": 25.017161,
+    "longitude": 121.536762,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "Taipei 101",
+    "latitude": 25.033976,
+    "longitude": 121.5645389,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "國立國父紀念館",
+    "latitude": 25.0400306,
+    "longitude": 121.5602452,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "象山步道",
+    "latitude": 25.025249,
+    "longitude": 121.5792578,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "松山文創園區",
+    "latitude": 25.0438366,
+    "longitude": 121.5606383,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "國立故宮博物院",
+    "latitude": 25.1023554,
+    "longitude": 121.5484925,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "國立中正紀念堂",
+    "latitude": 25.035502,
+    "longitude": 121.5201832,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "艋舺龍山寺",
+    "latitude": 25.0373106,
+    "longitude": 121.4998654,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "西門町",
+    "latitude": 25.0446664,
+    "longitude": 121.5063096,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "士林夜市",
+    "latitude": 25.0884972,
+    "longitude": 121.5243504,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "饒河街 觀光夜市",
+    "latitude": 25.0508854,
+    "longitude": 121.5774891,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "寧夏夜市",
+    "latitude": 25.0566808,
+    "longitude": 121.5153641,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北華西街夜市",
+    "latitude": 25.0385988,
+    "longitude": 121.4984426,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臨江街觀光夜市",
+    "latitude": 25.0301412,
+    "longitude": 121.5542672,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "師大夜市",
+    "latitude": 25.0245042,
+    "longitude": 121.5293123,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北市公館觀光夜市",
+    "latitude": 25.0137201,
+    "longitude": 121.5347221,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "大稻埕碼頭貨櫃市集",
+    "latitude": 25.0561283,
+    "longitude": 121.5074276,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "103臺北市大同區迪化街一段",
+    "latitude": 25.0585055,
+    "longitude": 121.5095956,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北賓館",
+    "latitude": 25.0401547,
+    "longitude": 121.5167496,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "總統府",
+    "latitude": 25.0399991,
+    "longitude": 121.5119507,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "二二八和平公園",
+    "latitude": 25.0415717,
+    "longitude": 121.5150295,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北植物園",
+    "latitude": 25.0318511,
+    "longitude": 121.5094593,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "大安森林公園",
+    "latitude": 25.0296587,
+    "longitude": 121.5362867,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "陽明山國家公園",
+    "latitude": 25.1942462,
+    "longitude": 121.5609363,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "擎天崗",
+    "latitude": 25.165756,
+    "longitude": 121.5753508,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "冷水坑",
+    "latitude": 25.1655401,
+    "longitude": 121.5639373,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "小油坑遊憩區",
+    "latitude": 25.1766629,
+    "longitude": 121.5471008,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "竹子湖",
+    "latitude": 25.1726423,
+    "longitude": 121.5333316,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "陽明山花鐘",
+    "latitude": 25.1585011,
+    "longitude": 121.5391877,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "北投溫泉博物館",
+    "latitude": 25.1365694,
+    "longitude": 121.50715,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北市立圖書館 北投分館",
+    "latitude": 25.1363559,
+    "longitude": 121.5062331,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "地熱谷",
+    "latitude": 25.137894,
+    "longitude": 121.5118863,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "關渡宮",
+    "latitude": 25.1176791,
+    "longitude": 121.4639554,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "關渡自然公園",
+    "latitude": 25.1188889,
+    "longitude": 121.4708333,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "淡水老街",
+    "latitude": 25.168927,
+    "longitude": 121.4440921,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "淡水漁人碼頭",
+    "latitude": 25.1830092,
+    "longitude": 121.4121084,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "淡水紅毛城",
+    "latitude": 25.1754077,
+    "longitude": 121.433021,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "真理大學",
+    "latitude": 25.1767715,
+    "longitude": 121.434879,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "新北市私立淡江高級中學",
+    "latitude": 25.1762402,
+    "longitude": 121.4369985,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "小白宮 - 原物品倉庫",
+    "latitude": 25.033521,
+    "longitude": 121.5161514,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "八里左岸公園",
+    "latitude": 25.1616574,
+    "longitude": 121.429278,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "新北市立十三行博物館",
+    "latitude": 25.1568739,
+    "longitude": 121.4048561,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "碧潭風景區",
+    "latitude": 24.9559849,
+    "longitude": 121.5365043,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北市立動物園",
+    "latitude": 24.9985635,
+    "longitude": 121.5809857,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "貓空纜車",
+    "latitude": 24.9959318,
+    "longitude": 121.5763329,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "貓空觀光茶園",
+    "latitude": 24.969788,
+    "longitude": 121.5978809,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "指南宮",
+    "latitude": 24.979824,
+    "longitude": 121.586626,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "222新北市深坑區深坑街",
+    "latitude": 25.0016916,
+    "longitude": 121.6147377,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "石碇老街",
+    "latitude": 24.9907256,
+    "longitude": 121.660808,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "十分老街",
+    "latitude": 25.0426687,
+    "longitude": 121.7766757,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "菁桐老街",
+    "latitude": 25.0237927,
+    "longitude": 121.723513,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "十分瀑布",
+    "latitude": 25.0489711,
+    "longitude": 121.7874553,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "九份老街",
+    "latitude": 25.1098079,
+    "longitude": 121.845228,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "金瓜石地質公園",
+    "latitude": 25.1009411,
+    "longitude": 121.8545499,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "新北市立黃金博物館",
+    "latitude": 25.1061358,
+    "longitude": 121.8596365,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "象山步道",
+    "latitude": 25.027375,
+    "longitude": 121.5709619,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "虎山親山步道",
+    "latitude": 25.0320167,
+    "longitude": 121.5874881,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "劍潭山親山步道",
+    "latitude": 25.0793713,
+    "longitude": 121.5252601,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "金面山步道",
+    "latitude": 25.0886636,
+    "longitude": 121.5678841,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "忠勇山步道",
+    "latitude": 25.0981564,
+    "longitude": 121.5853896,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "軍艦岩親山步道",
+    "latitude": 25.1317552,
+    "longitude": 121.5145907,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "大崙頭山森林步道",
+    "latitude": 25.1119064,
+    "longitude": 121.5846632,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "圓山大飯店",
+    "latitude": 25.0789293,
+    "longitude": 121.5265151,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "林安泰古厝",
+    "latitude": 25.0723739,
+    "longitude": 121.5303543,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "美麗華百樂園摩天輪",
+    "latitude": 25.0829319,
+    "longitude": 121.5577484,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北市立美術館",
+    "latitude": 25.072136,
+    "longitude": 121.5244037,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "花博公園圓山園區",
+    "latitude": 25.0716662,
+    "longitude": 121.5221637,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北典藏植物園",
+    "latitude": 25.0709271,
+    "longitude": 121.5317769,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "花博公園新生園區",
+    "latitude": 25.0699787,
+    "longitude": 121.531228,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "榮星花園公園",
+    "latitude": 25.0634668,
+    "longitude": 121.5391412,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "青年公園",
+    "latitude": 25.0230556,
+    "longitude": 121.5052778,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "106臺北市大安區永康街",
+    "latitude": 25.0307722,
+    "longitude": 121.5295026,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "東區商圈",
+    "latitude": 25.0427193,
+    "longitude": 121.5462632,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "香堤大道廣場",
+    "latitude": 25.0372425,
+    "longitude": 121.5669885,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "台北南港展覽館1館",
+    "latitude": 25.0566019,
+    "longitude": 121.6181159,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北流行音樂中心",
+    "latitude": 25.0526926,
+    "longitude": 121.599042,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "華山1914文化創意產業園區",
+    "latitude": 25.0440698,
+    "longitude": 121.5293583,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "光點台北（台北之家）",
+    "latitude": 25.053279,
+    "longitude": 121.5221609,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "台北當代藝術館",
+    "latitude": 25.0508047,
+    "longitude": 121.5189766,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "袖珍博物館",
+    "latitude": 25.0503212,
+    "longitude": 121.5363081,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "郭元益糕餅博物館 台北士林館",
+    "latitude": 25.0974613,
+    "longitude": 121.5241173,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "台北探索館",
+    "latitude": 25.0375506,
+    "longitude": 121.5637857,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "北門廣場",
+    "latitude": 25.0477863,
+    "longitude": 121.5110318,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "小南門傳統豆花東門店",
+    "latitude": 25.033942,
+    "longitude": 121.529955,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北府城 東門(景福門)",
+    "latitude": 25.0390959,
+    "longitude": 121.5176551,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "台北霞海城隍廟",
+    "latitude": 25.0555941,
+    "longitude": 121.5102169,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "行天宮",
+    "latitude": 25.0628658,
+    "longitude": 121.5338733,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "大龍峒保安宮",
+    "latitude": 25.0731088,
+    "longitude": 121.5155703,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "台北覺修宮",
+    "latitude": 25.0761447,
+    "longitude": 121.5136571,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "市定古蹟-艋舺青山宮",
+    "latitude": 25.0400088,
+    "longitude": 121.4995371,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "市定古蹟-艋舺清水巖",
+    "latitude": 25.0402142,
+    "longitude": 121.5025947,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "台北市文昌宮",
+    "latitude": 25.0591874,
+    "longitude": 121.5209944,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "臺北孔子廟",
+    "latitude": 25.0727623,
+    "longitude": 121.5161793,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "內湖科技園區",
+    "latitude": 25.078854,
+    "longitude": 121.5694758,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "碧湖公園",
+    "latitude": 25.0831288,
+    "longitude": 121.5834051,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "大湖公園",
+    "latitude": 25.0825351,
+    "longitude": 121.603164,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "白石湖吊橋",
+    "latitude": 25.099682,
+    "longitude": 121.5873607,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "內湖 碧山巖",
+    "latitude": 25.0968921,
+    "longitude": 121.5877127,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "劍南蝶園步道",
+    "latitude": 25.0860221,
+    "longitude": 121.5523169,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "內溝溪生態展示館",
+    "latitude": 25.0873088,
+    "longitude": 121.6228307,
+    "description": "",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "地熱谷",
+    "latitude": 25.1379481,
+    "longitude": 121.5116771,
+    "description": "北投區中山路30號之10",
+    "isNFCEnabled": false,
+    "nfcId": null
+  },
+  {
+    "name": "國立臺灣科學教育館",
+    "latitude": 25.0962609,
+    "longitude": 121.5164742,
+    "description": "士林區士商路189號",
+    "isNFCEnabled": false,
+    "nfcId": null
+  }
+]
