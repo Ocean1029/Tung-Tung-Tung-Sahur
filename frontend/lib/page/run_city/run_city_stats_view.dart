@@ -188,25 +188,10 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                     color: TPColors.grayscale200,
                   ),
                 ),
-                // 總時間和總距離
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTotalStatItem(
-                        icon: Icons.access_time,
-                        label: '總時間',
-                        value: controller.formattedTotalTime,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTotalStatItem(
-                        icon: Icons.straighten,
-                        label: '總距離',
-                        value: userData.formattedTotalDistance,
-                      ),
-                    ),
-                  ],
+                // 總時間和總距離（統一縮放）
+                _buildTotalStatsRow(
+                  timeValue: controller.formattedTotalTime,
+                  distanceValue: userData.formattedTotalDistance,
                 ),
               ],
             ),
@@ -216,37 +201,80 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
     );
   }
 
-  /// 建立總統計項目（灰字標籤 + 藍字數值）
+  /// 建立總統計行（兩個統計項目，統一縮放）
+  Widget _buildTotalStatsRow({
+    required String timeValue,
+    required String distanceValue,
+  }) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: IntrinsicWidth(
+        child: Row(
+          children: [
+            _buildTotalStatItem(
+              icon: Icons.access_time,
+              label: '總時間',
+              value: timeValue,
+              fontSize: 26,
+              iconSize: 26,
+            ),
+            const SizedBox(width: 16),
+            _buildTotalStatItem(
+              icon: Icons.straighten,
+              label: '總距離',
+              value: distanceValue,
+              fontSize: 26,
+              iconSize: 26,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 建立總統計項目（icon 在左，標題和數值在右）
   Widget _buildTotalStatItem({
     required IconData icon,
     required String label,
     required String value,
+    required double fontSize,
+    required double iconSize,
   }) {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
+        // Icon 在左側
+        Icon(
+          icon,
+          size: iconSize,
+          color: TPColors.runCityGray,
+        ),
+        const SizedBox(width: 12),
+        // 標題和數值在右側（垂直排列）
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 14,
-              color: TPColors.runCityGray,
-            ),
-            const SizedBox(width: 4),
+            // 標題（灰字，比名字小一點，名字是 18pt，這裡用 16pt）
             TPText(
               label,
-              style: TPTextStyles.caption,
+              style: TPTextStyles.h3Regular,
               color: TPColors.runCityGray,
             ),
+            const SizedBox(height: 4),
+            // 數值（藍字，大且粗，不換行）
+            TPText(
+              value,
+              style: TPTextStyles.h2SemiBold.copyWith(
+                fontSize: fontSize,
+              ),
+              color: TPColors.runCityBlue,
+              maxLines: 1,
+              overflow: TextOverflow.clip,
+            ),
           ],
-        ),
-        const SizedBox(height: 6),
-        TPText(
-          value,
-          style: TPTextStyles.h2SemiBold.copyWith(
-            fontSize: 24,
-          ),
-          color: TPColors.runCityBlue,
         ),
       ],
     );
