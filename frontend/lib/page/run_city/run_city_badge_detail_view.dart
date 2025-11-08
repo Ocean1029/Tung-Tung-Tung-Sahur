@@ -244,14 +244,7 @@ class _BadgeLocationsTable extends StatelessWidget {
                   color: TPColors.grayscale500,
                 ),
               ),
-              Expanded(
-                flex: 3,
-                child: TPText(
-                  '位置',
-                  style: TPTextStyles.caption,
-                  color: TPColors.grayscale500,
-                ),
-              ),
+              SizedBox(width: 24),
             ],
           ),
         ),
@@ -275,7 +268,7 @@ class _BadgeLocationsTable extends StatelessWidget {
   }
 }
 
-class _LocationRow extends StatelessWidget {
+class _LocationRow extends StatefulWidget {
   const _LocationRow({
     required this.point,
     required this.isCollected,
@@ -289,68 +282,103 @@ class _LocationRow extends StatelessWidget {
   final bool showDivider;
 
   @override
-  Widget build(BuildContext context) {
-    final statusText = isCollected ? '已完成' : '待收集';
-    final statusBackground =
-        isCollected ? const Color(0xFFDBF1F5) : const Color(0xFF5AB4C5);
+  State<_LocationRow> createState() => _LocationRowState();
+}
 
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: showDivider
-            ? const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: TPColors.grayscale200, width: 1),
-                ),
-              )
-            : null,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: TPText(
-                  point.name,
-                  style: TPTextStyles.bodyRegular.copyWith(fontSize: 13),
-                  color: TPColors.grayscale900,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: statusBackground,
-                    borderRadius: BorderRadius.circular(8),
+class _LocationRowState extends State<_LocationRow> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusText = widget.isCollected ? '已完成' : '待收集';
+    final statusBackground =
+        widget.isCollected ? const Color(0xFFDBF1F5) : const Color(0xFF5AB4C5);
+
+    return Column(
+      children: [
+        Container(
+          decoration: widget.showDivider
+              ? const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: TPColors.grayscale200, width: 1),
                   ),
-                  child: TPText(
-                    statusText,
-                    style: TPTextStyles.caption.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: TPColors.white,
+                )
+              : null,
+          child: InkWell(
+            onTap: () {
+              widget.onTap();
+              setState(() {
+                _expanded = !_expanded;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: TPText(
+                            widget.point.name,
+                            style:
+                                TPTextStyles.bodyRegular.copyWith(fontSize: 13),
+                            color: TPColors.grayscale900,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: statusBackground,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TPText(
+                              statusText,
+                              style: TPTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: TPColors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        _expanded ? Icons.expand_less : Icons.expand_more,
+                        color: TPColors.grayscale400,
+                      ),
+                    ],
+                  ),
+                  if (_expanded)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TPText(
+                          widget.point.description ??
+                              widget.point.area ??
+                              '未指定',
+                          style: TPTextStyles.bodyRegular.copyWith(
+                            fontSize: 12,
+                            color: TPColors.grayscale500,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                ],
               ),
             ),
-            Expanded(
-              flex: 3,
-              child: TPText(
-                point.area ?? '未指定',
-                style: TPTextStyles.bodyRegular.copyWith(fontSize: 13),
-                color: TPColors.grayscale600,
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
