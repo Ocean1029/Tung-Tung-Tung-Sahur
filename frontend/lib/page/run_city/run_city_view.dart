@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -80,10 +78,6 @@ class RunCityView extends GetView<RunCityController> {
               myLocationEnabled: true,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: false,
-              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
-                Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
-                Factory<PanGestureRecognizer>(() => PanGestureRecognizer()),
-              },
             ),
             // 用戶資料卡片（可點擊，覆蓋在地圖上方）
             if (controller.userData.value != null)
@@ -242,12 +236,12 @@ class RunCityView extends GetView<RunCityController> {
           Row(
             children: const [
               _LegendIndicator(
-                color: TPColors.primary500,
+                color: TPColors.primary100,
                 label: '已收集',
               ),
               SizedBox(width: 16),
               _LegendIndicator(
-                color: TPColors.orange500,
+                color: TPColors.primary500,
                 label: '未收集',
               ),
             ],
