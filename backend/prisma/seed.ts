@@ -147,7 +147,7 @@ const seed = async () => {
     "Grace Wu",
     "Henry Chen",
   ];
-  const otherUsers = await Promise.all(
+  const baseUsers = await Promise.all(
     userNames.map((name, index) =>
       prisma.user.create({
         data: {
@@ -158,7 +158,15 @@ const seed = async () => {
       })
     )
   );
-  const users = [frontendUser, ...otherUsers];
+  const wesley = await prisma.user.create({
+    data: {
+      id: "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250",
+      name: "金大森",
+      email: "ist83903@bcaoo.com",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Wesley"
+    }
+  });
+  const users = [...baseUsers, wesley];
   console.log(`Created ${users.length} users`);
 
   // Create user location collections
