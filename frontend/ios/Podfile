@@ -38,23 +38,40 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # Read DEVELOPMENT_TEAM from Runner project
+  runner_project_path = File.join(File.dirname(__FILE__), 'Runner.xcodeproj', 'project.pbxproj')
+  development_team = nil
+  if File.exist?(runner_project_path)
+    File.readlines(runner_project_path).each do |line|
+      if line =~ /DEVELOPMENT_TEAM\s*=\s*(\w+);/
+        development_team = $1
+        break
+      end
+    end
+  end
+  
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     
-    # 確保所有 Pods（包括 privacy extensions）都使用自動簽名
+    # Ensure all Pods (including privacy extensions) use automatic signing
     target.build_configurations.each do |config|
       config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Development'
       config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'
       config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'
-      config.build_settings['DEVELOPMENT_TEAM'] = '' # 會從 Runner target 繼承
-      
-      # 確保所有 targets 都啟用自動簽名
       config.build_settings['CODE_SIGN_STYLE'] = 'Automatic'
+      
+      # Set team if found, otherwise leave empty to inherit
+      if development_team
+        config.build_settings['DEVELOPMENT_TEAM'] = development_team
+      end
     end
   end
   
-  # 確保整個 Pods project 也使用自動簽名
+  # Ensure entire Pods project also uses automatic signing
   installer.pods_project.build_configurations.each do |config|
     config.build_settings['CODE_SIGN_STYLE'] = 'Automatic'
+    if development_team
+      config.build_settings['DEVELOPMENT_TEAM'] = development_team
+    end
   end
 end

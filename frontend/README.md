@@ -18,6 +18,35 @@ Here are some quick setup guide.
 - [XCode](https://developer.apple.com/xcode/) (for iOS)
 - [Android SDK](https://developer.android.com/studio/index.html) (for Android, with or without Android Studio)
 
+## Quick Start (從 GitHub 拉下代碼後)
+
+### 必須執行的指令（按順序）
+
+```bash
+# 1. 進入 frontend 目錄
+cd frontend
+
+# 2. 安裝 Flutter 依賴
+flutter pub get
+
+# 3. 生成代碼（如果需要）
+flutter packages pub run build_runner build
+
+# 4. iOS 專用：安裝 CocoaPods 依賴
+cd ios
+pod install
+cd ..
+
+# 5. 運行應用
+flutter run
+```
+
+### iOS 開發注意事項
+
+- **首次設置或更新依賴後**：必須執行 `pod install`
+- **如果遇到簽名錯誤**：在 Xcode 中打開 `ios/Runner.xcworkspace`，設置你的 Development Team
+- **如果遇到模組找不到**：清理 Xcode 緩存（Product > Clean Build Folder）
+
 ## Build the Project
 
 1. Get the packages project needed:
