@@ -209,18 +209,47 @@ const endActivity = async (
     }
   });
 
+  // Re-fetch collected locations (NFC collected)
+  const nfcCollectedLocations = await prisma.activityCollectedLocation.findMany({
+    where: { activityId },
+    include: {
+      location: true
+    },
+    orderBy: {
+      collectedAt: "asc"
+    }
+  });
+
   // Calculate total distance
+  // Priority: Use GPS track points if available (>= 2 points), otherwise use NFC collected locations
   let totalDistance = 0;
-  for (let i = 0; i < allTrackPoints.length - 1; i++) {
-    const point1 = allTrackPoints[i];
-    const point2 = allTrackPoints[i + 1];
-    totalDistance += calculateDistance(
-      point1.latitude,
-      point1.longitude,
-      point2.latitude,
-      point2.longitude
-    );
+  
+  if (allTrackPoints.length >= 2) {
+    // Use GPS track points for distance calculation
+    for (let i = 0; i < allTrackPoints.length - 1; i++) {
+      const point1 = allTrackPoints[i];
+      const point2 = allTrackPoints[i + 1];
+      totalDistance += calculateDistance(
+        point1.latitude,
+        point1.longitude,
+        point2.latitude,
+        point2.longitude
+      );
+    }
+  } else if (nfcCollectedLocations.length >= 2) {
+    // Use NFC collected locations for distance calculation
+    for (let i = 0; i < nfcCollectedLocations.length - 1; i++) {
+      const loc1 = nfcCollectedLocations[i].location;
+      const loc2 = nfcCollectedLocations[i + 1].location;
+      totalDistance += calculateDistance(
+        loc1.latitude,
+        loc1.longitude,
+        loc2.latitude,
+        loc2.longitude
+      );
+    }
   }
+  // If neither has enough points, totalDistance remains 0
 
   // Calculate duration in seconds
   const duration = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);

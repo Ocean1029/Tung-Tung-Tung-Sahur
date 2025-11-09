@@ -3,11 +3,11 @@ import { join } from "path";
 
 import { PrismaClient, UserBadgeStatus } from "@prisma/client";
 
-// Fix DATABASE_URL for local execution (replace 'db:5432' with 'localhost:5386')
+// Fix DATABASE_URL for local execution (replace 'db:5432' with 'localhost:5432')
 // This allows the seed script to work both locally and inside Docker containers
 if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes("db:")) {
-  // Replace db:5432 with localhost:5386 (the mapped port in docker-compose)
-  process.env.DATABASE_URL = process.env.DATABASE_URL.replace("db:5432", "localhost:5386");
+  // Replace db:5432 with localhost:5432 (the mapped port in docker-compose)
+  process.env.DATABASE_URL = process.env.DATABASE_URL.replace("db:5432", "localhost:5432");
 }
 
 const prisma = new PrismaClient();
@@ -127,13 +127,13 @@ const seed = async () => {
   const frontendUser = await prisma.user.upsert({
     where: { id: "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250" },
     update: {
-      avatarUrl: null,
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Wesley",
     },
     create: {
       id: "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250",
       name: "金大森",
       email: "ist83903@bcaoo.com",
-      avatarUrl: null,
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Wesley",
     },
   });
   
@@ -158,15 +158,7 @@ const seed = async () => {
       })
     )
   );
-  const wesley = await prisma.user.create({
-    data: {
-      id: "7f3562f4-bb3f-4ec7-89b9-da3b4b5ff250",
-      name: "金大森",
-      email: "ist83903@bcaoo.com",
-      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Wesley"
-    }
-  });
-  const users = [...baseUsers, wesley];
+  const users = [frontendUser, ...baseUsers];
   console.log(`Created ${users.length} users`);
 
   // Create user location collections

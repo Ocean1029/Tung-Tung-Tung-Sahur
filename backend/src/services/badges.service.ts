@@ -27,6 +27,7 @@ const mapBadgeToSummary = (badge: {
   name: string;
   description: string | null;
   imageUrl: string | null;
+  color: string | null;
   createdAt: Date;
   updatedAt: Date;
   badgeLocationRequirements: Array<{
@@ -48,6 +49,7 @@ const mapBadgeToSummary = (badge: {
     name: badge.name,
     description: badge.description,
     imageUrl: badge.imageUrl,
+    color: badge.color,
     area,
     totalLocations: badge.badgeLocationRequirements.length,
     requiredLocationIds,
@@ -166,6 +168,7 @@ const createBadge = async (input: BadgeCreateInput): Promise<BadgeDetailResponse
       name: input.name,
       description: input.description ?? null,
       imageUrl: input.imageUrl ?? null,
+      color: input.color ?? null,
       badgeLocationRequirements: {
         createMany: {
           data: requiredLocationIds.map((locationId) => ({
@@ -217,7 +220,8 @@ const updateBadge = async (
   const updateData = {
     ...(rest.name !== undefined && { name: rest.name }),
     ...(rest.description !== undefined && { description: rest.description ?? null }),
-    ...(rest.imageUrl !== undefined && { imageUrl: rest.imageUrl ?? null })
+    ...(rest.imageUrl !== undefined && { imageUrl: rest.imageUrl ?? null }),
+    ...(rest.color !== undefined && { color: rest.color ?? null })
   };
 
   await prisma.$transaction(async (tx) => {
@@ -370,6 +374,7 @@ const getUserBadges = async (
       name: badge.name,
       description: badge.description,
       imageUrl: badge.imageUrl,
+      color: badge.color,
       area,
       totalLocations: total,
       status: apiStatus,
@@ -488,6 +493,7 @@ const getUserBadgeDetail = async (
     name: badge.name,
     description: badge.description,
     imageUrl: badge.imageUrl,
+    color: badge.color,
     area: (() => {
       const candidates = badge.badgeLocationRequirements
         .map((req) => req.location?.area ?? null)
@@ -604,6 +610,7 @@ const evaluateUserBadges = async (userId: string): Promise<BadgeEvaluationResult
         badgeId: badge.id,
         name: badge.name,
         imageUrl: badge.imageUrl,
+        color: badge.color,
         unlockedAt: targetUnlockedAt
       });
     }

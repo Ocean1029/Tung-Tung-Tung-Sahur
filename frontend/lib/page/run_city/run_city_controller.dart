@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,6 +14,7 @@ import 'package:town_pass/page/run_city/run_city_mock_data.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
 import 'package:town_pass/util/tp_route.dart';
+import 'package:town_pass/util/tp_colors.dart';
 
 class RunCityController extends GetxController {
   RunCityController({
@@ -52,6 +54,7 @@ class RunCityController extends GetxController {
   final RunCityService _runCityService;
 
   GoogleMapController? mapController;
+  bool _isMapControllerDisposed = false; // 追蹤 mapController 是否已被 dispose
   StreamSubscription<Position>? _positionSubscription;
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
@@ -76,7 +79,9 @@ class RunCityController extends GetxController {
 
   @override
   void onClose() {
+    _isMapControllerDisposed = true;
     mapController?.dispose();
+    mapController = null;
     _stopTrackingStream();
     super.onClose();
   }
@@ -130,8 +135,8 @@ class RunCityController extends GetxController {
 
       // 如果地圖控制器已經初始化，立即定位到用戶位置
       // 縮放級別 17 對應約兩三百公尺的視野寬度
-      if (mapController != null) {
-        await mapController!.animateCamera(
+      if (!_isMapControllerDisposed && mapController != null) {
+        await _safeAnimateCamera(
           CameraUpdate.newLatLngZoom(_initialUserLocation!, 17),
         );
         isUserLocationCentered.value = true;
@@ -208,7 +213,13 @@ class RunCityController extends GetxController {
   }
 
   void onMapCreated(GoogleMapController controller) {
+    if (_isMapControllerDisposed) {
+      // 如果已經被 dispose，立即 dispose 新的 controller
+      controller.dispose();
+      return;
+    }
     mapController = controller;
+    _isMapControllerDisposed = false;
 
     // 如果已經獲取了用戶位置，立即定位到用戶位置
     // 縮放級別 17 對應約兩三百公尺的視野寬度
@@ -217,6 +228,42 @@ class RunCityController extends GetxController {
         CameraUpdate.newLatLngZoom(_initialUserLocation!, 17),
       );
       isUserLocationCentered.value = true;
+    }
+  }
+
+  /// 安全地使用 mapController，檢查是否已被 dispose
+  Future<void> _safeAnimateCamera(CameraUpdate update) async {
+    if (_isMapControllerDisposed || mapController == null) {
+      return;
+    }
+    try {
+      await mapController!.animateCamera(update);
+    } catch (e) {
+      // 如果 controller 已被 dispose，忽略錯誤
+      if (e.toString().contains('disposed') || e.toString().contains('Bad state')) {
+        debugPrint('MapController was disposed during animation: $e');
+        _isMapControllerDisposed = true;
+        mapController = null;
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  /// 安全地使用 mapController（不等待完成），檢查是否已被 dispose
+  void _safeAnimateCameraSync(CameraUpdate update) {
+    if (_isMapControllerDisposed || mapController == null) {
+      return;
+    }
+    try {
+      mapController!.animateCamera(update);
+    } catch (e) {
+      // 如果 controller 已被 dispose，忽略錯誤
+      if (e.toString().contains('disposed') || e.toString().contains('Bad state')) {
+        debugPrint('MapController was disposed during animation: $e');
+        _isMapControllerDisposed = true;
+        mapController = null;
+      }
     }
   }
 
@@ -264,7 +311,7 @@ class RunCityController extends GetxController {
 
   /// 將地圖移動到用戶當前位置
   Future<void> centerToUserLocation() async {
-    if (mapController == null) {
+    if (_isMapControllerDisposed || mapController == null) {
       return;
     }
 
@@ -296,7 +343,7 @@ class RunCityController extends GetxController {
 
       // 移動地圖到用戶最新位置
       // 縮放級別 17 對應約兩三百公尺的視野寬度
-      await mapController!.animateCamera(
+      await _safeAnimateCamera(
         CameraUpdate.newLatLngZoom(newUserLocation, 17),
       );
 
@@ -437,22 +484,59 @@ class RunCityController extends GetxController {
 
       _onPositionUpdated(currentPosition);
       await _flushTrackPoints(force: true);
+    } on PlatformException catch (e) {
+      // 處理定位相關的 PlatformException（必須在 RunCityApiException 之前）
+      debugPrint('RunCityController.startTracking PlatformException: $e');
+      String errorMessage = '定位服務錯誤';
+      if (e.code == 'PERMISSION_DENIED') {
+        errorMessage = '定位權限被拒絕，請在設定中開啟定位權限';
+      } else if (e.code == 'LOCATION_SERVICE_DISABLED') {
+        errorMessage = '定位服務未開啟，請開啟定位服務';
+      } else if (e.message != null) {
+        errorMessage = e.message!;
+      }
+      Get.snackbar(
+        '無法開始紀錄',
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 4),
+      );
     } on RunCityApiException catch (error) {
+      debugPrint('RunCityController.startTracking API error: $error');
       Get.snackbar(
         '無法開始紀錄',
         error.message,
         snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
         backgroundColor: Colors.black87,
+        duration: const Duration(seconds: 4),
       );
     } catch (error) {
       debugPrint('RunCityController.startTracking error: $error');
+      debugPrint('Error type: ${error.runtimeType}');
+      debugPrint('Error stack: ${StackTrace.current}');
+      
+      // 根據錯誤類型顯示更詳細的錯誤信息
+      String errorMessage = '請稍後再試';
+      if (error.toString().contains('timeout') || error.toString().contains('Timeout')) {
+        errorMessage = '請求超時，請檢查網路連接';
+      } else if (error.toString().contains('network') || error.toString().contains('Network')) {
+        errorMessage = '網路連接失敗，請檢查網路設定';
+      } else if (error.toString().contains('location') || error.toString().contains('Location')) {
+        errorMessage = '無法獲取位置資訊，請檢查定位權限和 GPS 訊號';
+      } else {
+        errorMessage = '發生錯誤：${error.toString().split('\n').first}';
+      }
+      
       Get.snackbar(
         '無法開始紀錄',
-        '請稍後再試',
+        errorMessage,
         snackPosition: SnackPosition.BOTTOM,
         colorText: Colors.white,
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 5),
       );
     }
   }
@@ -614,7 +698,7 @@ class RunCityController extends GetxController {
       routePath.add(currentPoint);
       _updatePolyline();
       // 縮放級別 17 對應約兩三百公尺的視野寬度
-      mapController?.animateCamera(
+      _safeAnimateCameraSync(
         CameraUpdate.newLatLngZoom(currentPoint, 17),
       );
       _markVisitedPoints(currentPoint);
@@ -640,7 +724,7 @@ class RunCityController extends GetxController {
     _refreshBadgeProgress();
 
     if (isTracking.value) {
-      mapController?.animateCamera(CameraUpdate.newLatLng(currentPoint));
+      _safeAnimateCameraSync(CameraUpdate.newLatLng(currentPoint));
     }
 
     _flushTrackPoints();
@@ -994,6 +1078,230 @@ class RunCityController extends GetxController {
     } else if (index > end) {
       badgeStartIndex.value =
           (index - badgesPerPage + 1).clamp(0, _maxBadgeStartIndex);
+    }
+  }
+
+  /// 處理 NFC 收集（從 URL Scheme 觸發）
+  Future<void> handleNfcCollection(String nfcId) async {
+    // 1. 檢查用戶是否登入
+    final userId = _accountService.account?.id;
+    if (userId == null) {
+      Get.snackbar(
+        '請先登入',
+        '請先登入以使用此功能',
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    // 2. 檢查是否有活動
+    if (_currentActivityId == null || !isTracking.value) {
+      Get.snackbar(
+        '請先開始跑步活動',
+        '請先開始跑步活動才能收集地點',
+        snackPosition: SnackPosition.BOTTOM,
+        colorText: Colors.white,
+        backgroundColor: Colors.orange,
+      );
+      return;
+    }
+
+    // 3. 從已載入的點位中查找對應的地點名稱
+    String? locationName;
+    try {
+      final location = points.firstWhere((point) => point.nfcId == nfcId);
+      locationName = location.name;
+    } catch (e) {
+      // 如果找不到，使用 nfcId 作為臨時名稱
+      locationName = nfcId;
+    }
+
+    // 4. 顯示收集對話框
+    await _showNfcCollectionDialog(nfcId, locationName, userId, _currentActivityId!);
+  }
+
+  /// 顯示 NFC 收集對話框
+  Future<void> _showNfcCollectionDialog(
+    String nfcId,
+    String locationName,
+    String userId,
+    String activityId,
+  ) async {
+    bool isCollecting = false;
+    String? errorMessage;
+
+    await Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // "收集成功!" 文字
+                  const Text(
+                    '收集成功!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: TPColors.primary500,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // 勾選圖標
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: const BoxDecoration(
+                      color: TPColors.primary500,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 50,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  // 地點名稱
+                  Text(
+                    locationName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  // 錯誤訊息
+                  if (errorMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      errorMessage!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.red,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  const SizedBox(height: 32),
+                  // 確認收集按鈕
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: isCollecting
+                          ? null
+                          : () async {
+                              setState(() {
+                                isCollecting = true;
+                                errorMessage = null;
+                              });
+
+                              try {
+                                final response = await _apiService.collectNfcLocation(
+                                  userId: userId,
+                                  activityId: activityId,
+                                  nfcId: nfcId,
+                                );
+
+                                if (response['success'] == true) {
+                                  final data = response['data'] as Map<String, dynamic>;
+                                  final collectedLocationName = data['name'] as String? ?? locationName;
+
+                                  // 更新點位狀態
+                                  await _refreshCollectedLocation(nfcId);
+
+                                  // 關閉對話框
+                                  Get.back();
+
+                                  // 顯示成功提示
+                                  Get.snackbar(
+                                    '收集成功',
+                                    '已收集：$collectedLocationName',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    colorText: Colors.white,
+                                    backgroundColor: Colors.green,
+                                    duration: const Duration(seconds: 2),
+                                  );
+                                } else {
+                                  setState(() {
+                                    isCollecting = false;
+                                    errorMessage = '收集失敗，請稍後再試';
+                                  });
+                                }
+                              } on RunCityApiException catch (e) {
+                                setState(() {
+                                  isCollecting = false;
+                                  if (e.statusCode == 404) {
+                                    errorMessage = '找不到該地點';
+                                  } else if (e.code == 'NETWORK_ERROR' || e.code == 'CONNECTION_ERROR') {
+                                    errorMessage = '網路連接失敗\n請檢查：\n1. 後端伺服器是否運行\n2. 網路連接是否正常';
+                                  } else if (e.code == 'TIMEOUT') {
+                                    errorMessage = '請求超時\n請檢查網路連接';
+                                  } else {
+                                    errorMessage = e.message;
+                                  }
+                                });
+                              } catch (e) {
+                                setState(() {
+                                  isCollecting = false;
+                                  errorMessage = '收集失敗：${e.toString()}';
+                                });
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: TPColors.primary500,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isCollecting
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text(
+                              '確認收集',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+      barrierDismissible: false,
+    );
+  }
+
+  /// 刷新已收集的地點狀態
+  Future<void> _refreshCollectedLocation(String nfcId) async {
+    try {
+      // 重新載入地圖點位以更新收集狀態
+      await _loadMapPoints();
+    } catch (e) {
+      debugPrint('刷新地點狀態失敗: $e');
     }
   }
 }

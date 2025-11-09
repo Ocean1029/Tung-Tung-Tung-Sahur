@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import swaggerJsdoc, { type OAS3Definition, type OAS3Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -19,11 +19,22 @@ const swaggerDefinition: OAS3Definition = {
   ]
 };
 
+// Determine the correct path for Swagger YAML files
+// In development: src/docs/**/*.yaml
+// In production: src/docs/**/*.yaml (copied to container)
+const getSwaggerApiPaths = (): string[] => {
+  const cwd = process.cwd();
+  const srcPath = join(cwd, "src", "docs", "**", "*.yaml");
+  const distPath = join(cwd, "dist", "docs", "**", "*.yaml");
+  
+  // Try both paths to support both development and production environments
+  return [srcPath, distPath];
+};
+
 const swaggerOptions: OAS3Options = {
   definition: swaggerDefinition,
-  // Limit source documents to YAML files to avoid TypeScript resolver issues.
-  // Use absolute path to ensure it works in Docker container
-  apis: [process.cwd() + "/src/docs/**/*.yaml"]
+  // Support both development (src/docs) and production (dist/docs or src/docs) paths
+  apis: getSwaggerApiPaths()
 };
 
 const swaggerSpec = (() => {
@@ -51,7 +62,12 @@ export const registerDocs = (app: Express): void => {
   // Add a simple HTML documentation page
   app.get("/api-docs", (req, res) => {
     try {
-      const htmlPath = join(process.cwd(), "src/docs/api-docs.html");
+      const cwd = process.cwd();
+      // Try src/docs first (development), then dist/docs (production)
+      const srcPath = join(cwd, "src", "docs", "api-docs.html");
+      const distPath = join(cwd, "dist", "docs", "api-docs.html");
+      
+      const htmlPath = existsSync(srcPath) ? srcPath : distPath;
       const html = readFileSync(htmlPath, "utf-8");
       res.send(html);
     } catch (error) {

@@ -100,57 +100,81 @@ class RunCityActivityDetailController extends GetxController {
 
   Future<void> _updateMap() async {
     final detail = activityDetail.value;
-    if (detail == null || detail.route.isEmpty) {
+    if (detail == null) {
       return;
     }
 
-    // 建立路線 Polyline
-    final routePoints = detail.route
-        .map((point) => LatLng(point.latitude, point.longitude))
-        .toList(growable: false);
-    polylines
-      ..clear()
-      ..add(
-        Polyline(
-          polylineId: const PolylineId('route'),
-          points: routePoints,
-          color: const Color(0xFFFF853A), // 橙色
-          width: 5,
-        ),
-      );
-    polylines.refresh();
-
-    // 建立所在地點紀錄節點 Marker（僅顯示此次活動刷到的點位）
-    final locationRecords = detail.locationRecords;
-    final markerIcon = await _getNodeMarkerIcon();
-    final markerPoints = locationRecords.isNotEmpty
-        ? locationRecords
-            .map(
-              (record) => LatLng(record.latitude, record.longitude),
-            )
-            .toList(growable: false)
-        : routePoints;
-    final newMarkers = markerPoints
-        .asMap()
-        .entries
-        .map(
-          (entry) => Marker(
-            markerId: MarkerId('location_point_${entry.key}'),
-            position: entry.value,
-            icon: markerIcon,
-            anchor: const Offset(0.5, 0.5),
-          ),
-        )
-        .toSet();
-    markers
-      ..clear()
-      ..addAll(newMarkers);
+    // 清除所有現有的標記
+    markers.clear();
     markers.refresh();
 
-    // 調整地圖視角以包含所有路線
-    final boundsPoints = markerPoints.isNotEmpty ? markerPoints : routePoints;
-    if (mapController != null && boundsPoints.isNotEmpty) {
-      await _fitBounds(boundsPoints);
+    // 建立路線 Polyline（僅當有路線數據時）
+    if (detail.route.isNotEmpty) {
+      final routePoints = detail.route
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList(growable: false);
+      polylines
+        ..clear()
+        ..add(
+          Polyline(
+            polylineId: const PolylineId('route'),
+            points: routePoints,
+            color: const Color(0xFFFF853A), // 橙色
+            width: 5,
+          ),
+        );
+      polylines.refresh();
+    } else {
+      polylines.clear();
+      polylines.refresh();
+    }
+
+    // 只標記 collectedLocations 中的地點（即 locationRecords）
+    final locationRecords = detail.locationRecords;
+    if (locationRecords.isNotEmpty) {
+      final markerIcon = await _getNodeMarkerIcon();
+      final newMarkers = locationRecords
+          .asMap()
+          .entries
+          .map(
+            (entry) => Marker(
+              markerId: MarkerId('collected_location_${entry.value.locationId}'),
+              position: LatLng(
+                entry.value.latitude,
+                entry.value.longitude,
+              ),
+              icon: markerIcon,
+              anchor: const Offset(0.5, 0.5),
+              infoWindow: InfoWindow(
+                title: entry.value.locationName,
+                snippet: entry.value.area ?? '',
+              ),
+            ),
+          )
+          .toSet();
+      markers.addAll(newMarkers);
+      markers.refresh();
+    }
+
+    // 調整地圖視角以包含所有路線和標記的地點
+    final allPoints = <LatLng>[];
+    
+    // 添加路線點
+    if (detail.route.isNotEmpty) {
+      allPoints.addAll(
+        detail.route.map((point) => LatLng(point.latitude, point.longitude)),
+      );
+    }
+    
+    // 添加標記的地點
+    if (locationRecords.isNotEmpty) {
+      allPoints.addAll(
+        locationRecords.map((record) => LatLng(record.latitude, record.longitude)),
+      );
+    }
+    
+    if (mapController != null && allPoints.isNotEmpty) {
+      await _fitBounds(allPoints);
     }
   }
 
