@@ -2,8 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 
 import { locationsService } from "../services/locations.service.js";
 import { usersService } from "../services/users.service.js";
-import type { UserListQuery } from "../types/users.types.js";
 import type { UserMapQuery } from "../types/locations.types.js";
+import type { UserListQuery } from "../types/users.types.js";
 
 /**
  * Controller layer for User Profile module

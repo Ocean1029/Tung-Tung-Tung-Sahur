@@ -112,9 +112,12 @@ temp/
 # =============================================================================
 *.tgz
 *.tar.gz
+# Lock files (exceptions for files that should be tracked)
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+!frontend/pubspec.lock
+!frontend/ios/Podfile.lock
 
 # =============================================================================
 # Flutter / Dart (Frontend)
@@ -127,7 +130,6 @@ frontend/.flutter-plugins-dependencies
 frontend/.pub-cache/
 frontend/.pub/
 frontend/.fvm/
-frontend/.dart_tool/
 # Flutter generated files
 frontend/**/*.g.dart
 frontend/**/*.gen.dart
@@ -160,6 +162,10 @@ frontend/**/ios/Flutter/app.zip
 frontend/**/ios/Flutter/flutter_assets/
 frontend/**/ios/ServiceDefinitions.json
 frontend/**/ios/Runner/GeneratedPluginRegistrant.*
+# Flutter iOS xcconfig files (should be tracked)
+!frontend/**/ios/Flutter/Debug.xcconfig
+!frontend/**/ios/Flutter/Release.xcconfig
+!frontend/**/ios/Flutter/Profile.xcconfig
 
 # Flutter Android
 frontend/**/android/**/gradle-wrapper.jar

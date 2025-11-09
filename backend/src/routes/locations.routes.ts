@@ -52,3 +52,12 @@ locationsRouter.delete(
   locationsController.deleteLocation
 );
 
+// POST /api/locations/:locationId/enable-nfc - Enable NFC for a location
+locationsRouter.post(
+  "/:locationId/enable-nfc",
+  requestValidator({
+    params: locationParamsSchema
+  }),
+  locationsController.enableNfc
+);
+

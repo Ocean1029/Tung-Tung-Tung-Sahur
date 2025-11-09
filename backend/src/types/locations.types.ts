@@ -74,3 +74,8 @@ export type UserMapResponse = {
   };
 };
 
+export type LocationEnableNfcResponse = {
+  success: true;
+  data: LocationResponse;
+};
+

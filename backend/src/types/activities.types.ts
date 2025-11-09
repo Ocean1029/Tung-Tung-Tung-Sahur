@@ -54,6 +54,13 @@ export type CollectedLocation = {
   coinsEarned: number;
 };
 
+export type ActivityNewBadge = {
+  badgeId: string;
+  name: string;
+  imageUrl: string | null;
+  unlockedAt: string;
+};
+
 export type ActivityEndResponse = {
   success: true;
   data: {
@@ -70,7 +77,7 @@ export type ActivityEndResponse = {
     }>;
     collectedLocations: CollectedLocation[];
     totalCoinsEarned: number;
-    newBadges: unknown[]; // Empty array for v0.5
+    newBadges: ActivityNewBadge[];
   };
 };
 
@@ -128,6 +135,23 @@ export type ActivityDetailResponse = {
       collectedAt: string;
     }>;
     coinsEarned: number;
+  };
+};
+
+export type ActivityNfcCollectInput = {
+  nfcId: string;
+};
+
+export type ActivityNfcCollectResponse = {
+  success: true;
+  data: {
+    locationId: string;
+    name: string;
+    area: string | null;
+    coinsEarned: number;
+    totalCoins: number;
+    isFirstCollection: boolean;
+    badgeUnlocked: ActivityNewBadge | null;
   };
 };
 

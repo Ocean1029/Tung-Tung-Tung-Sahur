@@ -2,12 +2,14 @@ import type {
   LocationCreateInput,
   LocationDeleteResponse,
   LocationDetailResponse,
+  LocationEnableNfcResponse,
   LocationListQuery,
   LocationListResponse,
   LocationUpdateInput,
   UserMapQuery,
   UserMapResponse
 } from "../types/locations.types.js";
+import { ApiError, ErrorCodes } from "../utils/errors.js";
 import { prisma } from "../utils/prismaClient.js";
 
 import { geocodingService } from "./geocoding.service.js";
@@ -409,11 +411,113 @@ const getUserMap = async (query: UserMapQuery): Promise<UserMapResponse> => {
   };
 };
 
+/**
+ * Enable NFC for a location
+ * Sets isNfcEnabled to true and automatically generates an NFC ID if not already set
+ * NFC ID format: nfc-001, nfc-002, etc.
+ * @param locationId - Location ID
+ * @returns Updated location with NFC enabled and NFC ID set
+ */
+const enableNfc = async (locationId: string): Promise<LocationEnableNfcResponse> => {
+  // Check if location exists
+  const existingLocation = await prisma.location.findUnique({
+    where: { id: locationId }
+  });
+
+  if (!existingLocation) {
+    throw new ApiError(ErrorCodes.NOT_FOUND, "Location not found", 404);
+  }
+
+  // If location already has an NFC ID, just enable NFC
+  if (existingLocation.nfcId) {
+    const location = await prisma.location.update({
+      where: { id: locationId },
+      data: {
+        isNfcEnabled: true
+      }
+    });
+
+    return {
+      success: true,
+      data: {
+        id: location.id,
+        name: location.name,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        description: location.description,
+        nfcId: location.nfcId,
+        isNfcEnabled: location.isNfcEnabled,
+        area: location.area,
+        createdAt: location.createdAt,
+        updatedAt: location.updatedAt
+      }
+    };
+  }
+
+  // Generate a new NFC ID in format nfc-001, nfc-002, etc.
+  // Find the highest existing NFC ID number
+  const locationsWithNfcId = await prisma.location.findMany({
+    where: {
+      nfcId: {
+        not: null,
+        startsWith: "nfc-"
+      }
+    },
+    select: {
+      nfcId: true
+    }
+  });
+
+  // Extract numbers from existing NFC IDs and find the maximum
+  let maxNumber = 0;
+  for (const loc of locationsWithNfcId) {
+    if (loc.nfcId) {
+      const match = loc.nfcId.match(/^nfc-(\d+)$/);
+      if (match) {
+        const number = parseInt(match[1], 10);
+        if (number > maxNumber) {
+          maxNumber = number;
+        }
+      }
+    }
+  }
+
+  // Generate next NFC ID
+  const nextNumber = maxNumber + 1;
+  const newNfcId = `nfc-${String(nextNumber).padStart(3, "0")}`;
+
+  // Update location to enable NFC and set NFC ID
+  const location = await prisma.location.update({
+    where: { id: locationId },
+    data: {
+      isNfcEnabled: true,
+      nfcId: newNfcId
+    }
+  });
+
+  return {
+    success: true,
+    data: {
+      id: location.id,
+      name: location.name,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      description: location.description,
+      nfcId: location.nfcId,
+      isNfcEnabled: location.isNfcEnabled,
+      area: location.area,
+      createdAt: location.createdAt,
+      updatedAt: location.updatedAt
+    }
+  };
+};
+
 export const locationsService = {
   getLocations,
   createLocation,
   updateLocation,
   deleteLocation,
-  getUserMap
+  getUserMap,
+  enableNfc
 };
 

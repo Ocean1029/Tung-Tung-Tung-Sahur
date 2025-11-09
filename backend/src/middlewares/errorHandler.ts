@@ -19,8 +19,8 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
       success: false,
       error: {
         code: ErrorCodes.INVALID_REQUEST,
-        message: "Validation failed",
-        details: formatZodError(error)
+      message: "Validation failed",
+      details: formatZodError(error)
       }
     });
     return;
@@ -68,7 +68,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
     success: false,
     error: {
       code: ErrorCodes.SERVER_ERROR,
-      message: "Internal server error"
+    message: "Internal server error"
     }
   });
 };

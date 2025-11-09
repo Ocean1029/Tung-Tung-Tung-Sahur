@@ -2,6 +2,7 @@ openapi: 3.1.0
 info:
   title: Tung Tung Tung Sahur API v0.5
   version: 0.5.0
+security: []
 paths:
   # Locations endpoints
   /locations:
@@ -137,6 +138,34 @@ paths:
                     example: "點位已成功刪除"
         "404":
           $ref: "#/components/responses/NotFound"
+  /locations/{locationId}/enable-nfc:
+    post:
+      summary: Enable NFC for a location
+      description: Enable NFC collection for a location. Once enabled, the location can only be collected via NFC scanning, not through GPS overlap detection.
+      tags:
+        - Locations
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: NFC enabled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: "#/components/schemas/Location"
+        "404":
+          $ref: "#/components/responses/NotFound"
   # Users endpoints
   /users:
     get:
@@ -176,6 +205,110 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/UserListItem"
+  # Badges endpoints (v1.0)
+  /badges:
+    get:
+      summary: List all badges
+      description: Retrieve all badges with their required locations
+      tags:
+        - Badges
+      parameters:
+        - name: search
+          in: query
+          description: Filter badges by name (case-insensitive)
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number for pagination (optional)
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          description: Items per page (optional, maximum 100)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: Successfully retrieved badges
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgeListResponse"
+    post:
+      summary: Create a badge
+      description: Create a new badge with required locations
+      tags:
+        - Badges
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BadgeCreateRequest"
+      responses:
+        "201":
+          description: Badge created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgeDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /badges/{badgeId}:
+    patch:
+      summary: Update a badge
+      description: Update badge metadata or required locations
+      tags:
+        - Badges
+      parameters:
+        - name: badgeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BadgeUpdateRequest"
+      responses:
+        "200":
+          description: Badge updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgeDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      summary: Delete a badge
+      description: Permanently delete a badge and its requirements
+      tags:
+        - Badges
+      parameters:
+        - name: badgeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Badge deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgeDeleteResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
   # User Map endpoint
   /users/{userId}/map:
     get:
@@ -457,6 +590,104 @@ paths:
                     $ref: "#/components/schemas/ActivityDetail"
         "404":
           $ref: "#/components/responses/NotFound"
+  /users/{userId}/activities/{activityId}/collect/nfc:
+    post:
+      summary: Collect location via NFC
+      description: Collect a location using NFC during an activity. The location must have NFC enabled.
+      tags:
+        - Activities
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: activityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityNfcCollectRequest"
+      responses:
+        "200":
+          description: Location collected successfully via NFC
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityNfcCollectResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  # User badge endpoints (v1.0)
+  /users/{userId}/badges:
+    get:
+      summary: Get user badge progress
+      description: Retrieve badge progress summary for a user
+      tags:
+        - User Badges
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter badges by status
+          schema:
+            type: string
+            enum:
+              - locked
+              - in_progress
+              - collected
+      responses:
+        "200":
+          description: Successfully retrieved user badges
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserBadgeListResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /users/{userId}/badges/{badgeId}:
+    get:
+      summary: Get user badge detail
+      description: Retrieve detailed progress for a specific badge
+      tags:
+        - User Badges
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: badgeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully retrieved user badge detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserBadgeDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
   # User Profile endpoints
   /users/{userId}/profile:
     get:
@@ -714,8 +945,8 @@ components:
         newBadges:
           type: array
           items:
-            type: object
-          description: Empty array for v0.5
+            $ref: "#/components/schemas/ActivityNewBadge"
+          description: Newly unlocked badges in this activity session
     ActivityListItem:
       type: object
       properties:
@@ -840,6 +1071,254 @@ components:
         updatedAt:
           type: string
           format: date-time
+    BadgeSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        area:
+          type: string
+          nullable: true
+        totalLocations:
+          type: integer
+        requiredLocationIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    BadgeCreateRequest:
+      type: object
+      required:
+        - name
+        - requiredLocationIds
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+        requiredLocationIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+    BadgeUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+        requiredLocationIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+    BadgeDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/BadgeSummary"
+    BadgeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BadgeSummary"
+    BadgeDeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "徽章已成功刪除"
+    UserBadgeProgress:
+      type: object
+      properties:
+        collected:
+          type: integer
+        total:
+          type: integer
+        percentage:
+          type: integer
+          description: Progress percentage between 0 and 100
+    UserBadgeSummary:
+      type: object
+      properties:
+        badgeId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        area:
+          type: string
+          nullable: true
+        totalLocations:
+          type: integer
+        status:
+          type: string
+          enum:
+            - locked
+            - in_progress
+            - collected
+        unlockedAt:
+          type: string
+          format: date-time
+          nullable: true
+        progress:
+          $ref: "#/components/schemas/UserBadgeProgress"
+    BadgeRequirementDetail:
+      type: object
+      properties:
+        locationId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        area:
+          type: string
+          nullable: true
+        isCollected:
+          type: boolean
+        collectedAt:
+          type: string
+          format: date-time
+          nullable: true
+    UserBadgeDetail:
+      allOf:
+        - $ref: "#/components/schemas/UserBadgeSummary"
+        - type: object
+          properties:
+            requiredLocations:
+              type: array
+              items:
+                $ref: "#/components/schemas/BadgeRequirementDetail"
+    UserBadgeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            totalBadges:
+              type: integer
+            collectedCount:
+              type: integer
+            inProgressCount:
+              type: integer
+            lockedCount:
+              type: integer
+            badges:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserBadgeSummary"
+    UserBadgeDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/UserBadgeDetail"
+    ActivityNewBadge:
+      type: object
+      properties:
+        badgeId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        unlockedAt:
+          type: string
+          format: date-time
+    ActivityNfcCollectRequest:
+      type: object
+      required:
+        - nfcId
+      properties:
+        nfcId:
+          type: string
+          description: NFC ID of the location to collect
+    ActivityNfcCollectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            locationId:
+              type: string
+              format: uuid
+            name:
+              type: string
+            area:
+              type: string
+              nullable: true
+            coinsEarned:
+              type: integer
+            totalCoins:
+              type: integer
+            isFirstCollection:
+              type: boolean
+            badgeUnlocked:
+              $ref: "#/components/schemas/ActivityNewBadge"
+              nullable: true
     Pagination:
       type: object
       properties:
@@ -879,6 +1358,18 @@ components:
                 $ref: "#/components/schemas/Error"
     NotFound:
       description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized access
       content:
         application/json:
           schema:

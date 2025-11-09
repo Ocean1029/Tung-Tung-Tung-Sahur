@@ -48,11 +48,18 @@ const getUserMap = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json(result);
 };
 
+const enableNfc = async (req: Request, res: Response): Promise<void> => {
+  const { locationId } = req.params;
+  const result = await locationsService.enableNfc(locationId);
+  res.status(200).json(result);
+};
+
 export const locationsController = {
   getLocations,
   createLocation,
   updateLocation,
   deleteLocation,
-  getUserMap
+  getUserMap,
+  enableNfc
 };
 
