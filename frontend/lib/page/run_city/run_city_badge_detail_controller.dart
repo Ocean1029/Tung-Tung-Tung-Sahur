@@ -1,12 +1,28 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
+import 'package:town_pass/service/account_service.dart';
+import 'package:town_pass/service/run_city_service.dart';
 
 class RunCityBadgeDetailController extends GetxController {
+  RunCityBadgeDetailController()
+      : _accountService = Get.isRegistered<AccountService>()
+            ? Get.find<AccountService>()
+            : null,
+        _runCityService = Get.isRegistered<RunCityService>()
+            ? Get.find<RunCityService>()
+            : null;
+
   late final RunCityBadge badge;
   late final List<RunCityPoint> allPoints;
 
@@ -16,6 +32,7 @@ class RunCityBadgeDetailController extends GetxController {
   late final Set<Circle> circles;
   GoogleMapController? mapController;
   BitmapDescriptor? _pointMarkerIcon;
+  final GlobalKey shareCardKey = GlobalKey();
 
   static const Color _pointColor = Color.fromRGBO(90, 180, 197, 1);
   static const String _mapStyleHidePoi = '''
@@ -27,6 +44,12 @@ class RunCityBadgeDetailController extends GetxController {
 ]
 ''';
 
+  final AccountService? _accountService;
+  final RunCityService? _runCityService;
+
+  String? _userName;
+  bool _isSharing = false;
+
   String get badgeDescription =>
       _badgeDescriptions[badge.id] ?? '探索${badge.name}，完成所有指定地點即可獲得徽章。';
 
@@ -37,6 +60,10 @@ class RunCityBadgeDetailController extends GetxController {
   List<RunCityPoint> get pendingPoints => badgePoints
       .where((point) => !badge.collectedPointIds.contains(point.id))
       .toList();
+
+  String get shareUserName =>
+      _userName?.isNotEmpty == true ? _userName! : 'Run City 玩家';
+  bool get isSharing => _isSharing;
 
   @override
   void onInit() {
@@ -60,7 +87,9 @@ class RunCityBadgeDetailController extends GetxController {
 
     initialCameraPosition = _buildInitialCameraPosition();
     circles = const <Circle>{};
+    markers = <Marker>{};
     _prepareMarkers();
+    unawaited(_loadUserName());
   }
 
   CameraPosition _buildInitialCameraPosition() {
@@ -215,16 +244,170 @@ class RunCityBadgeDetailController extends GetxController {
     return BitmapDescriptor.fromBytes(bytes!.buffer.asUint8List());
   }
 
-  void shareBadge() {
-    // TODO: wire up actual share logic when ready.
+  Future<bool> shareBadge() async {
+    if (!badge.isCompleted || _isSharing) {
+      return false;
+    }
+
+    try {
+      _isSharing = true;
+      update(['sharePreview']);
+      final RenderRepaintBoundary boundary = await _obtainReadyBoundary();
+
+      ui.Image image;
+      try {
+        image = await boundary.toImage(pixelRatio: 3);
+      } catch (error, stack) {
+        _logShareError('capture_image', error, stack);
+        throw _ShareException(
+          userMessage: '生成分享圖片時發生錯誤，請稍後再試',
+          debugStep: 'capture_image',
+          cause: error,
+        );
+      }
+
+      ByteData? byteData;
+      try {
+        byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      } catch (error, stack) {
+        _logShareError('encode_image', error, stack);
+        throw _ShareException(
+          userMessage: '轉換分享圖片時發生錯誤，請稍後再試',
+          debugStep: 'encode_image',
+          cause: error,
+        );
+      }
+      if (byteData == null) {
+        throw _ShareException(
+          userMessage: '無法產生分享圖片，請稍後再試',
+          debugStep: 'encode_image_null',
+        );
+      }
+
+      final Uint8List pngBytes = byteData.buffer.asUint8List();
+      File file;
+      try {
+        final Directory tempDir = await getTemporaryDirectory();
+        final String filePath =
+            '${tempDir.path}/run_city_badge_${badge.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+        file = File(filePath);
+        await file.writeAsBytes(pngBytes, flush: true);
+      } catch (error, stack) {
+        _logShareError('write_file', error, stack);
+        throw _ShareException(
+          userMessage: '儲存分享圖片時發生錯誤，請檢查儲存空間後再試',
+          debugStep: 'write_file',
+          cause: error,
+        );
+      }
+
+      try {
+        final String shareText =
+            '我完成了 ${badge.name} 徽章，收集了 ${badge.collectedPoints}/${badge.totalPoints} 個點位！#RunCity #TownPass';
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: shareText,
+        );
+      } catch (error, stack) {
+        _logShareError('share_sheet', error, stack);
+        throw _ShareException(
+          userMessage: '開啟分享面板失敗，請確認是否允許分享權限或稍後再試',
+          debugStep: 'share_sheet',
+          cause: error,
+        );
+      }
+      return true;
+    } on _ShareException catch (shareError) {
+      if (shareError.debugStep != null) {
+        debugPrint(
+          '[RunCityBadgeShare] step=${shareError.debugStep} badge=${badge.id} message=${shareError.userMessage} cause=${shareError.cause}',
+        );
+      }
+      _showShareError(shareError.userMessage);
+      return false;
+    } finally {
+      _isSharing = false;
+      update(['sharePreview']);
+    }
+    return false;
+  }
+
+  Future<RenderRepaintBoundary> _obtainReadyBoundary() async {
+    RenderRepaintBoundary? boundary;
+    for (var attempt = 0; attempt < 8; attempt++) {
+      await WidgetsBinding.instance.endOfFrame;
+      boundary = shareCardKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        throw const _ShareException(
+          userMessage: '找不到分享卡片，請重新進入頁面後再試',
+          debugStep: 'locate_boundary',
+        );
+      }
+      if (boundary.size.isEmpty) {
+        throw const _ShareException(
+          userMessage: '分享卡片尚未準備好，請稍後再試',
+          debugStep: 'boundary_empty',
+        );
+      }
+      if (!boundary.debugNeedsPaint) {
+        return boundary;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 16));
+    }
+    throw const _ShareException(
+      userMessage: '分享畫面尚未渲染完成，請稍候片刻再試',
+      debugStep: 'boundary_never_painted',
+    );
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final runCityService = _runCityService;
+      if (runCityService != null) {
+        final userData = await runCityService.getUserData();
+        if (userData.name.isNotEmpty) {
+          _userName = userData.name;
+          return;
+        }
+      }
+    } catch (_) {
+      // ignore and fallback to account service
+    }
+
+    final accountService = _accountService;
+    if (accountService?.account?.id != null) {
+      _userName = accountService!.account!.id;
+    }
+  }
+
+  void _showShareError(String message) {
     Get.snackbar(
-      '敬請期待',
-      '分享功能即將推出',
+      '分享失敗',
+      message,
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.black87,
+      backgroundColor: Colors.black.withOpacity(0.85),
       colorText: Colors.white,
     );
   }
+
+  void _logShareError(String step, Object error, StackTrace stackTrace) {
+    debugPrint(
+      '[RunCityBadgeShare] step=$step badge=${badge.id} error=$error\n$stackTrace',
+    );
+  }
+}
+
+class _ShareException implements Exception {
+  const _ShareException({
+    required this.userMessage,
+    this.debugStep,
+    this.cause,
+  });
+
+  final String userMessage;
+  final String? debugStep;
+  final Object? cause;
 }
 
 const Map<String, String> _badgeDescriptions = <String, String>{
