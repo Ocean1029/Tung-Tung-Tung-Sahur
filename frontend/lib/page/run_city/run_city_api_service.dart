@@ -42,7 +42,7 @@ class RunCityApiService extends GetxService {
         baseUrl = baseUrl ??
             const String.fromEnvironment(
               'RUN_CITY_API_BASE_URL',
-              defaultValue: 'http://172.20.10.3:3000', // 使用 Mac IP，手機才能連接
+              defaultValue: 'http://10.103.182.205:3000', // 使用 Mac IP，手機才能連接
             );
 
   final http.Client _httpClient;
