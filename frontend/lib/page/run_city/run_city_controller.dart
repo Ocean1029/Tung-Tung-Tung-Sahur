@@ -228,16 +228,7 @@ class RunCityController extends GetxController {
 
     try {
       final userBadges = await _apiService.fetchUserBadges(userId: account.id);
-      
-      // 為每個徽章分配顏色（臨時方法，之後會由資料庫提供）
-      final badgesWithColors = userBadges.asMap().entries.map((entry) {
-        final index = entry.key;
-        final badge = entry.value;
-        final badgeColor = _getBadgeColor(index);
-        return badge.copyWith(badgeColor: badgeColor);
-      }).toList();
-      
-      badges.assignAll(badgesWithColors);
+      badges.assignAll(userBadges);
 
       // 預設不選取任何徽章
       selectedBadge.value = null;
@@ -425,10 +416,25 @@ class RunCityController extends GetxController {
   void selectBadge(RunCityBadge? badge) {
     if (badge == null) {
       selectedBadge.value = null;
+      debugPrint('選中的徽章已清除');
     } else if (selectedBadge.value?.id == badge.id) {
       selectedBadge.value = null;
+      debugPrint('取消選中徽章: ${badge.name}');
     } else {
       selectedBadge.value = badge;
+      // 記錄選中徽章的顏色資訊
+      debugPrint('========== 選中徽章顏色資訊 ==========');
+      debugPrint('徽章名稱: ${badge.name}');
+      debugPrint('徽章ID: ${badge.badgeId}');
+      debugPrint('徽章顏色 (badgeColor): ${badge.badgeColor}');
+      if (badge.badgeColor != null) {
+        debugPrint('顏色值 (value): ${badge.badgeColor!.value}');
+        debugPrint('顏色hex: #${badge.badgeColor!.value.toRadixString(16).substring(2).toUpperCase()}');
+        debugPrint('顏色RGB: R=${badge.badgeColor!.red}, G=${badge.badgeColor!.green}, B=${badge.badgeColor!.blue}');
+      } else {
+        debugPrint('⚠️ 徽章顏色為 null（未從數據庫獲取到顏色）');
+      }
+      debugPrint('=====================================');
       // 聚焦到該徽章的所有地點
       _focusOnBadgeLocations(badge);
     }
@@ -1027,16 +1033,6 @@ class RunCityController extends GetxController {
     // 重新載入徽章以更新進度
     _loadBadges();
     _updateMarkers();
-  }
-
-  /// 獲取徽章顏色（根據索引循環使用三種顏色）
-  Color _getBadgeColor(int index) {
-    const colors = [
-      Color(0xFF76A732), // #76a732
-      Color(0xFFFD8534), // #fd8534
-      Color(0xFFF5BA49), // #f5ba49
-    ];
-    return colors[index % colors.length];
   }
 
   /// 獲取或創建徽章顏色的標記圖標

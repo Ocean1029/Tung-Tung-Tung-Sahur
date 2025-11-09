@@ -16,7 +16,7 @@ set +a; \
 cd $(BACKEND_DIR) && $(1)
 endef
 
-.PHONY: help install dev stop lint lint-fix format format-fix build clean prisma-generate prisma-migrate prisma-push seed test docker-build-dev docker-build-prod docker-run-prod db-create-user db-reset
+.PHONY: help install dev stop lint lint-fix format format-fix build clean prisma-generate prisma-migrate prisma-baseline prisma-push seed test docker-build-dev docker-build-prod docker-run-prod db-create-user db-reset
 
 help:
 	@echo "Available targets:"
@@ -31,6 +31,7 @@ help:
 	@echo "  clean               Remove build artifacts"
 	@echo "  prisma-generate     Generate Prisma client"
 	@echo "  prisma-migrate      Apply Prisma migrations using DATABASE_URL"
+	@echo "  prisma-baseline     Baseline existing migrations (mark as applied)"
 	@echo "  prisma-push         Push Prisma schema without migrations"
 	@echo "  seed                Seed database with sample data"
 	@echo "  test                Run project tests (placeholder)"
@@ -83,11 +84,34 @@ prisma-generate:
 
 prisma-migrate:
 	@echo "Applying Prisma migrations..."
-	@bash -c '$(call RUN_BACKEND_WITH_ENV,npm run prisma:migrate)'
+	@bash -c 'set -a; \
+	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
+	set +a; \
+	export DATABASE_URL="$${DATABASE_URL/db:5432/localhost:5432}"; \
+	cd $(BACKEND_DIR) && npm run prisma:migrate'
+
+prisma-baseline:
+	@echo "Baselining Prisma migrations..."
+	@bash -c 'set -a; \
+	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
+	set +a; \
+	export DATABASE_URL="$${DATABASE_URL/db:5432/localhost:5432}"; \
+	cd $(BACKEND_DIR) && \
+	for migration in prisma/migrations/*/; do \
+		if [ -d "$$migration" ] && [ -f "$$migration/migration.sql" ]; then \
+			migration_name=$$(basename "$$migration"); \
+			echo "Marking migration $$migration_name as applied..."; \
+			npx prisma migrate resolve --applied "$$migration_name" || true; \
+		fi; \
+	done'
 
 prisma-push:
 	@echo "Pushing Prisma schema..."
-	@bash -c '$(call RUN_BACKEND_WITH_ENV,npm run prisma:push)'
+	@bash -c 'set -a; \
+	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
+	set +a; \
+	export DATABASE_URL="$${DATABASE_URL/db:5432/localhost:5432}"; \
+	cd $(BACKEND_DIR) && npm run prisma:push'
 
 seed:
 	@echo "Seeding database..."

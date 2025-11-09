@@ -346,13 +346,22 @@ const seed = async () => {
     },
   ];
 
+  // 定義徽章顏色（循環使用4種顏色）
+  const badgeColors = [
+    '#76a732', // 綠色
+    '#F5BA4B', // 黃色
+    '#FD853A', // 橙色
+    '#5ab4c5', // 青色
+  ];
+
   const badges = await Promise.all(
-    badgeData.map((badge) =>
+    badgeData.map((badge, index) =>
       prisma.badge.create({
         data: {
           name: badge.name,
           description: badge.description,
           imageUrl: badge.imageUrl,
+          color: badgeColors[index % badgeColors.length], // 循環分配顏色
         },
       })
     )

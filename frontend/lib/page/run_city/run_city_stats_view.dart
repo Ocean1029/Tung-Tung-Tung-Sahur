@@ -683,11 +683,23 @@ class _BadgeSummaryCard extends StatelessWidget {
     final isCompleted = badge!.isCompleted;
     final collected = badge!.collectedPoints;
     final total = badge!.totalPoints;
+    // 優先使用數據庫中的徽章顏色
+    // 如果已收集，使用完整顏色；如果未收集，使用數據庫顏色但降低透明度
+    final Color iconColor;
+    if (badge!.badgeColor != null) {
+      // 如果有數據庫顏色，使用它（已收集用完整顏色，未收集用半透明）
+      iconColor = isCompleted 
+          ? badge!.badgeColor!
+          : badge!.badgeColor!.withOpacity(0.3);
+    } else {
+      // 如果沒有數據庫顏色，使用默認顏色
+      iconColor = isCompleted ? _completedColor : _incompleteColor;
+    }
 
     return GestureDetector(
       onTap: onTap,
       child: _BadgeContainer(
-        iconColor: isCompleted ? _completedColor : _incompleteColor,
+        iconColor: iconColor,
         title: badge!.name,
         progress: '$collected/$total',
         isCompleted: isCompleted,

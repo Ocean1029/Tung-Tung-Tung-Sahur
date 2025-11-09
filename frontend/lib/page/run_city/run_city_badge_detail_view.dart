@@ -122,8 +122,10 @@ class _BadgeHeader extends StatelessWidget {
         Assets.svg.badgeIcon.svg(
           width: 60,
           height: 60,
-          colorFilter:
-              const ColorFilter.mode(Color(0xFF76A732), BlendMode.srcIn),
+          colorFilter: ColorFilter.mode(
+            badge.badgeColor ?? const Color(0xFF76A732),
+            BlendMode.srcIn,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
