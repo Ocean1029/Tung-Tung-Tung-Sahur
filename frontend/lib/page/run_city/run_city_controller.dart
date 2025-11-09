@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/page/run_city/run_city_mock_data.dart';
+import 'package:town_pass/page/run_city/run_city_stats_controller.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
 import 'package:town_pass/util/tp_route.dart';
@@ -44,6 +45,7 @@ class RunCityController extends GetxController {
 
   final Rxn<RunCityUserProfile> userProfile = Rxn<RunCityUserProfile>();
   final RxList<RunCityBadge> badges = <RunCityBadge>[].obs;
+  final RxInt collectedBadgesCount = 0.obs; // 已收集的徽章數量
   final Rxn<RunCityBadge> selectedBadge = Rxn<RunCityBadge>();
   final RxBool isBadgePanelVisible = false.obs;
   static const int badgesPerPage = 3;
@@ -61,6 +63,7 @@ class RunCityController extends GetxController {
   BitmapDescriptor? _collectedMarkerIcon;
   BitmapDescriptor? _uncollectedMarkerIcon;
   BitmapDescriptor? _highlightMarkerIcon;
+  final Map<String, BitmapDescriptor> _badgeMarkerIcons = {}; // 緩存徽章顏色的標記圖標
   LatLng? _initialUserLocation; // 存儲用戶初始位置
   LatLng? _currentUserLocation; // 當前用戶位置
   final RxBool isUserLocationCentered = true.obs; // 用戶位置是否在地圖中心
@@ -94,13 +97,13 @@ class RunCityController extends GetxController {
       // 先請求定位權限並獲取用戶當前位置
       await _requestLocationAndSetInitialPosition();
 
-      // 並行載入地圖點位和用戶資料
+      // 並行載入地圖點位、用戶資料和徽章
       await Future.wait([
         _loadMapPoints(),
         _loadUserProfile(),
+        _loadBadges(),
+        _loadBadgeStats(),
       ]);
-      _initializeBadges();
-      _refreshBadgeProgress();
       await _updateMarkers();
     } on RunCityApiException catch (e) {
       // 處理 API 錯誤
@@ -209,6 +212,60 @@ class RunCityController extends GetxController {
         totalDistanceKm: 0,
         totalTimeSeconds: 0,
       );
+    }
+  }
+
+  /// 載入用戶徽章列表
+  Future<void> _loadBadges() async {
+    final account = _accountService.account;
+    if (account == null) {
+      badges.clear();
+      selectedBadge.value = null;
+      isBadgePanelVisible.value = false;
+      badgeStartIndex.value = 0;
+      return;
+    }
+
+    try {
+      final userBadges = await _apiService.fetchUserBadges(userId: account.id);
+      
+      // 為每個徽章分配顏色（臨時方法，之後會由資料庫提供）
+      final badgesWithColors = userBadges.asMap().entries.map((entry) {
+        final index = entry.key;
+        final badge = entry.value;
+        final badgeColor = _getBadgeColor(index);
+        return badge.copyWith(badgeColor: badgeColor);
+      }).toList();
+      
+      badges.assignAll(badgesWithColors);
+
+      // 預設不選取任何徽章
+      selectedBadge.value = null;
+
+      _resetBadgeStartIndex();
+    } catch (e) {
+      debugPrint('載入徽章失敗: $e');
+      badges.clear();
+      selectedBadge.value = null;
+      isBadgePanelVisible.value = false;
+      badgeStartIndex.value = 0;
+    }
+  }
+
+  /// 載入用戶徽章統計（已收集數量）
+  Future<void> _loadBadgeStats() async {
+    final account = _accountService.account;
+    if (account == null) {
+      collectedBadgesCount.value = 0;
+      return;
+    }
+
+    try {
+      final stats = await _apiService.fetchUserBadgeStats(userId: account.id);
+      collectedBadgesCount.value = stats.collectedCount;
+    } catch (e) {
+      debugPrint('載入徽章統計失敗: $e');
+      collectedBadgesCount.value = 0;
     }
   }
 
@@ -372,9 +429,113 @@ class RunCityController extends GetxController {
       selectedBadge.value = null;
     } else {
       selectedBadge.value = badge;
+      // 聚焦到該徽章的所有地點
+      _focusOnBadgeLocations(badge);
     }
     _ensureBadgeVisible(selectedBadge.value);
     _updateMarkers();
+  }
+
+  /// 聚焦到徽章的所有地點
+  Future<void> _focusOnBadgeLocations(RunCityBadge badge) async {
+    debugPrint('開始聚焦徽章: ${badge.name}, badgeId: ${badge.badgeId}');
+    debugPrint('徽章的 requiredLocationIds: ${badge.requiredLocationIds}');
+    debugPrint('當前地圖點位數量: ${points.length}');
+    debugPrint('mapController 是否為 null: ${mapController == null}');
+
+    if (mapController == null) {
+      debugPrint('mapController 為 null，無法聚焦');
+      return;
+    }
+
+    // 如果徽章沒有 requiredLocationIds，嘗試從徽章詳情 API 獲取
+    List<String>? locationIds = badge.requiredLocationIds;
+    if (locationIds == null || locationIds.isEmpty) {
+      debugPrint('徽章沒有 requiredLocationIds，嘗試從徽章詳情 API 獲取');
+      try {
+        final account = _accountService.account;
+        if (account != null) {
+          final badgeDetail = await _apiService.fetchUserBadgeDetail(
+            userId: account.id,
+            badgeId: badge.badgeId,
+          );
+          locationIds = badgeDetail.requiredLocations
+              .map((loc) => loc.locationId)
+              .toList();
+          debugPrint('從徽章詳情 API 獲取的 locationIds: $locationIds');
+          
+          // 更新徽章的 requiredLocationIds
+          final updatedBadge = badge.copyWith(requiredLocationIds: locationIds);
+          final badgeIndex = badges.indexWhere((b) => b.badgeId == badge.badgeId);
+          if (badgeIndex != -1) {
+            badges[badgeIndex] = updatedBadge;
+            selectedBadge.value = updatedBadge;
+          }
+        }
+      } catch (e) {
+        debugPrint('獲取徽章詳情失敗: $e');
+        return;
+      }
+    }
+
+    if (locationIds == null || locationIds.isEmpty) {
+      debugPrint('徽章沒有 requiredLocationIds，無法聚焦');
+      return;
+    }
+
+    // 收集該徽章的所有地點的 LatLng
+    final badgeLocations = <LatLng>[];
+    for (final locId in locationIds) {
+      try {
+        final point = points.firstWhere((p) => p.id == locId);
+        badgeLocations.add(point.location);
+        debugPrint('找到點位: $locId -> ${point.name} (${point.location.latitude}, ${point.location.longitude})');
+      } catch (e) {
+        // 如果找不到點位，跳過
+        debugPrint('徽章點位 ID "$locId" 在地圖點位中找不到');
+      }
+    }
+
+    debugPrint('找到的徽章地點數量: ${badgeLocations.length}');
+
+    if (badgeLocations.isEmpty) {
+      debugPrint('沒有找到任何徽章地點，無法聚焦');
+      return;
+    }
+
+    // 計算邊界
+    double minLat = badgeLocations.first.latitude;
+    double maxLat = badgeLocations.first.latitude;
+    double minLng = badgeLocations.first.longitude;
+    double maxLng = badgeLocations.first.longitude;
+
+    for (final location in badgeLocations) {
+      minLat = minLat < location.latitude ? minLat : location.latitude;
+      maxLat = maxLat > location.latitude ? maxLat : location.latitude;
+      minLng = minLng < location.longitude ? minLng : location.longitude;
+      maxLng = maxLng > location.longitude ? maxLng : location.longitude;
+    }
+
+    debugPrint('計算的邊界: minLat=$minLat, maxLat=$maxLat, minLng=$minLng, maxLng=$maxLng');
+
+    // 添加一些邊距，確保所有地點都能完整顯示
+    const padding = 0.002; // 約 200 公尺的邊距
+    final bounds = LatLngBounds(
+      southwest: LatLng(minLat - padding, minLng - padding),
+      northeast: LatLng(maxLat + padding, maxLng + padding),
+    );
+
+    debugPrint('準備移動地圖到邊界: southwest=${bounds.southwest}, northeast=${bounds.northeast}');
+
+    // 動畫移動地圖到該區域
+    try {
+      await mapController!.animateCamera(
+        CameraUpdate.newLatLngBounds(bounds, 100.0), // 100px 的內邊距
+      );
+      debugPrint('地圖聚焦成功');
+    } catch (e) {
+      debugPrint('地圖聚焦失敗: $e');
+    }
   }
 
   void toggleBadgePanel() {
@@ -393,7 +554,17 @@ class RunCityController extends GetxController {
 
   List<RunCityBadge> get sortedBadges {
     final sorted = badges.toList();
-    sorted.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+    // 根據狀態排序：進行中 > 已收集 > 未解鎖
+    sorted.sort((a, b) {
+      final statusOrder = {
+        RunCityBadgeStatus.inProgress: 0,
+        RunCityBadgeStatus.collected: 1,
+        RunCityBadgeStatus.locked: 2,
+      };
+      final aOrder = statusOrder[a.status] ?? 3;
+      final bOrder = statusOrder[b.status] ?? 3;
+      return aOrder.compareTo(bOrder);
+    });
     return sorted;
   }
 
@@ -407,7 +578,8 @@ class RunCityController extends GetxController {
       collectedAt:
           collected ? (points[index].collectedAt ?? DateTime.now()) : null,
     );
-    _refreshBadgeProgress();
+    // 重新載入徽章以更新進度
+    _loadBadges();
     await _updateMarkers();
   }
 
@@ -574,13 +746,20 @@ class RunCityController extends GetxController {
           summary.collectedLocations.map((RunCityPoint point) => point.id),
         );
         _applyCollectedLocations(summary.collectedLocations);
-        _refreshBadgeProgress();
+        await _loadBadges();
 
-        // 活動結束後，刷新用戶資料以更新金幣數量
-        await _loadUserProfile();
+        // 活動結束後，刷新用戶資料和徽章統計以更新金幣和徽章數量
+        await Future.wait([
+          _loadUserProfile(),
+          _loadBadgeStats(),
+        ]);
         
         // 先跳轉到「個人資訊」頁面，然後再跳轉到「運動紀錄詳細畫面」
         // 這樣返回時會先回到「個人資訊」頁面，再返回會回到「跑城市」頁面
+        // 手動註冊 Controller 確保它存在，然後跳轉
+        if (!Get.isRegistered<RunCityStatsController>()) {
+          Get.put(RunCityStatsController());
+        }
         Get.toNamed(TPRoute.runCityStats);
         // 使用 Future.microtask 確保路由跳轉完成後再跳轉到下一個頁面
         Future.microtask(() {
@@ -721,7 +900,7 @@ class RunCityController extends GetxController {
     totalDistanceMeters.value += segmentDistance;
     _updatePolyline();
     _markVisitedPoints(currentPoint);
-    _refreshBadgeProgress();
+    // 徽章進度會在活動結束後統一更新
 
     if (isTracking.value) {
       _safeAnimateCameraSync(CameraUpdate.newLatLng(currentPoint));
@@ -772,97 +951,7 @@ class RunCityController extends GetxController {
     visitedPointIds.addAll(newlyVisitedIds);
   }
 
-  void _initializeBadges() {
-    if (points.isEmpty) {
-      badges.clear();
-      selectedBadge.value = null;
-      isBadgePanelVisible.value = false;
-      badgeStartIndex.value = 0;
-      return;
-    }
 
-    final Map<String, List<RunCityPoint>> grouped = {};
-    for (final point in points) {
-      final area = point.area ?? '未知區域';
-      grouped.putIfAbsent(area, () => <RunCityPoint>[]).add(point);
-    }
-
-    final generated = grouped.entries.map((entry) {
-      final areaPoints = entry.value;
-      final collectedIds =
-          areaPoints.where((p) => p.collected).map((p) => p.id).toList();
-      final pointIds = areaPoints.map((p) => p.id).toList();
-      final reference = areaPoints.first.location;
-      final distance = Geolocator.distanceBetween(
-        initialCameraPosition.target.latitude,
-        initialCameraPosition.target.longitude,
-        reference.latitude,
-        reference.longitude,
-      );
-      return RunCityBadge(
-        id: entry.key,
-        name: entry.key,
-        pointIds: pointIds,
-        collectedPointIds: collectedIds,
-        distanceMeters: distance,
-      );
-    }).toList();
-
-    generated.sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
-    badges.assignAll(generated);
-
-    selectedBadge.value ??= _findFirstWhereOrNull(
-          generated,
-          (badge) => !badge.isCompleted,
-        ) ??
-        (generated.isNotEmpty ? generated.first : null);
-
-    _resetBadgeStartIndex();
-    _ensureBadgeVisible(selectedBadge.value);
-  }
-
-  void _refreshBadgeProgress() {
-    if (badges.isEmpty) {
-      return;
-    }
-
-    final collectedIds = points
-        .where((point) => point.collected)
-        .map((point) => point.id)
-        .toSet();
-    final updated = badges.map((badge) {
-      final collected = badge.pointIds
-          .where((pointId) => collectedIds.contains(pointId))
-          .toList();
-      return badge.copyWith(collectedPointIds: collected);
-    }).toList();
-
-    badges.assignAll(updated);
-
-    if (selectedBadge.value != null) {
-      final currentId = selectedBadge.value!.id;
-      final refreshed = _findFirstWhereOrNull(
-        updated,
-        (badge) => badge.id == currentId,
-      );
-      selectedBadge.value = refreshed;
-    }
-
-    _resetBadgeStartIndex();
-    _ensureBadgeVisible(selectedBadge.value);
-  }
-
-  RunCityBadge? _findFirstWhereOrNull(
-    Iterable<RunCityBadge> badges,
-    bool Function(RunCityBadge) test,
-  ) {
-    for (final badge in badges) {
-      if (test(badge)) {
-        return badge;
-      }
-    }
-    return null;
-  }
 
   void _stopTrackingStream() {
     _positionSubscription?.cancel();
@@ -935,8 +1024,30 @@ class RunCityController extends GetxController {
       }
     }
 
-    _refreshBadgeProgress();
+    // 重新載入徽章以更新進度
+    _loadBadges();
     _updateMarkers();
+  }
+
+  /// 獲取徽章顏色（根據索引循環使用三種顏色）
+  Color _getBadgeColor(int index) {
+    const colors = [
+      Color(0xFF76A732), // #76a732
+      Color(0xFFFD8534), // #fd8534
+      Color(0xFFF5BA49), // #f5ba49
+    ];
+    return colors[index % colors.length];
+  }
+
+  /// 獲取或創建徽章顏色的標記圖標
+  Future<BitmapDescriptor> _getBadgeMarkerIcon(Color badgeColor) async {
+    final colorKey = badgeColor.value.toString();
+    if (_badgeMarkerIcons.containsKey(colorKey)) {
+      return _badgeMarkerIcons[colorKey]!;
+    }
+    final icon = await _createCircleMarker(badgeColor);
+    _badgeMarkerIcons[colorKey] = icon;
+    return icon;
   }
 
   Future<void> _ensureMarkerIcons() async {
@@ -975,41 +1086,72 @@ class RunCityController extends GetxController {
     await _ensureMarkerIcons();
     final collectedIcon = _collectedMarkerIcon;
     final uncollectedIcon = _uncollectedMarkerIcon;
-    final highlightIcon = _highlightMarkerIcon;
 
     if (collectedIcon == null || uncollectedIcon == null) {
       return;
     }
 
-    final highlightIds =
-        selectedBadge.value?.remainingPointIds.toSet() ?? <String>{};
+    // 如果有選取的徽章，獲取該徽章未收集的點位 ID
+    final selectedBadgeValue = selectedBadge.value;
+    final highlightIds = <String>{};
+    
+    if (selectedBadgeValue != null && selectedBadgeValue.requiredLocationIds != null) {
+      for (final locId in selectedBadgeValue.requiredLocationIds!) {
+        // 檢查該點位是否存在於地圖點位中
+        try {
+          final point = points.firstWhere((p) => p.id == locId);
+          // 只標記未收集的點位
+          if (!point.collected) {
+            highlightIds.add(locId);
+          }
+        } catch (e) {
+          // 如果找不到點位，記錄調試信息
+          debugPrint('徽章點位 ID "$locId" 在地圖點位中找不到');
+        }
+      }
+    }
 
-    final nextMarkers = points.map((point) {
+    // 如果有選取的徽章，獲取徽章的顏色
+    Color? badgeColor;
+    if (selectedBadgeValue != null) {
+      badgeColor = selectedBadgeValue.badgeColor;
+    }
+
+    final nextMarkers = <Marker>[];
+    for (final point in points) {
       final statusLabel = point.collected ? '已收集' : '待收集';
       final subtitle = (point.area?.isNotEmpty ?? false)
           ? '${point.area} · $statusLabel'
           : statusLabel;
       final isHighlight = highlightIds.contains(point.id);
-      return Marker(
+      
+      // 如果有選取的徽章且該點未收集，使用徽章顏色
+      BitmapDescriptor markerIcon;
+      if (isHighlight && badgeColor != null && !point.collected) {
+        // 使用徽章顏色的標記圖標
+        markerIcon = await _getBadgeMarkerIcon(badgeColor);
+      } else if (point.collected) {
+        markerIcon = collectedIcon;
+      } else {
+        markerIcon = uncollectedIcon;
+      }
+      
+      nextMarkers.add(Marker(
         markerId: MarkerId(point.id),
         position: point.location,
         infoWindow: InfoWindow(
           title: point.name,
           snippet: subtitle,
         ),
-        icon: isHighlight
-            ? (highlightIcon ?? collectedIcon)
-            : point.collected
-                ? collectedIcon
-                : uncollectedIcon,
+        icon: markerIcon,
         anchor: const Offset(0.5, 0.5),
         zIndex: isHighlight
             ? 4
             : point.collected
                 ? 3
                 : 2,
-      );
-    }).toList();
+      ));
+    }
 
     markers.assignAll(nextMarkers);
   }

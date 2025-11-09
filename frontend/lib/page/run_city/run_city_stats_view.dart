@@ -86,6 +86,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
             onRefresh: () => controller.refresh(),
             child: ListView(
               padding: const EdgeInsets.all(16),
+              shrinkWrap: false,
               children: [
                 // 個人簡介區塊
                 _buildUserProfileCard(userData),
@@ -363,13 +364,10 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                 badges: allBadges,
                 isExpanded: isExpanded,
                 onBadgeTap: (badge) {
-                  final badgePoints =
-                      controller.badgePointsSource.toList(growable: false);
                   Get.toNamed(
                     TPRoute.runCityBadgeDetail,
                     arguments: {
-                      'badge': badge,
-                      'points': badgePoints,
+                      'badgeId': badge.badgeId,
                     },
                   );
                 },
@@ -392,6 +390,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // 標題 14px，與下方表格12px間距，與左邊的白色方匡距離為24px
             Padding(
@@ -422,10 +421,11 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 0), // 表格與左側白匡為16px（使用容器的padding）
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // 表頭
                     _buildTableHeader(),
-                    // 資料列
+                    // 資料列 - 確保所有資料都能顯示
                     ...activities.asMap().entries.map((entry) {
                       final index = entry.key;
                       final activity = entry.value;

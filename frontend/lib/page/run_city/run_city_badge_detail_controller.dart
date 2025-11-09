@@ -4,16 +4,21 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
+import 'package:town_pass/service/account_service.dart';
 
 class RunCityBadgeDetailController extends GetxController {
-  late final RunCityBadge badge;
-  late final List<RunCityPoint> allPoints;
+  final RunCityApiService _apiService = Get.find<RunCityApiService>();
+  final AccountService _accountService = Get.find<AccountService>();
 
-  late final List<RunCityPoint> badgePoints;
-  late final CameraPosition initialCameraPosition;
-  late Set<Marker> markers;
-  late final Set<Circle> circles;
+  final RxBool isLoading = true.obs;
+  final Rxn<RunCityBadgeDetail> badgeDetail = Rxn<RunCityBadgeDetail>();
+  final RxnString errorMessage = RxnString();
+
+  late CameraPosition initialCameraPosition;
+  final RxSet<Marker> markers = <Marker>{}.obs;
+  final RxSet<Circle> circles = <Circle>{}.obs;
   GoogleMapController? mapController;
   BitmapDescriptor? _pointMarkerIcon;
 
@@ -27,44 +32,63 @@ class RunCityBadgeDetailController extends GetxController {
 ]
 ''';
 
-  String get badgeDescription =>
-      _badgeDescriptions[badge.id] ?? '探索${badge.name}，完成所有指定地點即可獲得徽章。';
+  RunCityBadge? get badge => badgeDetail.value?.badge;
+  List<RunCityBadgeLocation> get badgeLocations => badgeDetail.value?.requiredLocations ?? [];
 
-  List<RunCityPoint> get collectedPoints => badgePoints
-      .where((point) => badge.collectedPointIds.contains(point.id))
+  String get badgeDescription => badge?.description ?? '探索${badge?.name ?? ""}，完成所有指定地點即可獲得徽章。';
+
+  List<RunCityBadgeLocation> get collectedLocations => badgeLocations
+      .where((location) => location.isCollected)
       .toList();
 
-  List<RunCityPoint> get pendingPoints => badgePoints
-      .where((point) => !badge.collectedPointIds.contains(point.id))
+  List<RunCityBadgeLocation> get pendingLocations => badgeLocations
+      .where((location) => !location.isCollected)
       .toList();
 
   @override
   void onInit() {
     super.onInit();
     final args = Get.arguments as Map<String, dynamic>? ?? <String, dynamic>{};
-    final badgeArg = args['badge'];
-    final pointsArg = args['points'];
+    final badgeId = args['badgeId'] as String?;
+    final badgeArg = args['badge'] as RunCityBadge?;
 
-    if (badgeArg is! RunCityBadge || pointsArg is! List<RunCityPoint>) {
+    if (badgeId == null && badgeArg == null) {
       Get.back();
       return;
     }
 
-    badge = badgeArg;
-    allPoints = pointsArg;
-    badgePoints = allPoints
-        .where(
-          (point) => badge.pointIds.contains(point.id),
-        )
-        .toList(growable: false);
+    loadBadgeDetail(badgeId ?? badgeArg!.badgeId);
+  }
 
+  Future<void> loadBadgeDetail(String badgeId) async {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    try {
+      final account = _accountService.account;
+      if (account == null) {
+        errorMessage.value = '請先登入';
+        return;
+      }
+
+      final detail = await _apiService.fetchUserBadgeDetail(
+        userId: account.id,
+        badgeId: badgeId,
+      );
+
+      badgeDetail.value = detail;
     initialCameraPosition = _buildInitialCameraPosition();
-    circles = const <Circle>{};
-    _prepareMarkers();
+      circles.clear();
+      await _prepareMarkers();
+    } catch (e) {
+      errorMessage.value = '載入徽章詳情失敗：$e';
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   CameraPosition _buildInitialCameraPosition() {
-    if (badgePoints.isEmpty) {
+    if (badgeLocations.isEmpty) {
       return const CameraPosition(
         target: LatLng(25.033968, 121.564468),
         zoom: 13,
@@ -73,29 +97,29 @@ class RunCityBadgeDetailController extends GetxController {
 
     double latSum = 0;
     double lngSum = 0;
-    for (final point in badgePoints) {
-      latSum += point.location.latitude;
-      lngSum += point.location.longitude;
+    for (final location in badgeLocations) {
+      latSum += location.latitude;
+      lngSum += location.longitude;
     }
     final center =
-        LatLng(latSum / badgePoints.length, lngSum / badgePoints.length);
+        LatLng(latSum / badgeLocations.length, lngSum / badgeLocations.length);
 
     return CameraPosition(
       target: center,
-      zoom: _suggestZoom(badgePoints),
+      zoom: _suggestZoom(badgeLocations),
     );
   }
 
-  double _suggestZoom(List<RunCityPoint> points) {
-    if (points.length <= 1) {
+  double _suggestZoom(List<RunCityBadgeLocation> locations) {
+    if (locations.length <= 1) {
       return 15;
     }
     double maxDistance = 0;
-    for (var i = 0; i < points.length; i++) {
-      for (var j = i + 1; j < points.length; j++) {
+    for (var i = 0; i < locations.length; i++) {
+      for (var j = i + 1; j < locations.length; j++) {
         final distance = _haversineDistance(
-          points[i].location,
-          points[j].location,
+          locations[i].location,
+          locations[j].location,
         );
         maxDistance = max(maxDistance, distance);
       }
@@ -135,24 +159,26 @@ class RunCityBadgeDetailController extends GetxController {
       borderWidth: 4,
       shadowBlur: 8,
     );
-    markers = _buildMarkers();
+    markers.assignAll(_buildMarkers());
     update(['badgeMap']);
   }
 
   Set<Marker> _buildMarkers() {
-    final collectedIds = badge.collectedPointIds.toSet();
-    return badgePoints.map((point) {
-      final isCollected = collectedIds.contains(point.id);
+    if (badge == null) {
+      return <Marker>{};
+    }
+    
+    return badgeLocations.map((location) {
       return Marker(
-        markerId: MarkerId(point.id),
-        position: point.location,
+        markerId: MarkerId(location.locationId),
+        position: location.location,
         infoWindow: InfoWindow(
-          title: point.name,
-          snippet: point.area ?? '',
+          title: location.name,
+          snippet: badge?.area ?? '',
         ),
         icon: _pointMarkerIcon ??
             BitmapDescriptor.defaultMarkerWithHue(
-              isCollected
+              location.isCollected
                   ? BitmapDescriptor.hueAzure
                   : BitmapDescriptor.hueCyan,
             ),
@@ -166,12 +192,12 @@ class RunCityBadgeDetailController extends GetxController {
     controller.setMapStyle(_mapStyleHidePoi);
   }
 
-  Future<void> focusOnPoint(RunCityPoint point) async {
+  Future<void> focusOnLocation(RunCityBadgeLocation location) async {
     if (mapController == null) {
       return;
     }
     await mapController!.animateCamera(
-      CameraUpdate.newLatLngZoom(point.location, 15),
+      CameraUpdate.newLatLngZoom(location.location, 15),
     );
   }
 
@@ -227,11 +253,3 @@ class RunCityBadgeDetailController extends GetxController {
   }
 }
 
-const Map<String, String> _badgeDescriptions = <String, String>{
-  '中正區': '穿梭中正區的特色地標，一次蒐集台北的歷史韻味。',
-  '萬華區': '沿著舊城小巷探險，收集萬華的老味道。',
-  '大同區': '環遊大稻埕河岸，感受古城的繁華風情。',
-  '信義區': '走訪信義計畫區與山林步道，完成都會與自然的雙重任務。',
-  '大安區': '漫步綠意與學區，一次收集台大周邊的經典地標。',
-  '士林區': '夜市與文藝路線兼具，完成士林的探索挑戰。',
-};

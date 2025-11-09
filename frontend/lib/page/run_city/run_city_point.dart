@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -186,42 +187,260 @@ class RunCityUserProfile {
   }
 }
 
-class RunCityBadge {
-  const RunCityBadge({
-    required this.id,
-    required this.name,
-    required this.pointIds,
-    required this.collectedPointIds,
-    required this.distanceMeters,
+/// 徽章狀態
+enum RunCityBadgeStatus {
+  collected, // 已收集
+  inProgress, // 進行中
+  locked, // 未解鎖
+}
+
+/// 徽章進度
+class RunCityBadgeProgress {
+  const RunCityBadgeProgress({
+    required this.collected,
+    required this.total,
+    required this.percentage,
   });
 
-  final String id;
-  final String name;
-  final List<String> pointIds;
-  final List<String> collectedPointIds;
-  final double distanceMeters;
+  final int collected;
+  final int total;
+  final int percentage; // 0-100
 
-  int get totalPoints => pointIds.length;
-  int get collectedPoints => collectedPointIds.length;
-  List<String> get remainingPointIds =>
-      pointIds.where((id) => !collectedPointIds.contains(id)).toList();
-  bool get isCompleted => remainingPointIds.isEmpty;
-  double get completionRate =>
-      totalPoints == 0 ? 0 : collectedPoints / totalPoints;
-  double get distanceKm => distanceMeters / 1000;
+  factory RunCityBadgeProgress.fromJson(Map<String, dynamic> json) {
+    return RunCityBadgeProgress(
+      collected: json['collected'] as int,
+      total: json['total'] as int,
+      percentage: json['percentage'] as int,
+    );
+  }
+}
+
+class RunCityBadge {
+  const RunCityBadge({
+    required this.badgeId,
+    required this.name,
+    required this.description,
+    required this.area,
+    required this.imageUrl,
+    this.status,
+    this.unlockedAt,
+    this.progress,
+    this.requiredLocationIds,
+    this.badgeColor, // 徽章顏色（臨時屬性，之後會由資料庫提供）
+    // 保留舊字段以向後兼容
+    this.pointIds,
+    this.collectedPointIds,
+    this.distanceMeters,
+  });
+
+  final String badgeId;
+  final String name;
+  final String description;
+  final String area;
+  final String imageUrl;
+  final RunCityBadgeStatus? status; // collected, in_progress, locked
+  final DateTime? unlockedAt;
+  final RunCityBadgeProgress? progress;
+  final List<String>? requiredLocationIds;
+  final Color? badgeColor; // 徽章顏色（臨時屬性，之後會由資料庫提供）
+
+  // 向後兼容的舊字段
+  final List<String>? pointIds;
+  final List<String>? collectedPointIds;
+  final double? distanceMeters;
+
+  // 向後兼容：使用 badgeId 作為 id
+  String get id => badgeId;
+
+  // 使用新的 progress 或舊的 pointIds/collectedPointIds
+  int get totalPoints {
+    if (progress != null) {
+      return progress!.total;
+    }
+    return pointIds?.length ?? 0;
+  }
+
+  int get collectedPoints {
+    if (progress != null) {
+      return progress!.collected;
+    }
+    return collectedPointIds?.length ?? 0;
+  }
+
+  List<String> get remainingPointIds {
+    if (requiredLocationIds != null && progress != null) {
+      // 這裡需要從其他地方獲取已收集的點位 ID
+      // 暫時返回空列表，實際使用時需要從 API 獲取
+      return [];
+    }
+    return pointIds?.where((id) => !(collectedPointIds?.contains(id) ?? false)).toList() ?? [];
+  }
+
+  bool get isCompleted {
+    if (status == RunCityBadgeStatus.collected) {
+      return true;
+    }
+    if (progress != null) {
+      return progress!.percentage >= 100;
+    }
+    return remainingPointIds.isEmpty;
+  }
+
+  double get completionRate {
+    if (progress != null) {
+      return progress!.percentage / 100.0;
+    }
+    return totalPoints == 0 ? 0 : collectedPoints / totalPoints;
+  }
+
+  double get distanceKm => (distanceMeters ?? 0) / 1000;
+
+  factory RunCityBadge.fromJson(Map<String, dynamic> json, {Color? badgeColor}) {
+    RunCityBadgeStatus? status;
+    if (json['status'] != null) {
+      switch (json['status'] as String) {
+        case 'collected':
+          status = RunCityBadgeStatus.collected;
+          break;
+        case 'in_progress':
+          status = RunCityBadgeStatus.inProgress;
+          break;
+        case 'locked':
+          status = RunCityBadgeStatus.locked;
+          break;
+      }
+    }
+
+    DateTime? unlockedAt;
+    if (json['unlockedAt'] != null) {
+      // 後端返回 GMT+0，轉換為 GMT+8
+      final unlockedAtUtc = DateTime.parse(json['unlockedAt'] as String).toUtc();
+      unlockedAt = unlockedAtUtc.add(const Duration(hours: 8));
+    }
+
+    RunCityBadgeProgress? progress;
+    if (json['progress'] != null) {
+      progress = RunCityBadgeProgress.fromJson(json['progress'] as Map<String, dynamic>);
+    }
+
+    return RunCityBadge(
+      badgeId: json['badgeId'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String? ?? '',
+      area: json['area'] as String? ?? '',
+      imageUrl: json['imageUrl'] as String,
+      status: status,
+      unlockedAt: unlockedAt,
+      progress: progress,
+      requiredLocationIds: json['requiredLocationIds'] != null
+          ? (json['requiredLocationIds'] as List<dynamic>).map((e) => e as String).toList()
+          : null,
+      badgeColor: badgeColor, // 臨時屬性，之後會由資料庫提供
+    );
+  }
 
   RunCityBadge copyWith({
+    RunCityBadgeStatus? status,
+    DateTime? unlockedAt,
+    RunCityBadgeProgress? progress,
     List<String>? collectedPointIds,
     double? distanceMeters,
+    Color? badgeColor,
+    List<String>? requiredLocationIds,
   }) {
     return RunCityBadge(
-      id: id,
+      badgeId: badgeId,
       name: name,
+      description: description,
+      area: area,
+      imageUrl: imageUrl,
+      status: status ?? this.status,
+      unlockedAt: unlockedAt ?? this.unlockedAt,
+      progress: progress ?? this.progress,
+      requiredLocationIds: requiredLocationIds ?? this.requiredLocationIds,
+      badgeColor: badgeColor ?? this.badgeColor,
       pointIds: pointIds,
       collectedPointIds: collectedPointIds ?? this.collectedPointIds,
       distanceMeters: distanceMeters ?? this.distanceMeters,
     );
   }
+}
+
+/// 徽章詳情（包含所需點位列表）
+class RunCityBadgeDetail {
+  const RunCityBadgeDetail({
+    required this.badge,
+    required this.requiredLocations,
+  });
+
+  final RunCityBadge badge;
+  final List<RunCityBadgeLocation> requiredLocations;
+
+  factory RunCityBadgeDetail.fromJson(Map<String, dynamic> json) {
+    final badge = RunCityBadge.fromJson(json);
+    
+    final requiredLocations = (json['requiredLocations'] as List<dynamic>? ?? <dynamic>[])
+        .map((dynamic item) => RunCityBadgeLocation.fromJson(item as Map<String, dynamic>))
+        .toList(growable: false);
+
+    return RunCityBadgeDetail(
+      badge: badge,
+      requiredLocations: requiredLocations,
+    );
+  }
+}
+
+/// 徽章所需點位
+class RunCityBadgeLocation {
+  const RunCityBadgeLocation({
+    required this.locationId,
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    this.nfcId,
+    required this.isCollected,
+    this.collectedAt,
+  });
+
+  final String locationId;
+  final String name;
+  final double latitude;
+  final double longitude;
+  final String? nfcId;
+  final bool isCollected;
+  final DateTime? collectedAt;
+
+  factory RunCityBadgeLocation.fromJson(Map<String, dynamic> json) {
+    DateTime? collectedAt;
+    if (json['collectedAt'] != null) {
+      // 後端返回 GMT+0，轉換為 GMT+8
+      final collectedAtUtc = DateTime.parse(json['collectedAt'] as String).toUtc();
+      collectedAt = collectedAtUtc.add(const Duration(hours: 8));
+    }
+
+    return RunCityBadgeLocation(
+      locationId: json['locationId'] as String,
+      name: json['name'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      nfcId: json['nfcId'] as String?,
+      isCollected: json['isCollected'] as bool,
+      collectedAt: collectedAt,
+    );
+  }
+
+  LatLng get location => LatLng(latitude, longitude);
+}
+
+/// 用戶徽章統計
+class UserBadgeStats {
+  const UserBadgeStats({
+    required this.collectedCount,
+    required this.totalCount,
+  });
+
+  final int collectedCount;
+  final int totalCount;
 }
 
 /// 活動列表項目（用於歷史紀錄）
