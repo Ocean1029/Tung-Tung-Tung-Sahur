@@ -179,43 +179,45 @@ class RunCityBadgeShareCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            TPText(
+              _formattedDate,
+              style: TPTextStyles.bodySemiBold,
+              color: TPColors.grayscale400,
+            ),
+            const SizedBox(height: 6),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TPText(
-                  _formattedDate,
-                  style: TPTextStyles.bodySemiBold,
-                  color: TPColors.grayscale400,
-                ),
-                const SizedBox(height: 6),
                 TPText(
                   userName,
                   style: TPTextStyles.bodySemiBold,
                   color: TPColors.grayscale950,
                 ),
-              ],
-            ),
-            const Spacer(),
-            TPText.rich(
-              TextSpan(
-                style: TPTextStyles.h3SemiBold.copyWith(
-                  color: TPColors.grayscale700,
-                ),
-                children: [
-                  const TextSpan(text: '收集了 '),
+                const Spacer(),
+                TPText.rich(
                   TextSpan(
-                    text: '$collectedPoints',
-                    style: TPTextStyles.h2SemiBold.copyWith(
-                      color: TPColors.primary500,
+                    style: TPTextStyles.h3SemiBold.copyWith(
+                      fontSize: 18,
+                      color: TPColors.grayscale700,
                     ),
+                    children: [
+                      const TextSpan(text: '收集了 '),
+                      TextSpan(
+                        text: '$collectedPoints',
+                        style: TPTextStyles.h2SemiBold.copyWith(
+                          fontSize: 20,
+                          color: TPColors.primary500,
+                        ),
+                      ),
+                      const TextSpan(text: ' 個點位'),
+                    ],
                   ),
-                  const TextSpan(text: ' 個點位'),
-                ],
-              ),
-              textAlign: TextAlign.right,
+                  textAlign: TextAlign.right,
+                ),
+              ],
             ),
           ],
         ),

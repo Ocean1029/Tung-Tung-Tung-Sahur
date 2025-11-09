@@ -39,6 +39,9 @@ cd ..
 
 # 5. 運行應用
 flutter run
+
+
+open ios/Runner.xcworkspace
 ```
 
 ### iOS 開發注意事項

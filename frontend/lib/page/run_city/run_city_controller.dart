@@ -417,10 +417,15 @@ class RunCityController extends GetxController {
     if (badge == null) {
       selectedBadge.value = null;
       debugPrint('選中的徽章已清除');
+      _ensureBadgeVisible(selectedBadge.value);
+      _updateMarkers();
     } else if (selectedBadge.value?.id == badge.id) {
       selectedBadge.value = null;
       debugPrint('取消選中徽章: ${badge.name}');
+      _ensureBadgeVisible(selectedBadge.value);
+      _updateMarkers();
     } else {
+      // 先設置選中的徽章
       selectedBadge.value = badge;
       // 記錄選中徽章的顏色資訊
       debugPrint('========== 選中徽章顏色資訊 ==========');
@@ -435,11 +440,22 @@ class RunCityController extends GetxController {
         debugPrint('⚠️ 徽章顏色為 null（未從數據庫獲取到顏色）');
       }
       debugPrint('=====================================');
-      // 聚焦到該徽章的所有地點
-      _focusOnBadgeLocations(badge);
+      _ensureBadgeVisible(selectedBadge.value);
+      
+      // 確保標記更新完成後再聚焦
+      // 使用 async/await 確保順序執行
+      _updateMarkersAndFocus(badge);
     }
-    _ensureBadgeVisible(selectedBadge.value);
-    _updateMarkers();
+  }
+
+  /// 更新標記並聚焦到徽章地點
+  Future<void> _updateMarkersAndFocus(RunCityBadge badge) async {
+    // 先更新標記，確保顏色圖標已創建
+    await _updateMarkers();
+    // 標記更新完成後再聚焦到徽章地點
+    await _focusOnBadgeLocations(badge);
+    // 聚焦完成後，再次更新標記以確保顯示正確（因為聚焦可能會觸發地圖更新）
+    await _updateMarkers();
   }
 
   /// 聚焦到徽章的所有地點
@@ -476,6 +492,8 @@ class RunCityController extends GetxController {
           if (badgeIndex != -1) {
             badges[badgeIndex] = updatedBadge;
             selectedBadge.value = updatedBadge;
+            // 更新徽章後，需要重新更新標記以顯示正確的顏色
+            await _updateMarkers();
           }
         }
       } catch (e) {
@@ -1039,10 +1057,13 @@ class RunCityController extends GetxController {
   Future<BitmapDescriptor> _getBadgeMarkerIcon(Color badgeColor) async {
     final colorKey = badgeColor.value.toString();
     if (_badgeMarkerIcons.containsKey(colorKey)) {
+      debugPrint('_getBadgeMarkerIcon: 使用緩存的圖標，顏色: $badgeColor');
       return _badgeMarkerIcons[colorKey]!;
     }
+    debugPrint('_getBadgeMarkerIcon: 創建新圖標，顏色: $badgeColor');
     final icon = await _createCircleMarker(badgeColor);
     _badgeMarkerIcons[colorKey] = icon;
+    debugPrint('_getBadgeMarkerIcon: 圖標創建完成並緩存');
     return icon;
   }
 
@@ -1111,6 +1132,13 @@ class RunCityController extends GetxController {
     Color? badgeColor;
     if (selectedBadgeValue != null) {
       badgeColor = selectedBadgeValue.badgeColor;
+      debugPrint('_updateMarkers: 選中的徽章顏色: $badgeColor');
+    }
+
+    // 如果有徽章顏色且需要高亮的點位，先預先創建徽章顏色的標記圖標
+    if (badgeColor != null && highlightIds.isNotEmpty) {
+      debugPrint('_updateMarkers: 預先創建徽章顏色標記圖標: $badgeColor');
+      await _getBadgeMarkerIcon(badgeColor);
     }
 
     final nextMarkers = <Marker>[];
@@ -1124,8 +1152,9 @@ class RunCityController extends GetxController {
       // 如果有選取的徽章且該點未收集，使用徽章顏色
       BitmapDescriptor markerIcon;
       if (isHighlight && badgeColor != null && !point.collected) {
-        // 使用徽章顏色的標記圖標
+        // 使用徽章顏色的標記圖標（此時應該已經在緩存中）
         markerIcon = await _getBadgeMarkerIcon(badgeColor);
+        debugPrint('_updateMarkers: 為點位 ${point.name} 使用徽章顏色標記: $badgeColor');
       } else if (point.collected) {
         markerIcon = collectedIcon;
       } else {
@@ -1150,6 +1179,7 @@ class RunCityController extends GetxController {
     }
 
     markers.assignAll(nextMarkers);
+    debugPrint('_updateMarkers: 標記更新完成，共 ${nextMarkers.length} 個標記');
   }
 
   List<RunCityBadge?> get currentBadgeSlots {

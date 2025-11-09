@@ -147,28 +147,14 @@ class RunCityActivityDetailView
                       color: TPColors.grayscale950,
                     ),
                     const SizedBox(height: 8),
-                    // 日期時間 + 分享
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: TPText(
-                            detail.formattedDateTimeRange,
-                            style:
-                                TPTextStyles.bodyRegular.copyWith(fontSize: 14),
-                            color: TPColors.grayscale950,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.ios_share),
-                          color: TPColors.runCityBlue,
-                          splashRadius: 20,
-                          tooltip: '分享',
-                          onPressed: () => _handleShareTap(context, controller),
-                        ),
-                      ],
+                    // 日期時間
+                    TPText(
+                      detail.formattedDateTimeRange,
+                      style:
+                          TPTextStyles.bodyRegular.copyWith(fontSize: 14),
+                      color: TPColors.grayscale950,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -177,10 +163,24 @@ class RunCityActivityDetailView
           ),
         ),
         const SizedBox(height: 16),
-        // 距離和時間統計
-        _buildTotalStatsRow(
-          distanceValue: detail.formattedDistance,
-          timeValue: detail.formattedDuration,
+        // 距離和時間統計 + 分享按鈕
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _buildTotalStatsRow(
+                distanceValue: detail.formattedDistance,
+                timeValue: detail.formattedDuration,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.ios_share),
+              color: TPColors.runCityBlue,
+              splashRadius: 20,
+              tooltip: '分享',
+              onPressed: () => _handleShareTap(context, controller),
+            ),
+          ],
         ),
       ],
     );

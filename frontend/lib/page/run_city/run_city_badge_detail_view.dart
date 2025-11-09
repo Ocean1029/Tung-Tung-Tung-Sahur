@@ -111,10 +111,6 @@ class _BadgeHeader extends StatelessWidget {
     final collected = controller.collectedPoints;
     final total = controller.totalPoints;
     final canShare = controller.isCompleted;
-    final Color shareButtonColor =
-        canShare ? TPColors.runCityBlue : TPColors.grayscale200;
-    final Color shareIconColor =
-        canShare ? TPColors.white : TPColors.grayscale500;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,27 +152,12 @@ class _BadgeHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        InkWell(
-          onTap: canShare ? onShare : null,
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: shareButtonColor,
-              boxShadow: canShare
-                  ? const [
-                      BoxShadow(
-                        color: Color(0x14000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 8),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Icon(Icons.ios_share, color: shareIconColor),
-          ),
+        IconButton(
+          icon: const Icon(Icons.ios_share),
+          color: canShare ? TPColors.runCityBlue : TPColors.grayscale400,
+          splashRadius: 20,
+          tooltip: '分享',
+          onPressed: canShare ? onShare : null,
         ),
       ],
     );

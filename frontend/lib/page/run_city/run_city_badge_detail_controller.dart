@@ -13,10 +13,12 @@ import 'package:share_plus/share_plus.dart';
 import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/service/account_service.dart';
+import 'package:town_pass/service/run_city_service.dart';
 
 class RunCityBadgeDetailController extends GetxController {
   final RunCityApiService _apiService = Get.find<RunCityApiService>();
   final AccountService _accountService = Get.find<AccountService>();
+  final RunCityService _runCityService = Get.find<RunCityService>();
 
   final RxBool isLoading = true.obs;
   final Rxn<RunCityBadgeDetail> badgeDetail = Rxn<RunCityBadgeDetail>();
@@ -383,12 +385,16 @@ class RunCityBadgeDetailController extends GetxController {
 
   Future<void> _loadUserName() async {
     try {
+      // 從 RunCityService 獲取用戶資料，取得真正的用戶名
+      final userData = await _runCityService.getUserData();
+      _userName = userData.name;
+    } catch (e) {
+      // 如果獲取用戶資料失敗，使用 account service 的資料作為備用
       final account = _accountService.account;
-      if (account?.id != null) {
-        _userName = account!.id;
+      if (account != null) {
+        // Account 可能沒有 name 欄位，使用 userId 作為備用
+        _userName = account.id;
       }
-    } catch (_) {
-      // ignore
     }
   }
 

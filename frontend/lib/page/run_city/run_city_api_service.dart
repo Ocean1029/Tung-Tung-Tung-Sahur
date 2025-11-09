@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +41,7 @@ class RunCityApiService extends GetxService {
         baseUrl = baseUrl ??
             const String.fromEnvironment(
               'RUN_CITY_API_BASE_URL',
-              defaultValue: 'http://10.103.182.205:3000', // 使用 Mac IP，手機才能連接
+              defaultValue: 'http://172.20.10.3:3000', // 使用 Mac IP，手機才能連接
             );
 
   final http.Client _httpClient;
@@ -324,10 +323,7 @@ class RunCityApiService extends GetxService {
     String? userName,
     String? userAvatar,
   }) async {
-    if (useMockData) {
-      return _getMockActivityDetail(activityId, userId: userId, userName: userName, userAvatar: userAvatar);
-    }
-
+    // 運動記錄分享功能始終從後端資料庫獲取真實數據
     final response = await _get(
       '/api/users/$userId/activities/$activityId',
     );
@@ -434,131 +430,6 @@ class RunCityApiService extends GetxService {
     return data
         .map((dynamic json) => RunCityBadge.fromJson(json as Map<String, dynamic>))
         .toList(growable: false);
-  }
-
-  /// Mock 活動詳情資料
-  Future<RunCityActivityDetail> _getMockActivityDetail(
-    String activityId, {
-    String? userId,
-    String? userName,
-    String? userAvatar,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    // 先獲取活動列表，找到對應的活動信息
-    final activities = await _getMockActivities();
-    final activity = activities.firstWhere(
-      (a) => a.activityId == activityId,
-      orElse: () => activities.first, // 如果找不到，使用第一個
-    );
-
-    // 根據活動信息生成詳細數據
-    final startTime = activity.date;
-    final endTime = startTime.add(Duration(seconds: activity.duration));
-    final distanceKm = activity.distance;
-    final durationSeconds = activity.duration;
-    final averageSpeedKmh = activity.averageSpeed;
-    final coinsEarned = activity.coinsEarned;
-
-    // 根據不同的 activityId 生成不同的路線和點位
-    final centerLat = 25.0330;
-    final centerLng = 121.5654;
-    final route = <RunCityTrackPoint>[];
-    
-    // 根據 activityId 生成不同的路線模式
-    int routePattern = 0;
-    if (activityId == 'act_001') {
-      routePattern = 1; // 環形路線
-    } else if (activityId == 'act_002') {
-      routePattern = 2; // 直線路線
-    } else if (activityId == 'act_003') {
-      routePattern = 3; // 曲折路線
-    }
-
-    // 生成路線點位
-    final pointCount = (durationSeconds / 120).round().clamp(10, 30); // 每2分鐘一個點
-    for (int i = 0; i < pointCount; i++) {
-      double lat, lng;
-      final progress = i / pointCount;
-      
-      switch (routePattern) {
-        case 1: // 環形路線
-          final radius = 0.002;
-          final angle = progress * 2 * math.pi;
-          lat = centerLat + radius * math.sin(angle);
-          lng = centerLng + radius * math.cos(angle);
-          break;
-        case 2: // 直線路線
-          lat = centerLat + progress * 0.003;
-          lng = centerLng + progress * 0.003;
-          break;
-        case 3: // 曲折路線
-          final radius = 0.0015;
-          final angle = progress * 4 * math.pi; // 多繞幾圈
-          lat = centerLat + radius * math.sin(angle) + progress * 0.002;
-          lng = centerLng + radius * math.cos(angle) + progress * 0.002;
-          break;
-        default:
-          final radius = 0.002;
-          final angle = progress * 2 * math.pi;
-          lat = centerLat + radius * math.sin(angle);
-          lng = centerLng + radius * math.cos(angle);
-      }
-      
-      route.add(
-        RunCityTrackPoint(
-          latitude: lat,
-          longitude: lng,
-          timestamp: startTime.add(Duration(seconds: i * (durationSeconds ~/ pointCount))),
-        ),
-      );
-    }
-
-    // 根據 collectedLocationsCount 生成點位紀錄
-    final locationRecords = <RunCityActivityLocationRecord>[];
-    final locationNames = ['安森東側涼亭', '台大體育館', '台大圖書館', '台大操場', '台大總圖'];
-    final areas = ['臺北市 大安區', '臺北市 大安區', '臺北市 大安區', '臺北市 大安區', null];
-    
-    // 使用固定的種子確保每次生成的數據一致（基於 activityId）
-    final random = math.Random(activityId.hashCode);
-    
-    for (int i = 0; i < activity.collectedLocationsCount; i++) {
-      final locationIndex = i % locationNames.length;
-      final collectTime = startTime.add(
-        Duration(seconds: (i + 1) * (durationSeconds ~/ (activity.collectedLocationsCount + 1))),
-      );
-      
-      // 根據路線計算點位位置
-      final routeIndex = ((i + 1) * route.length / (activity.collectedLocationsCount + 1)).round();
-      final routePoint = route[routeIndex.clamp(0, route.length - 1)];
-      
-      // 使用固定種子的隨機數，確保同一活動每次生成的數據一致
-      locationRecords.add(
-        RunCityActivityLocationRecord(
-          locationId: 'loc_${activityId}_${i + 1}',
-          locationName: locationNames[locationIndex],
-          collectedAt: collectTime,
-          latitude: routePoint.latitude + (random.nextDouble() - 0.5) * 0.0005,
-          longitude: routePoint.longitude + (random.nextDouble() - 0.5) * 0.0005,
-          area: areas[locationIndex],
-        ),
-      );
-    }
-
-    return RunCityActivityDetail(
-      activityId: activityId,
-      userId: userId ?? 'user_001',
-      userName: userName ?? 'Ocean',
-      userAvatar: userAvatar,
-      startTime: startTime,
-      endTime: endTime,
-      distanceKm: distanceKm,
-      durationSeconds: durationSeconds,
-      averageSpeedKmh: averageSpeedKmh,
-      route: route,
-      locationRecords: locationRecords,
-      totalCoinsEarned: coinsEarned,
-    );
   }
 
   /// Mock 用戶徽章列表
@@ -681,8 +552,44 @@ class RunCityApiService extends GetxService {
     Map<String, String>? queryParameters,
   }) async {
     final uri = _buildUri(path, queryParameters: queryParameters);
-    final response = await _httpClient.get(uri);
-    return _handleResponse(response);
+    
+    try {
+      final response = await _httpClient
+          .get(uri, headers: _jsonHeaders)
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw RunCityApiException(
+                '請求超時，請檢查網路連接',
+                code: 'TIMEOUT',
+                statusCode: 408,
+              );
+            },
+          );
+      return _handleResponse(response);
+    } on http.ClientException catch (e) {
+      // 處理網路連接錯誤
+      throw RunCityApiException(
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確（當前：$baseUrl）',
+        code: 'NETWORK_ERROR',
+        statusCode: null,
+      );
+    } on SocketException catch (e) {
+      throw RunCityApiException(
+        '無法連接到伺服器：${e.message}\n請確認後端伺服器正在運行\n當前 API 地址：$baseUrl',
+        code: 'CONNECTION_ERROR',
+        statusCode: null,
+      );
+    } catch (e) {
+      if (e is RunCityApiException) {
+        rethrow;
+      }
+      throw RunCityApiException(
+        '請求失敗：${e.toString()}',
+        code: 'UNKNOWN_ERROR',
+        statusCode: null,
+      );
+    }
   }
 
   Future<Map<String, dynamic>> _post(
@@ -740,12 +647,47 @@ class RunCityApiService extends GetxService {
     Map<String, dynamic>? body,
   }) async {
     final uri = _buildUri(path);
-    final response = await _httpClient.patch(
-      uri,
-      headers: _jsonHeaders,
-      body: body != null ? jsonEncode(body) : null,
-    );
-    return _handleResponse(response);
+    
+    try {
+      final response = await _httpClient
+          .patch(
+            uri,
+            headers: _jsonHeaders,
+            body: body != null ? jsonEncode(body) : null,
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw RunCityApiException(
+                '請求超時，請檢查網路連接',
+                code: 'TIMEOUT',
+                statusCode: 408,
+              );
+            },
+          );
+      return _handleResponse(response);
+    } on http.ClientException catch (e) {
+      throw RunCityApiException(
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確（當前：$baseUrl）',
+        code: 'NETWORK_ERROR',
+        statusCode: null,
+      );
+    } on SocketException catch (e) {
+      throw RunCityApiException(
+        '無法連接到伺服器：${e.message}\n請確認後端伺服器正在運行\n當前 API 地址：$baseUrl',
+        code: 'CONNECTION_ERROR',
+        statusCode: null,
+      );
+    } catch (e) {
+      if (e is RunCityApiException) {
+        rethrow;
+      }
+      throw RunCityApiException(
+        '請求失敗：${e.toString()}',
+        code: 'UNKNOWN_ERROR',
+        statusCode: null,
+      );
+    }
   }
 
   Future<void> _delete(
@@ -753,8 +695,43 @@ class RunCityApiService extends GetxService {
     Map<String, String>? queryParameters,
   }) async {
     final uri = _buildUri(path, queryParameters: queryParameters);
-    final response = await _httpClient.delete(uri, headers: _jsonHeaders);
-    _handleResponse(response);
+    
+    try {
+      final response = await _httpClient
+          .delete(uri, headers: _jsonHeaders)
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw RunCityApiException(
+                '請求超時，請檢查網路連接',
+                code: 'TIMEOUT',
+                statusCode: 408,
+              );
+            },
+          );
+      _handleResponse(response);
+    } on http.ClientException catch (e) {
+      throw RunCityApiException(
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確（當前：$baseUrl）',
+        code: 'NETWORK_ERROR',
+        statusCode: null,
+      );
+    } on SocketException catch (e) {
+      throw RunCityApiException(
+        '無法連接到伺服器：${e.message}\n請確認後端伺服器正在運行\n當前 API 地址：$baseUrl',
+        code: 'CONNECTION_ERROR',
+        statusCode: null,
+      );
+    } catch (e) {
+      if (e is RunCityApiException) {
+        rethrow;
+      }
+      throw RunCityApiException(
+        '請求失敗：${e.toString()}',
+        code: 'UNKNOWN_ERROR',
+        statusCode: null,
+      );
+    }
   }
 
   Map<String, dynamic> _handleResponse(http.Response response) {
