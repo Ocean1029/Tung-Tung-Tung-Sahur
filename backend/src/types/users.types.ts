@@ -10,6 +10,7 @@ export type UserProfileResponse = {
     email: string;
     avatar: string | null;
     totalDistance: number;
+    totalTime: number; // Duration in seconds
     totalCoins: number;
     createdAt: string;
     updatedAt: string;

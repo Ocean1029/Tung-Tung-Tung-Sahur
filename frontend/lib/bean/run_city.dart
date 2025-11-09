@@ -72,7 +72,11 @@ class RunCityUserData {
 
   /// 累積距離（公尺）
   @JsonKey(name: 'totalDistance')
-  final int? totalDistance;
+  final double? totalDistance;
+
+  /// 累積時間（秒）
+  @JsonKey(name: 'totalTime')
+  final int? totalTime;
 
   /// 建立時間
   @DateTimeStringConverter()
@@ -91,6 +95,7 @@ class RunCityUserData {
     this.avatar,
     required this.totalCoins,
     this.totalDistance,
+    this.totalTime,
     this.createdAt,
     this.updatedAt,
   });
@@ -108,18 +113,37 @@ class RunCityUserData {
 
   /// 格式化累積距離
   String get formattedTotalDistance {
-    if (totalDistance == null) {
+    if (totalDistance == null || totalDistance == 0) {
       return '0 公尺';
     }
-    if (totalDistance! < 1000) {
-      return '$totalDistance 公尺';
+    // 如果距離大於等於1000公尺，顯示為X.X公里（不要X公里X公尺）
+    if (totalDistance! >= 1000) {
+      final km = totalDistance! / 1000;
+      // 如果距離是整數，不顯示小數點
+      if (km == km.roundToDouble()) {
+        return '${km.toInt()} 公里';
+      }
+      return '${km.toStringAsFixed(1)} 公里';
     }
-    final km = totalDistance! / 1000;
-    // 如果距離是整數，不顯示小數點
-    if (km == km.roundToDouble()) {
-      return '${km.toInt()} km';
+    // 小於1000公尺時顯示為公尺（四捨五入到整數）
+    return '${totalDistance!.round()} 公尺';
+  }
+
+  /// 格式化累積時間
+  String get formattedTotalTime {
+    if (totalTime == null || totalTime == 0) {
+      return '0 分鐘';
     }
-    return '${km.toStringAsFixed(1)} km';
+    final hours = totalTime! ~/ 3600;
+    final minutes = (totalTime! % 3600) ~/ 60;
+    final seconds = totalTime! % 60;
+    if (hours > 0) {
+      return '${hours} 時 ${minutes} 分';
+    }
+    if (minutes > 0) {
+      return '${minutes} 分 ${seconds} 秒';
+    }
+    return '${seconds} 秒';
   }
 }
 

@@ -69,6 +69,10 @@ const getUserProfile = async (userId: string): Promise<UserProfileResponse> => {
   const totalDistance =
     user.activities.reduce((sum, activity) => sum + (activity.distance || 0), 0) || 0;
 
+  // Calculate total time from completed activities (duration in seconds)
+  const totalTime =
+    user.activities.reduce((sum, activity) => sum + (activity.duration || 0), 0) || 0;
+
   // Calculate total coins from activities
   const totalCoins =
     user.activities.reduce((sum, activity) => sum + activity.totalCoins, 0) || 0;
@@ -81,6 +85,7 @@ const getUserProfile = async (userId: string): Promise<UserProfileResponse> => {
       email: user.email,
       avatar: user.avatarUrl,
       totalDistance,
+      totalTime,
       totalCoins,
       createdAt: user.createdAt.toISOString(),
       updatedAt: user.updatedAt.toISOString()

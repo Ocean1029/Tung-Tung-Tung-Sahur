@@ -162,27 +162,33 @@ class RunCityApiService extends GetxService {
     );
 
     final data = response['data'] as Map<String, dynamic>;
+    // 將後端傳入的 UTC 時間（GMT+0）轉換為 GMT+8
+    final startTimeUtc = DateTime.parse(data['startTime'] as String).toUtc();
+    final startTimeGmt8 = startTimeUtc.add(const Duration(hours: 8));
     return RunCityActivitySession(
       activityId: data['activityId'] as String,
-      startTime: DateTime.parse(data['startTime'] as String).toUtc(),
+      startTime: startTimeGmt8,
       status: data['status'] as String,
     );
   }
 
-  Future<void> trackActivity({
+  Future<double> trackActivity({
     required String userId,
     required String activityId,
     required List<RunCityTrackPoint> points,
   }) async {
     if (points.isEmpty) {
-      return;
+      return 0.0;
     }
-    await _post(
+    final response = await _post(
       '/api/users/$userId/activities/$activityId/track',
       body: <String, dynamic>{
         'points': points.map((RunCityTrackPoint p) => p.toJson()).toList(),
       },
     );
+    // 後端會回傳 distance（已行走距離，單位：公尺）
+    final distance = (response['data']?['distance'] as num?)?.toDouble() ?? 0.0;
+    return distance;
   }
 
   Future<void> collectLocation({
@@ -224,11 +230,16 @@ class RunCityApiService extends GetxService {
     final data = response['data'] as Map<String, dynamic>;
     final route = (data['route'] as List<dynamic>? ?? <dynamic>[])
         .map(
-          (dynamic item) => RunCityTrackPoint(
-            latitude: (item['latitude'] as num).toDouble(),
-            longitude: (item['longitude'] as num).toDouble(),
-            timestamp: DateTime.parse(item['timestamp'] as String).toUtc(),
-          ),
+          (dynamic item) {
+            // 將後端傳入的 UTC 時間（GMT+0）轉換為 GMT+8
+            final timestampUtc = DateTime.parse(item['timestamp'] as String).toUtc();
+            final timestampGmt8 = timestampUtc.add(const Duration(hours: 8));
+            return RunCityTrackPoint(
+              latitude: (item['latitude'] as num).toDouble(),
+              longitude: (item['longitude'] as num).toDouble(),
+              timestamp: timestampGmt8,
+            );
+          },
         )
         .toList(growable: false);
 
@@ -249,10 +260,15 @@ class RunCityApiService extends GetxService {
             )
             .toList(growable: false);
 
+    // 將後端傳入的 UTC 時間（GMT+0）轉換為 GMT+8
+    final startTimeUtc = DateTime.parse(data['startTime'] as String).toUtc();
+    final startTimeGmt8 = startTimeUtc.add(const Duration(hours: 8));
+    final endTimeUtc = DateTime.parse(data['endTime'] as String).toUtc();
+    final endTimeGmt8 = endTimeUtc.add(const Duration(hours: 8));
     return RunCityActivitySummary(
       activityId: data['activityId'] as String,
-      startTime: DateTime.parse(data['startTime'] as String).toUtc(),
-      endTime: DateTime.parse(data['endTime'] as String).toUtc(),
+      startTime: startTimeGmt8,
+      endTime: endTimeGmt8,
       distanceKm: (data['distance'] as num?)?.toDouble() ?? 0,
       durationSeconds: (data['duration'] as num?)?.toInt() ?? 0,
       averageSpeedKmh: (data['averageSpeed'] as num?)?.toDouble() ?? 0,

@@ -1,6 +1,13 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
+/// 將後端傳入的 UTC 時間（GMT+0）轉換為 GMT+8
+DateTime _parseBackendDateTime(String dateTimeString) {
+  // 後端傳入的是 UTC 時間（GMT+0），轉換為 GMT+8
+  final utcTime = DateTime.parse(dateTimeString).toUtc();
+  return utcTime.add(const Duration(hours: 8));
+}
+
 /// Represents one NFC location in the Run City experience.
 class RunCityPoint {
   const RunCityPoint({
@@ -67,7 +74,7 @@ class RunCityPoint {
       isNFCEnabled: (json['isNFCEnabled'] as bool?) ?? false,
       collected: (json['isCollected'] as bool?) ?? false,
       collectedAt: json['collectedAt'] != null
-          ? DateTime.tryParse(json['collectedAt'] as String)
+          ? _parseBackendDateTime(json['collectedAt'] as String)
           : null,
     );
   }
@@ -170,12 +177,12 @@ class RunCityUserProfile {
     final minutes = (totalTimeSeconds % 3600) ~/ 60;
     final seconds = totalTimeSeconds % 60;
     if (hours > 0) {
-      return '${hours}小時${minutes}分';
+      return '${hours} 時 ${minutes} 分';
     }
     if (minutes > 0) {
-      return '${minutes}分${seconds}秒';
+      return '${minutes} 分 ${seconds} 秒';
     }
-    return '${seconds}秒';
+    return '${seconds} 秒';
   }
 }
 
@@ -240,7 +247,7 @@ class RunCityActivityItem {
   factory RunCityActivityItem.fromJson(Map<String, dynamic> json) {
     return RunCityActivityItem(
       activityId: json['activityId'] as String,
-      date: DateTime.parse(json['date'] as String).toUtc(),
+      date: _parseBackendDateTime(json['date'] as String),
       distance: (json['distance'] as num).toDouble(),
       duration: json['duration'] as int,
       averageSpeed: (json['averageSpeed'] as num).toDouble(),
@@ -256,9 +263,9 @@ class RunCityActivityItem {
     }
     // 如果距離是整數，不顯示小數點
     if (distance == distance.roundToDouble()) {
-      return '${distance.toInt()} km';
+      return '${distance.toInt()} 公里';
     }
-    return '${distance.toStringAsFixed(1)} km';
+    return '${distance.toStringAsFixed(1)} 公里';
   }
 
   /// 格式化時間
@@ -268,11 +275,11 @@ class RunCityActivityItem {
     final seconds = duration % 60;
 
     if (hours > 0) {
-      return '${hours}小時${minutes}分';
+      return '${hours} 時 ${minutes} 分';
     } else if (minutes > 0) {
-      return '${minutes}分${seconds}秒';
+      return '${minutes} 分 ${seconds} 秒';
     } else {
-      return '${seconds}秒';
+      return '${seconds} 秒';
     }
   }
 
@@ -323,7 +330,7 @@ class RunCityActivityLocationRecord {
     return RunCityActivityLocationRecord(
       locationId: json['id'] as String, // API 使用 'id' 而不是 'locationId'
       locationName: json['name'] as String, // API 使用 'name' 而不是 'locationName'
-      collectedAt: DateTime.parse(json['collectedAt'] as String).toUtc(),
+      collectedAt: _parseBackendDateTime(json['collectedAt'] as String),
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       area: json['area'] as String?, // API 會傳 area，但可能為 null
@@ -377,9 +384,9 @@ class RunCityActivityDetail {
       return '${(distanceKm * 1000).toStringAsFixed(0)} 公尺';
     }
     if (distanceKm == distanceKm.roundToDouble()) {
-      return '${distanceKm.toInt()} km';
+      return '${distanceKm.toInt()} 公里';
     }
-    return '${distanceKm.toStringAsFixed(1)} km';
+    return '${distanceKm.toStringAsFixed(1)} 公里';
   }
 
   /// 格式化時間
@@ -387,9 +394,9 @@ class RunCityActivityDetail {
     final hours = durationSeconds ~/ 3600;
     final minutes = (durationSeconds % 3600) ~/ 60;
     if (hours > 0) {
-      return '${hours}h ${minutes}m';
+      return '${hours} 時 ${minutes} 分';
     }
-    return '${minutes}m';
+    return '${minutes} 分';
   }
 
   factory RunCityActivityDetail.fromJson(
@@ -403,7 +410,7 @@ class RunCityActivityDetail {
           (dynamic item) => RunCityTrackPoint(
             latitude: (item['latitude'] as num).toDouble(),
             longitude: (item['longitude'] as num).toDouble(),
-            timestamp: DateTime.parse(item['timestamp'] as String).toUtc(),
+            timestamp: _parseBackendDateTime(item['timestamp'] as String),
             accuracy: (item['accuracy'] as num?)?.toDouble(),
           ),
         )
@@ -423,8 +430,8 @@ class RunCityActivityDetail {
       userId: userId ?? '', // API 沒有返回，需要從參數傳入
       userName: userName ?? '', // API 沒有返回，需要從參數傳入
       userAvatar: userAvatar, // API 沒有返回，需要從參數傳入
-      startTime: DateTime.parse(json['startTime'] as String).toUtc(),
-      endTime: DateTime.parse(json['endTime'] as String).toUtc(),
+      startTime: _parseBackendDateTime(json['startTime'] as String),
+      endTime: _parseBackendDateTime(json['endTime'] as String),
       distanceKm: (json['distance'] as num?)?.toDouble() ?? 0,
       durationSeconds: (json['duration'] as num?)?.toInt() ?? 0,
       averageSpeedKmh: (json['averageSpeed'] as num?)?.toDouble() ?? 0,

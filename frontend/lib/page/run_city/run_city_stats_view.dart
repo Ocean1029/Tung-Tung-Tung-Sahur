@@ -220,7 +220,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
           // 第二區：總距離和總時間
           _buildTotalStatsRow(
             distanceValue: userData.formattedTotalDistance,
-            timeValue: controller.formattedTotalTime,
+            timeValue: userData.formattedTotalTime,
           ),
         ],
       ),
@@ -239,7 +239,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
         children: [
           _buildTotalStatItem(
             icon: Icons.straighten,
-            label: '距離',
+            label: '總距離',
             value: distanceValue,
             fontSize: 24, // 藍色字 24px
             iconSize: 20, // icon 20×20
@@ -248,7 +248,7 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
           const SizedBox(width: 8), // 文字到下一個icon是8px
           _buildTotalStatItem(
             icon: Icons.access_time,
-            label: '時間',
+            label: '總時間',
             value: timeValue,
             fontSize: 24, // 藍色字 24px
             iconSize: 20, // icon 20×20
@@ -443,50 +443,57 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
 
   /// 建立表格表頭
   Widget _buildTableHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: TPColors.runCityTableHeader,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16), // 圓角16px
-          topRight: Radius.circular(16), // 圓角16px
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12), // 標頭與第一行之間相距12px
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // 上下 padding 8px
+        decoration: BoxDecoration(
+          color: TPColors.runCityTableHeader,
+          borderRadius: BorderRadius.circular(8), // 四個角都是圓角
+          // 標頭不需要陰影
         ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: TPText(
-              '日期',
-              style: TPTextStyles.caption,
-              color: TPColors.grayscale400,
+        child: Row(
+          children: [
+            // 日期列 - flex: 4
+            Expanded(
+              flex: 4,
+              child: TPText(
+                '日期',
+                style: TPTextStyles.caption,
+                color: TPColors.grayscale400,
+              ),
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: TPText(
-              '時間',
-              style: TPTextStyles.caption,
-              color: TPColors.grayscale400,
+            // 時間列 - flex: 5
+            Expanded(
+              flex: 5,
+              child: TPText(
+                '時間',
+                style: TPTextStyles.caption,
+                color: TPColors.grayscale400,
+              ),
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: TPText(
-              '距離',
-              style: TPTextStyles.caption,
-              color: TPColors.grayscale400,
+            // 距離列 - flex: 4
+            Expanded(
+              flex: 4,
+              child: TPText(
+                '距離',
+                style: TPTextStyles.caption,
+                color: TPColors.grayscale400,
+              ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: TPText(
-              '金幣',
-              style: TPTextStyles.caption,
-              color: TPColors.grayscale400,
+            // 金幣列 - flex: 2
+            Expanded(
+              flex: 2,
+              child: TPText(
+                '金幣',
+                style: TPTextStyles.caption,
+                color: TPColors.grayscale400,
+              ),
             ),
-          ),
-        ],
+            // 箭頭位置固定寬度
+            const SizedBox(width: 24),
+          ],
+        ),
       ),
     );
   }
@@ -498,68 +505,75 @@ class RunCityStatsView extends GetView<RunCityStatsController> {
     final accountService = Get.find<AccountService>();
     final userId = accountService.account?.id ?? '';
 
-    return GestureDetector(
-      onTap: () {
-        Get.toNamed(
-          TPRoute.runCityActivityDetail,
-          arguments: {
-            'activityId': activity.activityId,
-            'userId': userId,
-          },
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: isLast
-              ? null // 最後一行不要有橫線
-              : Border(
-                  bottom: BorderSide(
-                    color: TPColors.grayscale200,
-                    width: 1,
-                  ),
-                ),
-          borderRadius: isLast
-              ? const BorderRadius.only(
-                  bottomLeft: Radius.circular(16), // 圓角16px
-                  bottomRight: Radius.circular(16), // 圓角16px
-                )
-              : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12), // 每一列之間相距12px
+      child: GestureDetector(
+        onTap: () {
+          Get.toNamed(
+            TPRoute.runCityActivityDetail,
+            arguments: {
+              'activityId': activity.activityId,
+              'userId': userId,
+            },
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // 上下 padding 8px
+          decoration: BoxDecoration(
+            color: TPColors.white,
+            borderRadius: BorderRadius.circular(8), // 每行都有圓角
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1A000000), // 陰影顏色
+                offset: Offset(1, 1), // x:1, y:1
+                blurRadius: 4, // blur:4
+                spreadRadius: 0, // spread:0
+              ),
+            ],
+          ),
           child: Row(
             children: [
+              // 日期列 - flex: 4
               Expanded(
-                flex: 2,
+                flex: 4,
                 child: TPText(
                   dateStr,
                   style: TPTextStyles.bodyRegular.copyWith(fontSize: 12),
                   color: TPColors.grayscale950,
                 ),
               ),
+              // 時間列 - flex: 5
               Expanded(
-                flex: 2,
+                flex: 5,
                 child: TPText(
                   activity.formattedTimeRange,
                   style: TPTextStyles.bodyRegular.copyWith(fontSize: 12),
                   color: TPColors.grayscale950,
                 ),
               ),
+              // 距離列 - flex: 4
               Expanded(
-                flex: 2,
+                flex: 4,
                 child: TPText(
                   activity.formattedDistance,
                   style: TPTextStyles.bodyRegular.copyWith(fontSize: 12),
                   color: TPColors.grayscale950,
                 ),
               ),
+              // 金幣列 - flex: 2
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: TPText(
                   '${activity.coinsEarned}',
                   style: TPTextStyles.bodyRegular.copyWith(fontSize: 12),
                   color: TPColors.grayscale950,
                 ),
+              ),
+              // 右側箭頭指示可點擊（箭頭上面不用標題）
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: TPColors.grayscale400,
               ),
             ],
           ),

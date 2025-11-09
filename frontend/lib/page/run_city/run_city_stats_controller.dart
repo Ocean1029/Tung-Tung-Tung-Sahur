@@ -29,9 +29,9 @@ class RunCityStatsController extends GetxController {
     final hours = totalTimeSeconds ~/ 3600;
     final minutes = (totalTimeSeconds % 3600) ~/ 60;
     if (hours > 0) {
-      return '${hours}h ${minutes}m';
+      return '${hours} 時 ${minutes} 分';
     }
-    return '${minutes}m';
+    return '${minutes} 分';
   }
 
   @override

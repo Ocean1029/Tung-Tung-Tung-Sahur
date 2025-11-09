@@ -12,6 +12,7 @@ import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/page/run_city/run_city_mock_data.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
+import 'package:town_pass/util/tp_route.dart';
 
 class RunCityController extends GetxController {
   RunCityController({
@@ -128,9 +129,10 @@ class RunCityController extends GetxController {
       _currentUserLocation = _initialUserLocation;
 
       // 如果地圖控制器已經初始化，立即定位到用戶位置
+      // 縮放級別 17 對應約兩三百公尺的視野寬度
       if (mapController != null) {
         await mapController!.animateCamera(
-          CameraUpdate.newLatLngZoom(_initialUserLocation!, 15),
+          CameraUpdate.newLatLngZoom(_initialUserLocation!, 17),
         );
         isUserLocationCentered.value = true;
       }
@@ -209,9 +211,10 @@ class RunCityController extends GetxController {
     mapController = controller;
 
     // 如果已經獲取了用戶位置，立即定位到用戶位置
+    // 縮放級別 17 對應約兩三百公尺的視野寬度
     if (_initialUserLocation != null) {
       controller.animateCamera(
-        CameraUpdate.newLatLngZoom(_initialUserLocation!, 15),
+        CameraUpdate.newLatLngZoom(_initialUserLocation!, 17),
       );
       isUserLocationCentered.value = true;
     }
@@ -292,14 +295,15 @@ class RunCityController extends GetxController {
       _currentUserLocation = newUserLocation;
 
       // 移動地圖到用戶最新位置
+      // 縮放級別 17 對應約兩三百公尺的視野寬度
       await mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(newUserLocation, 15),
+        CameraUpdate.newLatLngZoom(newUserLocation, 17),
       );
 
       // 更新相機位置記錄，以便後續檢查
       _lastCameraPosition = CameraPosition(
         target: newUserLocation,
-        zoom: 15,
+        zoom: 17,
       );
       // 地圖移動過程中，onCameraMove 會持續檢查並更新狀態
       // 當移動完成時，onCameraIdle 會最終確認狀態
@@ -490,6 +494,20 @@ class RunCityController extends GetxController {
 
         // 活動結束後，刷新用戶資料以更新金幣數量
         await _loadUserProfile();
+        
+        // 先跳轉到「個人資訊」頁面，然後再跳轉到「運動紀錄詳細畫面」
+        // 這樣返回時會先回到「個人資訊」頁面，再返回會回到「跑城市」頁面
+        Get.toNamed(TPRoute.runCityStats);
+        // 使用 Future.microtask 確保路由跳轉完成後再跳轉到下一個頁面
+        Future.microtask(() {
+          Get.toNamed(
+            TPRoute.runCityActivityDetail,
+            arguments: {
+              'activityId': activityId,
+              'userId': userId,
+            },
+          );
+        });
       } on RunCityApiException catch (error) {
         Get.snackbar(
           '結束紀錄失敗',
@@ -595,8 +613,9 @@ class RunCityController extends GetxController {
     if (routePath.isEmpty) {
       routePath.add(currentPoint);
       _updatePolyline();
+      // 縮放級別 17 對應約兩三百公尺的視野寬度
       mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(currentPoint, 15),
+        CameraUpdate.newLatLngZoom(currentPoint, 17),
       );
       _markVisitedPoints(currentPoint);
       return;
@@ -788,11 +807,15 @@ class RunCityController extends GetxController {
     final pointsToSend = List<RunCityTrackPoint>.from(_pendingTrackPoints);
     _isSendingTrackPoints = true;
     try {
-      await _apiService.trackActivity(
+      final distance = await _apiService.trackActivity(
         userId: userId,
         activityId: _currentActivityId!,
         points: pointsToSend,
       );
+      // 更新已行走距離（後端返回的距離，單位：公尺）
+      if (distance > 0) {
+        totalDistanceMeters.value = distance;
+      }
       if (_pendingTrackPoints.length >= pointsToSend.length) {
         _pendingTrackPoints.removeRange(0, pointsToSend.length);
       } else {

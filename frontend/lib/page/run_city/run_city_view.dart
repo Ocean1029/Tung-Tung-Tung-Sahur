@@ -87,19 +87,32 @@ class RunCityView extends GetView<RunCityController> {
               zoomGesturesEnabled: true,
               zoomControlsEnabled: false,
             ),
-            // 用戶資料卡片（可點擊，覆蓋在地圖上方）
-            if (controller.userProfile.value != null)
-              Positioned(
-                top: 16,
-                left: 16,
-                right: 16,
-                child: GestureDetector(
-                  onTap: () {
-                    Get.toNamed(TPRoute.runCityStats);
-                  },
-                  child: _buildUserProfileCard(controller.userProfile.value!),
-                ),
-              ),
+            // 動態計算欄（追蹤時顯示）
+            Obx(() {
+              if (controller.isTracking.value) {
+                return Positioned(
+                  top: 16,
+                  left: 16,
+                  right: 16,
+                  child: _buildTrackingStatsCard(),
+                );
+              }
+              // 用戶資料卡片（非追蹤時顯示，可點擊，覆蓋在地圖上方）
+              if (controller.userProfile.value != null) {
+                return Positioned(
+                  top: 16,
+                  left: 16,
+                  right: 16,
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.toNamed(TPRoute.runCityStats);
+                    },
+                    child: _buildUserProfileCard(controller.userProfile.value!),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            }),
             Obx(() {
               if (!controller.isBadgePanelVisible.value) {
                 return const SizedBox.shrink();
@@ -123,30 +136,131 @@ class RunCityView extends GetView<RunCityController> {
                 child: _buildBadgePanel(context),
               );
             }),
-            // 本次跑步紀錄卡片（如果有路線）
-            if (!controller.isTracking.value && controller.routePath.isNotEmpty)
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 360,
-                child: _buildSummaryCard(
-                  distanceMeters: controller.totalDistanceMeters.value,
-                  elapsed: controller.elapsed.value,
-                  averageSpeedKmh: controller.averageSpeedKmh.value,
-                  visitedCount: controller.visitedPointIds.length,
-                ),
-              ),
+            // 移除本次跑步紀錄卡片，改為直接跳轉到活動詳細頁面
             // 追蹤控制按鈕
             Positioned(
               left: 0,
               right: 0,
-              bottom: 24,
+              bottom: 36,
               child: _buildTrackingControls(),
             ),
           ],
         );
       }),
     );
+  }
+
+  /// 建立動態計算欄（追蹤時顯示）
+  Widget _buildTrackingStatsCard() {
+    return Obx(() {
+      final distanceMeters = controller.totalDistanceMeters.value;
+      final elapsed = controller.elapsed.value;
+      
+      // 格式化距離
+      final distanceKm = distanceMeters / 1000;
+      final formattedDistance = distanceKm >= 1
+          ? '${distanceKm.toStringAsFixed(1)} 公里'
+          : '${distanceMeters.toStringAsFixed(0)} 公尺';
+      
+      // 格式化時長 (HH:MM:SS)
+      final hours = elapsed.inHours;
+      final minutes = elapsed.inMinutes.remainder(60);
+      final seconds = elapsed.inSeconds.remainder(60);
+      final formattedDuration = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+      
+      return Container(
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16), // 上方8px padding
+        decoration: BoxDecoration(
+          color: TPColors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              offset: const Offset(0, 4),
+              blurRadius: 4,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // 左欄：距離
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start, // icon 對齊 from start
+                children: [
+                  // Icon 20×20，與左白匡距離24px（16px padding + 8px = 24px），與上方距離8px
+                  const SizedBox(width: 8), // 16px padding + 8px = 24px
+                  Icon(
+                    Icons.straighten,
+                    size: 20,
+                    color: const Color(0xFF91A0A8), // #91A0A8
+                  ),
+                  const SizedBox(width: 8), // icon與文字之間8px
+                  // 標題和數值
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 標題 14px #91A0A8
+                      TPText(
+                        '距離',
+                        style: TPTextStyles.h3Regular.copyWith(fontSize: 14),
+                        color: const Color(0xFF91A0A8),
+                      ),
+                      const SizedBox(height: 4),
+                      // 數值 24px #00B9CA, font-H2-semibold
+                      TPText(
+                        formattedDistance,
+                        style: TPTextStyles.h2SemiBold.copyWith(fontSize: 24),
+                        color: const Color(0xFF00B9CA), // #00B9CA
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // 右欄：時長（icon貼齊白容器中線，內文向左對齊）
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start, // icon 對齊 from start
+                children: [
+                  // Icon 貼齊白容器中線（在右欄的開始位置，即整個容器的中線）
+                  Icon(
+                    Icons.access_time,
+                    size: 20,
+                    color: const Color(0xFF91A0A8), // #91A0A8
+                  ),
+                  const SizedBox(width: 8), // icon與文字之間8px
+                  // 內文向左對齊
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 標題 14px #91A0A8，與下方計算時間對齊
+                        TPText(
+                          '時長',
+                          style: TPTextStyles.h3Regular.copyWith(fontSize: 14),
+                          color: const Color(0xFF91A0A8),
+                        ),
+                        const SizedBox(height: 4),
+                        // 數值 24px #00B9CA, font-H2-semibold
+                        TPText(
+                          formattedDuration,
+                          style: TPTextStyles.h2SemiBold.copyWith(fontSize: 24),
+                          color: const Color(0xFF00B9CA), // #00B9CA
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   /// 建立用戶資料卡片
@@ -325,19 +439,20 @@ class RunCityView extends GetView<RunCityController> {
   Widget _buildTrackingControls() {
     return Obx(() {
       final isTracking = controller.isTracking.value;
-      final goButtonWidth = isTracking ? 96.0 : 88.0;
+      final goButtonWidth = 100.0; // 固定為 100x100
       final positionButtonWidth = 54.0;
       final spacing = 50.0;
       const badgeButtonSize = 54.0;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center, // 垂直置中
         children: [
           // 左側空白，用於平衡布局
           Expanded(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center, // 垂直置中
               children: [
                 // 位置按鈕（位於 GO 按鈕左側 50px 處）
                 Obx(() => GestureDetector(
@@ -377,7 +492,7 @@ class RunCityView extends GetView<RunCityController> {
               ],
             ),
           ),
-          // GO 按鈕（位於螢幕水平正中）
+          // GO/END 按鈕（位於螢幕水平正中）
           GestureDetector(
             onTap: () {
               if (isTracking) {
@@ -386,27 +501,55 @@ class RunCityView extends GetView<RunCityController> {
                 controller.startTracking();
               }
             },
-            child: Container(
-              width: goButtonWidth,
-              height: goButtonWidth,
-              decoration: BoxDecoration(
-                color: isTracking ? TPColors.red400 : TPColors.primary500,
-                shape: BoxShape.circle,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 16,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              alignment: Alignment.center,
-              child: TPText(
-                isTracking ? '結束' : 'GO',
-                style: TPTextStyles.h2SemiBold,
-                color: TPColors.white,
-              ),
-            ),
+            child: isTracking
+                ? // END 按鈕：100×100（含8px外框）的圓形，外框#5AB4C5，內裡#FFFFFF
+                  Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white, // 內裡 #FFFFFF
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFF5AB4C5), // 外框 #5AB4C5
+                          width: 8, // 8px外框
+                        ),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 16,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: TPText(
+                        'END',
+                        style: TPTextStyles.h1SemiBold.copyWith(fontSize: 36), // 36px
+                        color: const Color(0xFF5AB4C5), // #5AB4C5
+                      ),
+                    )
+                : // GO 按鈕：保持原有樣式
+                  Container(
+                      width: goButtonWidth,
+                      height: goButtonWidth,
+                      decoration: BoxDecoration(
+                        color: TPColors.primary500,
+                        shape: BoxShape.circle,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 16,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: TPText(
+                        'GO',
+                        style: TPTextStyles.h1SemiBold, // H1-semibold，36pt
+                        color: TPColors.white,
+                      ),
+                    ),
           ),
           Expanded(
             child: Row(
@@ -465,137 +608,6 @@ class RunCityView extends GetView<RunCityController> {
     });
   }
 
-  Widget _buildSummaryCard({
-    required double distanceMeters,
-    required Duration elapsed,
-    required double averageSpeedKmh,
-    required int visitedCount,
-  }) {
-    final distanceKm = distanceMeters / 1000;
-    final formattedDistance = distanceKm >= 1
-        ? '${distanceKm.toStringAsFixed(2)} km'
-        : '${distanceMeters.toStringAsFixed(0)} m';
-    final formattedDuration = _formatDuration(elapsed);
-    final formattedSpeed = averageSpeedKmh.isNaN
-        ? '0 km/h'
-        : '${averageSpeedKmh.toStringAsFixed(1)} km/h';
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: TPColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 20,
-            offset: Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const TPText(
-                      '本次跑步紀錄',
-                      style: TPTextStyles.h3SemiBold,
-                      color: TPColors.grayscale900,
-                    ),
-                    const SizedBox(height: 4),
-                    TPText(
-                      '經過 $visitedCount 個點位',
-                      style: TPTextStyles.bodyRegular,
-                      color: TPColors.grayscale600,
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline,
-                    color: TPColors.grayscale400),
-                onPressed: controller.clearRoute,
-                tooltip: '清除紀錄',
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _StatChip(
-                label: '距離',
-                value: formattedDistance,
-              ),
-              const SizedBox(width: 12),
-              _StatChip(
-                label: '時間',
-                value: formattedDuration,
-              ),
-              const SizedBox(width: 12),
-              _StatChip(
-                label: '平均速度',
-                value: formattedSpeed,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDuration(Duration duration) {
-    final hours = duration.inHours;
-    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    if (hours > 0) {
-      return '$hours:$minutes:$seconds';
-    }
-    return '$minutes:$seconds';
-  }
-}
-
-class _StatChip extends StatelessWidget {
-  const _StatChip({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: TPColors.primary50,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TPText(
-              label,
-              style: TPTextStyles.caption,
-              color: TPColors.grayscale500,
-            ),
-            const SizedBox(height: 6),
-            TPText(
-              value,
-              style: TPTextStyles.h3SemiBold,
-              color: TPColors.grayscale900,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _BadgePreview extends StatelessWidget {
