@@ -1,14 +1,18 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class RunCityActivityDetailController extends GetxController {
   final RunCityApiService _apiService = Get.find<RunCityApiService>();
@@ -25,8 +29,16 @@ class RunCityActivityDetailController extends GetxController {
   final RxSet<Marker> markers = <Marker>{}.obs;
   final RxSet<Polyline> polylines = <Polyline>{}.obs;
 
+  final GlobalKey shareCardKey = GlobalKey();
+  Uint8List? _shareMapSnapshot;
+  bool _isSharing = false;
+  bool _isSharePreviewOpen = false;
+
   String? _userId;
   String? _activityId;
+
+  Uint8List? get shareMapSnapshot => _shareMapSnapshot;
+  bool get isSharing => _isSharing;
 
   @override
   void onInit() {
@@ -211,9 +223,19 @@ class RunCityActivityDetailController extends GetxController {
     unawaited(_updateMap());
   }
 
-  /// 刷新資料
-  Future<void> refresh() async {
-    await loadActivityDetail();
+  Future<bool> prepareSharePreview() async {
+    if (_isSharePreviewOpen) {
+      return true;
+    }
+    try {
+      await _captureMapSnapshot();
+      update(['sharePreview']);
+      _isSharePreviewOpen = true;
+      return true;
+    } on _ShareException catch (error) {
+      _showShareError(error.userMessage);
+      return false;
+    }
   }
 
   Future<BitmapDescriptor> _getNodeMarkerIcon() async {
@@ -270,4 +292,188 @@ class RunCityActivityDetailController extends GetxController {
     _nodeMarkerIcon = BitmapDescriptor.fromBytes(bytes);
     return _nodeMarkerIcon!;
   }
+
+  Future<bool> shareActivity() async {
+    if (_isSharing) {
+      return false;
+    }
+    final detail = activityDetail.value;
+    if (detail == null) {
+      _showShareError('尚無活動資料');
+      return false;
+    }
+
+    try {
+      _isSharing = true;
+      update(['sharePreview']);
+      if (_shareMapSnapshot == null || _shareMapSnapshot!.isEmpty) {
+        await _captureMapSnapshot();
+        update(['sharePreview']);
+      }
+
+      final boundary = await _obtainReadyBoundary();
+
+      ui.Image image;
+      try {
+        image = await boundary.toImage(pixelRatio: 3);
+      } catch (error, stack) {
+        _logShareError('capture_image', error, stack);
+        throw _ShareException(
+          userMessage: '生成分享圖片時發生錯誤，請稍後再試',
+          debugStep: 'capture_image',
+          cause: error,
+        );
+      }
+
+      ByteData? byteData;
+      try {
+        byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      } catch (error, stack) {
+        _logShareError('encode_image', error, stack);
+        throw _ShareException(
+          userMessage: '轉換分享圖片時發生錯誤，請稍後再試',
+          debugStep: 'encode_image',
+          cause: error,
+        );
+      }
+      if (byteData == null) {
+        throw const _ShareException(
+          userMessage: '無法產生分享圖片，請稍後再試',
+          debugStep: 'encode_image_null',
+        );
+      }
+
+      final Uint8List pngBytes = byteData.buffer.asUint8List();
+      File file;
+      try {
+        final Directory tempDir = await getTemporaryDirectory();
+        final String filePath =
+            '${tempDir.path}/run_city_activity_${_activityId}_${DateTime.now().millisecondsSinceEpoch}.png';
+        file = File(filePath);
+        await file.writeAsBytes(pngBytes, flush: true);
+      } catch (error, stack) {
+        _logShareError('write_file', error, stack);
+        throw _ShareException(
+          userMessage: '儲存分享圖片時發生錯誤，請檢查儲存空間後再試',
+          debugStep: 'write_file',
+          cause: error,
+        );
+      }
+
+      try {
+        final String shareText =
+            '我的 Run City 運動紀錄：${detail.formattedDistance}，耗時 ${detail.formattedDuration}，獲得 ${detail.totalCoinsEarned} 金幣！#RunCity #TownPass';
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: shareText,
+        );
+      } catch (error, stack) {
+        _logShareError('share_sheet', error, stack);
+        throw _ShareException(
+          userMessage: '開啟分享面板失敗，請確認是否允許分享權限或稍後再試',
+          debugStep: 'share_sheet',
+          cause: error,
+        );
+      }
+      return true;
+    } on _ShareException catch (error) {
+      _showShareError(error.userMessage);
+      return false;
+    } finally {
+      _isSharing = false;
+      update(['sharePreview']);
+    }
+  }
+
+  Future<void> _captureMapSnapshot() async {
+    if (mapController == null) {
+      throw const _ShareException(
+        userMessage: '地圖尚未載入完成，請稍後再試',
+        debugStep: 'map_not_ready',
+      );
+    }
+    try {
+      final Uint8List? snapshot = await mapController!.takeSnapshot();
+      if (snapshot == null || snapshot.isEmpty) {
+        throw const _ShareException(
+          userMessage: '無法擷取地圖畫面，請稍後再試',
+          debugStep: 'map_snapshot_empty',
+        );
+      }
+      _shareMapSnapshot = snapshot;
+    } catch (error) {
+      throw _ShareException(
+        userMessage: '擷取地圖畫面失敗，請稍後再試',
+        debugStep: 'map_snapshot_error',
+        cause: error,
+      );
+    }
+  }
+
+  void _logShareError(String step, Object error, StackTrace stackTrace) {
+    debugPrint(
+      '[RunCityActivityShare] step=$step activity=$_activityId error=$error\n$stackTrace',
+    );
+  }
+
+  Future<RenderRepaintBoundary> _obtainReadyBoundary() async {
+    RenderRepaintBoundary? boundary;
+    for (var attempt = 0; attempt < 8; attempt++) {
+      await WidgetsBinding.instance.endOfFrame;
+      boundary = shareCardKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        throw const _ShareException(
+          userMessage: '找不到分享卡片，請重新開啟頁面後再試',
+          debugStep: 'locate_boundary',
+        );
+      }
+      if (boundary.size.isEmpty) {
+        throw const _ShareException(
+          userMessage: '分享卡片尚未準備好，請稍後再試',
+          debugStep: 'boundary_empty',
+        );
+      }
+      if (!boundary.debugNeedsPaint) {
+        return boundary;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 16));
+    }
+    throw const _ShareException(
+      userMessage: '分享畫面尚未渲染完成，請稍候片刻再試',
+      debugStep: 'boundary_never_painted',
+    );
+  }
+
+  void closeSharePreview() {
+    _isSharePreviewOpen = false;
+    update(['sharePreview']);
+  }
+
+  void _showShareError(String message) {
+    Get.snackbar(
+      '分享失敗',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.black.withOpacity(0.85),
+      colorText: Colors.white,
+    );
+  }
+
+  /// 刷新資料
+  Future<void> refreshActivity() async {
+    await loadActivityDetail();
+  }
+}
+
+class _ShareException implements Exception {
+  const _ShareException({
+    required this.userMessage,
+    this.debugStep,
+    this.cause,
+  });
+
+  final String userMessage;
+  final String? debugStep;
+  final Object? cause;
 }
