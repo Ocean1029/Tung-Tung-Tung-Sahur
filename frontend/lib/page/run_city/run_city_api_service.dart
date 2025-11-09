@@ -41,7 +41,7 @@ class RunCityApiService extends GetxService {
         baseUrl = baseUrl ??
             const String.fromEnvironment(
               'RUN_CITY_API_BASE_URL',
-              defaultValue: 'http://172.20.10.3:3000', // 使用 Mac IP，手機才能連接
+              defaultValue: 'https://run-city-424370484311.asia-east1.run.app',
             );
 
   final http.Client _httpClient;
@@ -570,7 +570,7 @@ class RunCityApiService extends GetxService {
     } on http.ClientException catch (e) {
       // 處理網路連接錯誤
       throw RunCityApiException(
-        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確（當前：$baseUrl）',
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. 網路連接正常\n3. API 地址正確（當前：$baseUrl）',
         code: 'NETWORK_ERROR',
         statusCode: null,
       );
@@ -620,7 +620,7 @@ class RunCityApiService extends GetxService {
     } on http.ClientException catch (e) {
       // 處理網路連接錯誤
       throw RunCityApiException(
-        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確',
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. 網路連接正常\n3. API 地址正確',
         code: 'NETWORK_ERROR',
         statusCode: null,
       );
@@ -668,7 +668,7 @@ class RunCityApiService extends GetxService {
       return _handleResponse(response);
     } on http.ClientException catch (e) {
       throw RunCityApiException(
-        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確（當前：$baseUrl）',
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. 網路連接正常\n3. API 地址正確（當前：$baseUrl）',
         code: 'NETWORK_ERROR',
         statusCode: null,
       );
@@ -712,7 +712,7 @@ class RunCityApiService extends GetxService {
       _handleResponse(response);
     } on http.ClientException catch (e) {
       throw RunCityApiException(
-        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確（當前：$baseUrl）',
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. 網路連接正常\n3. API 地址正確（當前：$baseUrl）',
         code: 'NETWORK_ERROR',
         statusCode: null,
       );

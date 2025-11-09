@@ -502,6 +502,8 @@ const getUserBadgeDetail = async (
       latitude: location?.latitude ?? 0,
       longitude: location?.longitude ?? 0,
       area: location?.area ?? null,
+      description: location?.description ?? null,
+      nfcId: location?.nfcId ?? null,
       isCollected: collectionMap.has(req.locationId),
       collectedAt: collectionMap.get(req.locationId) ?? null
     };

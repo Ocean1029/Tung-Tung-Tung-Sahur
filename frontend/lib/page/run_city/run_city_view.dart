@@ -22,7 +22,7 @@ class RunCityView extends GetView<RunCityController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const TPAppBar(title: '跑城市'),
+      appBar: const TPAppBar(title: 'Run City'),
       body: Obx(() {
         // 檢查用戶是否登入
         if (Get.find<AccountService>().account == null) {

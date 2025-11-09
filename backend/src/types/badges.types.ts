@@ -59,8 +59,10 @@ export type BadgeRequirementDetail = {
   latitude: number;
   longitude: number;
   area: string | null;
-  isCollected?: boolean;
-  collectedAt?: Date | null;
+  description: string | null;
+  nfcId: string | null;
+  isCollected: boolean;
+  collectedAt: Date | null;
 };
 
 export type UserBadgeStatusValue = "locked" | "in_progress" | "collected";

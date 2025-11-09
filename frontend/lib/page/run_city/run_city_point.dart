@@ -434,6 +434,8 @@ class RunCityBadgeLocation {
     required this.name,
     required this.latitude,
     required this.longitude,
+    this.area,
+    this.description,
     this.nfcId,
     required this.isCollected,
     this.collectedAt,
@@ -443,6 +445,8 @@ class RunCityBadgeLocation {
   final String name;
   final double latitude;
   final double longitude;
+  final String? area;
+  final String? description;
   final String? nfcId;
   final bool isCollected;
   final DateTime? collectedAt;
@@ -460,6 +464,8 @@ class RunCityBadgeLocation {
       name: json['name'] as String,
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      area: json['area'] as String?,
+      description: json['description'] as String?,
       nfcId: json['nfcId'] as String?,
       isCollected: json['isCollected'] as bool,
       collectedAt: collectedAt,

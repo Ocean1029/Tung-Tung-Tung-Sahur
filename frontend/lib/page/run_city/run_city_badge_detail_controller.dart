@@ -93,12 +93,53 @@ class RunCityBadgeDetailController extends GetxController {
         return;
       }
 
+      // 獲取徽章詳情
       final detail = await _apiService.fetchUserBadgeDetail(
         userId: account.id,
         badgeId: badgeId,
       );
 
-      badgeDetail.value = detail;
+      // 獲取所有 location 以補充 description
+      try {
+        final allLocations = await _apiService.fetchLocations();
+        final locationMap = <String, RunCityPoint>{};
+        for (final loc in allLocations) {
+          locationMap[loc.id] = loc;
+        }
+
+        // 補充 requiredLocations 的 description
+        final updatedLocations = detail.requiredLocations.map((badgeLoc) {
+          final fullLocation = locationMap[badgeLoc.locationId];
+          if (fullLocation != null) {
+            // 創建新的 RunCityBadgeLocation，補充 description 和其他字段
+            return RunCityBadgeLocation(
+              locationId: badgeLoc.locationId,
+              name: badgeLoc.name,
+              latitude: badgeLoc.latitude,
+              longitude: badgeLoc.longitude,
+              area: badgeLoc.area ?? fullLocation.area,
+              description: badgeLoc.description ?? fullLocation.description,
+              nfcId: badgeLoc.nfcId ?? fullLocation.nfcId,
+              isCollected: badgeLoc.isCollected,
+              collectedAt: badgeLoc.collectedAt,
+            );
+          }
+          return badgeLoc;
+        }).toList();
+
+        // 創建更新後的 detail
+        final updatedDetail = RunCityBadgeDetail(
+          badge: detail.badge,
+          requiredLocations: updatedLocations,
+        );
+
+        badgeDetail.value = updatedDetail;
+      } catch (e) {
+        // 如果獲取 location 失敗，使用原始 detail（不顯示錯誤，因為這是補充數據）
+        debugPrint('獲取 location 詳細信息失敗: $e');
+        badgeDetail.value = detail;
+      }
+
       initialCameraPosition = _buildInitialCameraPosition();
       circles.clear();
       await _prepareMarkers();

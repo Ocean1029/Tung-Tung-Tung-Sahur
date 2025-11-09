@@ -7,11 +7,10 @@ import 'package:town_pass/service/device_service.dart';
 
 class NFCService extends GetxService {
   // 後端 API 基礎 URL
-  // ⚠️ 重要：在真機上不能使用 localhost，必須使用 Mac 的 IP 地址！
-  // 如果 Mac IP 改變，請更新此處或使用環境變數 API_BASE_URL
+  // 使用部署的後端服務器
   final String baseUrl = const String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://172.20.10.3:3000', // Mac 的 IP 地址
+    defaultValue: 'https://run-city-424370484311.asia-east1.run.app',
   );
 
   final DeviceService _deviceService = Get.find<DeviceService>();

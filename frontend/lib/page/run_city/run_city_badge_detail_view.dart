@@ -511,7 +511,7 @@ class _LocationRowState extends State<_LocationRow> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: TPText(
-                          widget.location.nfcId ?? '未指定',
+                          widget.location.description ?? '未指定',
                           style: TPTextStyles.bodyRegular.copyWith(
                             fontSize: 12,
                             color: TPColors.grayscale500,
