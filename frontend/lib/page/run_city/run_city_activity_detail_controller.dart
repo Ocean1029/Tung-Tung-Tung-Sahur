@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -80,7 +84,7 @@ class RunCityActivityDetailController extends GetxController {
         userAvatar: userAvatar,
       );
       activityDetail.value = detail;
-      _updateMap();
+      await _updateMap();
     } on RunCityApiException catch (e) {
       final errorText = e.code != null ? '${e.message} (${e.code})' : e.message;
       errorMessage.value = errorText;
@@ -92,112 +96,85 @@ class RunCityActivityDetailController extends GetxController {
   }
 
   /// 更新地圖顯示
-  /// 
-  /// 地圖顯示邏輯：優先使用 NFC 收集的位置繪製路線
-  /// 1. 如果有 NFC 收集位置：使用 NFC 位置繪製（Demo 場景）
-  /// 2. 如果沒有 NFC 收集位置但有 GPS 路線：使用 GPS 路線繪製（真實使用場景）
-  /// 3. 兩種數據都保留，根據可用性自動選擇
-  void _updateMap() {
+  BitmapDescriptor? _nodeMarkerIcon;
+
+  Future<void> _updateMap() async {
     final detail = activityDetail.value;
     if (detail == null) {
       return;
     }
 
-    // 判斷使用哪種數據源
-    // 優先級：NFC locationRecords（Demo） > GPS route（真實使用）
-    final hasNfcLocations = detail.locationRecords.isNotEmpty;
-    final hasGpsRoute = detail.route.length >= 2;
-    
-    List<LatLng> routePoints;
-    bool useNfcLocations = false;
-    bool useGpsRoute = false;
-
-    if (hasNfcLocations) {
-      // 情況 1：有 NFC 收集位置（Demo 場景）- 優先使用 NFC 位置
-      routePoints = detail.locationRecords
-          .map((record) => LatLng(record.latitude, record.longitude))
-          .toList();
-      useNfcLocations = true;
-    } else if (hasGpsRoute) {
-      // 情況 2：沒有 NFC 收集位置但有 GPS 路線（真實使用場景）- 使用 GPS 路線
-      routePoints = detail.route
-          .map((point) => LatLng(point.latitude, point.longitude))
-          .toList();
-      useGpsRoute = true;
-    } else {
-      // 情況 3：兩種都沒有，不顯示地圖
-      return;
-    }
-
-    // 建立路線 Polyline
-    polylines.clear();
-    if (routePoints.length > 1) {
-      polylines.add(
-        Polyline(
-          polylineId: const PolylineId('route'),
-          points: routePoints,
-          color: const Color(0xFFFF853A), // 橙色
-          width: 5,
-        ),
-      );
-    }
-
-    // 建立 Marker
+    // 清除所有現有的標記
     markers.clear();
-    
-    if (useNfcLocations) {
-      // 使用 NFC 收集的位置作為 Marker（Demo 場景）
-      for (int i = 0; i < detail.locationRecords.length; i++) {
-        final record = detail.locationRecords[i];
-        final position = LatLng(record.latitude, record.longitude);
-        
-        // 第一個點是起點（綠色），最後一個點是終點（紅色），其他是收集點（藍色）
-        double markerHue;
-        String markerId;
-        if (i == 0) {
-          markerHue = BitmapDescriptor.hueGreen; // 起點：綠色
-          markerId = 'start';
-        } else if (i == detail.locationRecords.length - 1) {
-          markerHue = BitmapDescriptor.hueRed; // 終點：紅色
-          markerId = 'end';
-        } else {
-          markerHue = BitmapDescriptor.hueBlue; // 收集點：藍色
-          markerId = 'nfc_$i';
-        }
-        
-        markers.add(
-          Marker(
-            markerId: MarkerId(markerId),
-            position: position,
-            icon: BitmapDescriptor.defaultMarkerWithHue(markerHue),
-            infoWindow: InfoWindow(
-              title: record.locationName,
-              snippet: '${record.formattedTime}',
-            ),
+    markers.refresh();
+
+    // 建立路線 Polyline（僅當有路線數據時）
+    if (detail.route.isNotEmpty) {
+      final routePoints = detail.route
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList(growable: false);
+      polylines
+        ..clear()
+        ..add(
+          Polyline(
+            polylineId: const PolylineId('route'),
+            points: routePoints,
+            color: const Color(0xFFFF853A), // 橙色
+            width: 5,
           ),
         );
-      }
-    } else if (useGpsRoute) {
-      // 使用 GPS 路線的起點和終點（真實使用場景）
-      final startPoint = routePoints.first;
-      final endPoint = routePoints.last;
-      markers.addAll({
-        Marker(
-          markerId: const MarkerId('start'),
-          position: startPoint,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        ),
-        Marker(
-          markerId: const MarkerId('end'),
-          position: endPoint,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        ),
-      });
+      polylines.refresh();
+    } else {
+      polylines.clear();
+      polylines.refresh();
     }
 
-    // 調整地圖視角以包含所有路線和標記
-    if (mapController != null && routePoints.isNotEmpty) {
-      _fitBounds(routePoints);
+    // 只標記 collectedLocations 中的地點（即 locationRecords）
+    final locationRecords = detail.locationRecords;
+    if (locationRecords.isNotEmpty) {
+      final markerIcon = await _getNodeMarkerIcon();
+      final newMarkers = locationRecords
+          .asMap()
+          .entries
+          .map(
+            (entry) => Marker(
+              markerId: MarkerId('collected_location_${entry.value.locationId}'),
+              position: LatLng(
+                entry.value.latitude,
+                entry.value.longitude,
+              ),
+              icon: markerIcon,
+              anchor: const Offset(0.5, 0.5),
+              infoWindow: InfoWindow(
+                title: entry.value.locationName,
+                snippet: entry.value.area ?? '',
+              ),
+            ),
+          )
+          .toSet();
+      markers.addAll(newMarkers);
+      markers.refresh();
+    }
+
+    // 調整地圖視角以包含所有路線和標記的地點
+    final allPoints = <LatLng>[];
+    
+    // 添加路線點
+    if (detail.route.isNotEmpty) {
+      allPoints.addAll(
+        detail.route.map((point) => LatLng(point.latitude, point.longitude)),
+      );
+    }
+    
+    // 添加標記的地點
+    if (locationRecords.isNotEmpty) {
+      allPoints.addAll(
+        locationRecords.map((record) => LatLng(record.latitude, record.longitude)),
+      );
+    }
+    
+    if (mapController != null && allPoints.isNotEmpty) {
+      await _fitBounds(allPoints);
     }
   }
 
@@ -231,11 +208,66 @@ class RunCityActivityDetailController extends GetxController {
   /// 地圖創建完成回調
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
-    _updateMap();
+    unawaited(_updateMap());
   }
 
   /// 刷新資料
   Future<void> refresh() async {
     await loadActivityDetail();
+  }
+
+  Future<BitmapDescriptor> _getNodeMarkerIcon() async {
+    if (_nodeMarkerIcon != null) {
+      return _nodeMarkerIcon!;
+    }
+
+    const double markerDiameter = 50;
+    const double borderWidth = 3.5;
+    const double shadowBlurSigma = 7;
+    const double shadowOffsetY = 5;
+    final double canvasSize =
+        markerDiameter + shadowBlurSigma * 2 + shadowOffsetY;
+
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+    final center = ui.Offset(
+      canvasSize / 2,
+      markerDiameter / 2 + shadowBlurSigma,
+    );
+
+    final shadowPaint = ui.Paint()
+      ..color = Colors.black.withOpacity(0.2)
+      ..maskFilter = ui.MaskFilter.blur(ui.BlurStyle.normal, shadowBlurSigma);
+    canvas.drawCircle(
+      center.translate(0, shadowOffsetY),
+      markerDiameter / 2,
+      shadowPaint,
+    );
+
+    final fillPaint = ui.Paint()..color = const Color(0xFF5AB4C5);
+    canvas.drawCircle(center, markerDiameter / 2, fillPaint);
+
+    final borderPaint = ui.Paint()
+      ..color = Colors.white
+      ..style = ui.PaintingStyle.stroke
+      ..strokeWidth = borderWidth;
+    canvas.drawCircle(
+      center,
+      markerDiameter / 2 - borderWidth / 2,
+      borderPaint,
+    );
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(
+      canvasSize.toInt(),
+      (markerDiameter + shadowBlurSigma * 2 + shadowOffsetY).toInt(),
+    );
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData == null) {
+      throw Exception('無法產生節點圖示');
+    }
+    final Uint8List bytes = byteData.buffer.asUint8List();
+    _nodeMarkerIcon = BitmapDescriptor.fromBytes(bytes);
+    return _nodeMarkerIcon!;
   }
 }

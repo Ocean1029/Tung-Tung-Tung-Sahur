@@ -112,21 +112,17 @@ class RunCityUserData {
   DateTime? get activatedAt => createdAt;
 
   /// 格式化累積距離
+  /// 後端返回的 totalDistance 單位為公里
   String get formattedTotalDistance {
     if (totalDistance == null || totalDistance == 0) {
-      return '0 公尺';
+      return '0 公里';
     }
-    // 如果距離大於等於1000公尺，顯示為X.X公里（不要X公里X公尺）
-    if (totalDistance! >= 1000) {
-      final km = totalDistance! / 1000;
-      // 如果距離是整數，不顯示小數點
-      if (km == km.roundToDouble()) {
-        return '${km.toInt()} 公里';
-      }
-      return '${km.toStringAsFixed(1)} 公里';
+    // 後端返回的單位是公里，一律顯示為X.X公里
+    // 如果距離是整數，不顯示小數點
+    if (totalDistance! == totalDistance!.roundToDouble()) {
+      return '${totalDistance!.toInt()} 公里';
     }
-    // 小於1000公尺時顯示為公尺（四捨五入到整數）
-    return '${totalDistance!.round()} 公尺';
+    return '${totalDistance!.toStringAsFixed(1)} 公里';
   }
 
   /// 格式化累積時間

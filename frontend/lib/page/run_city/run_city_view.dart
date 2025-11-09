@@ -57,19 +57,19 @@ class RunCityView extends GetView<RunCityController> {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TPText(
+                children: [
+                  TPText(
                   controller.errorMessage.value ?? '發生錯誤',
                   style: TPTextStyles.bodyRegular,
                   color: TPColors.red500,
-                ),
+                  ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => controller.refresh(),
                   child: const TPText('重試'),
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
           );
         }
 
@@ -104,7 +104,7 @@ class RunCityView extends GetView<RunCityController> {
                   left: 16,
                   right: 16,
                   child: GestureDetector(
-                    onTap: () {
+              onTap: () {
                       Get.toNamed(TPRoute.runCityStats);
                     },
                     child: _buildUserProfileCard(controller.userProfile.value!),
@@ -132,7 +132,7 @@ class RunCityView extends GetView<RunCityController> {
               return Positioned(
                 left: 16,
                 right: 16,
-                bottom: 120,
+                bottom: 144, // GO按鈕底部36px + 按鈕高度100px + 間距8px = 144px
                 child: _buildBadgePanel(context),
               );
             }),
@@ -179,7 +179,7 @@ class RunCityView extends GetView<RunCityController> {
               offset: const Offset(0, 4),
               blurRadius: 4,
               spreadRadius: 0,
-            ),
+          ),
           ],
         ),
         child: Row(
@@ -199,7 +199,7 @@ class RunCityView extends GetView<RunCityController> {
                   const SizedBox(width: 8), // icon與文字之間8px
                   // 標題和數值
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // 標題 14px #91A0A8
@@ -239,14 +239,14 @@ class RunCityView extends GetView<RunCityController> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         // 標題 14px #91A0A8，與下方計算時間對齊
-                        TPText(
+                  TPText(
                           '時長',
                           style: TPTextStyles.h3Regular.copyWith(fontSize: 14),
                           color: const Color(0xFF91A0A8),
-                        ),
-                        const SizedBox(height: 4),
+                  ),
+                  const SizedBox(height: 4),
                         // 數值 24px #00B9CA, font-H2-semibold
-                        TPText(
+                  TPText(
                           formattedDuration,
                           style: TPTextStyles.h2SemiBold.copyWith(fontSize: 24),
                           color: const Color(0xFF00B9CA), // #00B9CA
@@ -324,14 +324,17 @@ class RunCityView extends GetView<RunCityController> {
                   color: TPColors.grayscale950,
                 ),
                 const SizedBox(height: 8), // 名字與金幣資訊之間間距8px
-                // 金幣資訊
+                // 金幣和徽章資訊
                 Row(
                   children: [
-                    // Icon 20×20
-                    Icon(
-                      Icons.monetization_on,
-                      size: 20,
-                      color: TPColors.runCityBlue,
+                    // 金幣：藍點點 icon 20×20
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF5AB4C5), // #5AB4C5
+                        shape: BoxShape.circle,
+                      ),
                     ),
                     const SizedBox(width: 8), // icon與文字之間8px
                     // 金幣數量數字 14px
@@ -340,18 +343,35 @@ class RunCityView extends GetView<RunCityController> {
                       style: TPTextStyles.bodyRegular.copyWith(fontSize: 14),
                       color: TPColors.grayscale950,
                     ),
+                    const SizedBox(width: 16), // 金幣與徽章之間間距16px
+                    // 徽章：六角形 icon 20×20
+                    Assets.svg.badgeIcon.svg(
+                      width: 20,
+                      height: 20,
+                      colorFilter: const ColorFilter.mode(
+                        Color(0xFF76A732), // 徽章顏色
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 8), // icon與文字之間8px
+                    // 徽章數量數字 14px
+                    Obx(() => TPText(
+                      'x ${controller.collectedBadgesCount.value}',
+                      style: TPTextStyles.bodyRegular.copyWith(fontSize: 14),
+                      color: TPColors.grayscale950,
+                    )),
                   ],
                 ),
               ],
             ),
           ),
           // 右側箭頭指示可點擊，與白框右側間距24px（使用padding）
-          const Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: TPColors.grayscale400,
-          ),
-        ],
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: TPColors.grayscale400,
+            ),
+          ],
       ),
     );
   }
@@ -401,6 +421,9 @@ class RunCityView extends GetView<RunCityController> {
                       ? controller.currentBadgeSlots[i]
                       : null;
                   final isSelected = badge != null && selected?.id == badge.id;
+                  final badgeIndex = badge != null
+                      ? controller.badges.indexWhere((b) => b.badgeId == badge.badgeId)
+                      : -1;
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.symmetric(
@@ -410,6 +433,7 @@ class RunCityView extends GetView<RunCityController> {
                           ? _BadgePreview(
                               badge: badge,
                               isSelected: isSelected,
+                              badgeIndex: badgeIndex,
                               onTap: () => controller.selectBadge(badge),
                             )
                           : const _BadgePlaceholder(),
@@ -614,12 +638,27 @@ class _BadgePreview extends StatelessWidget {
   const _BadgePreview({
     required this.badge,
     required this.isSelected,
+    required this.badgeIndex,
     required this.onTap,
   });
 
   final RunCityBadge badge;
   final bool isSelected;
+  final int badgeIndex;
   final VoidCallback onTap;
+
+  /// 獲取徽章顏色（根據索引循環使用三種顏色）
+  Color _getBadgeColor(int index) {
+    if (index < 0) {
+      return _badgeCompletedColor; // 默認顏色
+    }
+    const colors = [
+      Color(0xFF76A732), // #76a732
+      Color(0xFFFD8534), // #fd8534
+      Color(0xFFF5BA49), // #f5ba49
+    ];
+    return colors[index % colors.length];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -637,9 +676,9 @@ class _BadgePreview extends StatelessWidget {
             height: 56,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: isSelected
+              border: isSelected && badge.badgeColor != null
                   ? Border.all(
-                      color: _badgeCompletedColor,
+                      color: badge.badgeColor!,
                       width: 3,
                     )
                   : null,
@@ -649,8 +688,8 @@ class _BadgePreview extends StatelessWidget {
                 'assets/svg/badge_icon.svg',
                 width: 40,
                 height: 40,
-                colorFilter: const ColorFilter.mode(
-                  _badgeCompletedColor,
+                colorFilter: ColorFilter.mode(
+                  badge.badgeColor ?? _getBadgeColor(badgeIndex),
                   BlendMode.srcIn,
                 ),
               ),

@@ -15,9 +15,17 @@ class RunCityBadgeDetailView extends GetView<RunCityBadgeDetailController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TPAppBar(title: 'Run City'),
-      body: controller.badgePoints.isEmpty
-          ? _buildEmptyState()
-          : SingleChildScrollView(
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.errorMessage.value != null) {
+          return Center(child: Text(controller.errorMessage.value ?? ''));
+        }
+        if (controller.badgeLocations.isEmpty) {
+          return _buildEmptyState();
+        }
+        return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Container(
                 padding: const EdgeInsets.all(20),
@@ -43,7 +51,8 @@ class RunCityBadgeDetailView extends GetView<RunCityBadgeDetailController> {
                   ],
                 ),
               ),
-            ),
+        );
+      }),
     );
   }
 
@@ -76,7 +85,10 @@ class _BadgeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final badge = controller.badge;
-    final collected = badge.collectedPointIds.length;
+    if (badge == null) {
+      return const SizedBox.shrink();
+    }
+    final collected = controller.collectedLocations.length;
     final total = badge.totalPoints;
 
     return Row(
@@ -213,7 +225,7 @@ class _BadgeLocationsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final points = controller.badgePoints;
+    final locations = controller.badgeLocations;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -249,16 +261,15 @@ class _BadgeLocationsTable extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        ...points.asMap().entries.map(
+        ...locations.asMap().entries.map(
           (entry) {
             final index = entry.key;
-            final point = entry.value;
-            final isLast = index == points.length - 1;
+            final location = entry.value;
+            final isLast = index == locations.length - 1;
             return _LocationRow(
-              point: point,
-              isCollected:
-                  controller.badge.collectedPointIds.contains(point.id),
-              onTap: () => controller.focusOnPoint(point),
+              location: location,
+              isCollected: location.isCollected,
+              onTap: () => controller.focusOnLocation(location),
               showDivider: !isLast,
             );
           },
@@ -270,13 +281,13 @@ class _BadgeLocationsTable extends StatelessWidget {
 
 class _LocationRow extends StatefulWidget {
   const _LocationRow({
-    required this.point,
+    required this.location,
     required this.isCollected,
     required this.onTap,
     required this.showDivider,
   });
 
-  final RunCityPoint point;
+  final RunCityBadgeLocation location;
   final bool isCollected;
   final VoidCallback onTap;
   final bool showDivider;
@@ -323,7 +334,7 @@ class _LocationRowState extends State<_LocationRow> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12),
                           child: TPText(
-                            widget.point.name,
+                            widget.location.name,
                             style:
                                 TPTextStyles.bodyRegular.copyWith(fontSize: 13),
                             color: TPColors.grayscale900,
@@ -363,9 +374,7 @@ class _LocationRowState extends State<_LocationRow> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: TPText(
-                          widget.point.description ??
-                              widget.point.area ??
-                              '未指定',
+                          widget.location.nfcId ?? '未指定',
                           style: TPTextStyles.bodyRegular.copyWith(
                             fontSize: 12,
                             color: TPColors.grayscale500,

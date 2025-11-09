@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:town_pass/bean/run_city.dart';
 import 'package:town_pass/page/run_city/run_city_api_service.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
-import 'package:town_pass/page/run_city/run_city_mock_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:town_pass/service/account_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
 
@@ -76,56 +76,56 @@ class RunCityStatsController extends GetxController {
     userData.value = data;
   }
 
-  /// 載入活動列表
+  /// 載入活動列表（獲取所有記錄）
   Future<void> _loadActivities(String userId) async {
-    final items = await _apiService.fetchActivities(userId: userId);
-    activities.assignAll(items);
+    // 後端 API 最大 limit 為 100，需要分頁加載所有記錄
+    final allItems = <RunCityActivityItem>[];
+    int currentPage = 1;
+    const limit = 100; // 後端允許的最大值
+    bool hasMore = true;
+    
+    while (hasMore) {
+      final items = await _apiService.fetchActivities(
+        userId: userId,
+        page: currentPage,
+        limit: limit,
+      );
+      
+      allItems.addAll(items);
+      
+      // 如果返回的記錄數少於 limit，說明已經是最後一頁
+      if (items.length < limit) {
+        hasMore = false;
+      } else {
+        currentPage++;
+      }
+    }
+    
+    activities.assignAll(allItems);
   }
 
   Future<void> _loadBadges(String userId) async {
-    late final List<RunCityPoint> userPoints;
-    if (RunCityService.useMockData) {
-      userPoints = mockRunCityPoints.toList(growable: false);
-    } else {
-      userPoints = await _apiService.fetchUserLocations(userId: userId);
-    }
-
-    badgePointsSource.assignAll(userPoints);
-    final generatedBadges = _generateBadges(userPoints);
-    generatedBadges.sort((a, b) {
-      final completionCompare = (a.isCompleted ? 0 : 1).compareTo(b.isCompleted ? 0 : 1);
-      if (completionCompare != 0) {
-        return completionCompare;
+    try {
+      final userBadges = await _apiService.fetchUserBadges(userId: userId);
+      // 根據狀態排序：進行中 > 已收集 > 未解鎖
+      userBadges.sort((a, b) {
+        final statusOrder = {
+          RunCityBadgeStatus.inProgress: 0,
+          RunCityBadgeStatus.collected: 1,
+          RunCityBadgeStatus.locked: 2,
+        };
+        final aOrder = statusOrder[a.status] ?? 3;
+        final bOrder = statusOrder[b.status] ?? 3;
+        return aOrder.compareTo(bOrder);
+      });
+      badges.assignAll(userBadges);
+      areBadgesExpanded.value = false;
+    } catch (e) {
+      if (kDebugMode) {
+        print('載入徽章失敗: $e');
       }
-      return a.id.compareTo(b.id);
-    });
-
-    badges.assignAll(generatedBadges);
-    areBadgesExpanded.value = false;
-  }
-
-  List<RunCityBadge> _generateBadges(List<RunCityPoint> points) {
-    if (points.isEmpty) {
-      return <RunCityBadge>[];
+      badges.clear();
     }
-
-    final Map<String, List<RunCityPoint>> groupedByArea = <String, List<RunCityPoint>>{};
-    for (final point in points) {
-      final area = point.area ?? '未分類';
-      groupedByArea.putIfAbsent(area, () => <RunCityPoint>[]).add(point);
-    }
-
-    return groupedByArea.entries.map((entry) {
-      final collected = entry.value.where((p) => p.collected).map((p) => p.id).toList();
-      final allIds = entry.value.map((p) => p.id).toList();
-      return RunCityBadge(
-        id: entry.key,
-        name: entry.key,
-        pointIds: allIds,
-        collectedPointIds: collected,
-        distanceMeters: 0,
-      );
-    }).toList();
   }
 
   /// 刷新資料
