@@ -117,6 +117,7 @@ model Badge {
   name        String   @db.Text
   description String?  @db.Text
   imageUrl    String?  @map("image_url") @db.Text
+  color       String?  @db.Text
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp
 

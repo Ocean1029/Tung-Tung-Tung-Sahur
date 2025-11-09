@@ -15,6 +15,13 @@ export const badgeCreateSchema = z
     name: z.string().trim().min(1, { message: "Name is required" }),
     description: z.string().trim().optional(),
     imageUrl: z.string().url().optional().nullable(),
+    color: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/, {
+        message: "Color must be a valid hex color code (e.g., #FF5733 or #FF5733AA)"
+      })
+      .optional()
+      .nullable(),
     requiredLocationIds: z
       .array(z.string().uuid({ message: "Invalid location ID format" }))
       .min(1, { message: "At least one location is required" })
@@ -26,6 +33,13 @@ export const badgeUpdateSchema = z
     name: z.string().trim().min(1).optional(),
     description: z.string().trim().optional(),
     imageUrl: z.string().url().optional().nullable(),
+    color: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/, {
+        message: "Color must be a valid hex color code (e.g., #FF5733 or #FF5733AA)"
+      })
+      .optional()
+      .nullable(),
     requiredLocationIds: z
       .array(z.string().uuid({ message: "Invalid location ID format" }))
       .min(1)

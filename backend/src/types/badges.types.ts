@@ -7,6 +7,7 @@ export type BadgeSummary = {
   name: string;
   description: string | null;
   imageUrl: string | null;
+  color: string | null;
   area: string | null;
   totalLocations: number;
   requiredLocationIds: string[];
@@ -24,6 +25,7 @@ export type BadgeCreateInput = {
   name: string;
   description?: string;
   imageUrl?: string;
+  color?: string;
   requiredLocationIds: string[];
 };
 
@@ -31,6 +33,7 @@ export type BadgeUpdateInput = {
   name?: string;
   description?: string;
   imageUrl?: string;
+  color?: string;
   requiredLocationIds?: string[];
 };
 
@@ -73,6 +76,7 @@ export type UserBadgeSummary = {
   name: string;
   description: string | null;
   imageUrl: string | null;
+  color: string | null;
   area: string | null;
   totalLocations: number;
   status: UserBadgeStatusValue;
@@ -110,6 +114,7 @@ export type BadgeEvaluationResult = {
     badgeId: string;
     name: string;
     imageUrl: string | null;
+    color: string | null;
     unlockedAt: Date;
   }>;
 };
