@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_badge_detail_controller.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
+import 'package:town_pass/page/run_city/widgets/run_city_badge_share_card.dart';
 import 'package:town_pass/util/tp_app_bar.dart';
 import 'package:town_pass/util/tp_colors.dart';
 import 'package:town_pass/util/tp_text.dart';
@@ -25,7 +26,9 @@ class RunCityBadgeDetailView extends GetView<RunCityBadgeDetailController> {
         if (controller.badgeLocations.isEmpty) {
           return _buildEmptyState();
         }
-        return SingleChildScrollView(
+        return Stack(
+          children: [
+            SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Container(
                 padding: const EdgeInsets.all(20),
@@ -43,7 +46,10 @@ class RunCityBadgeDetailView extends GetView<RunCityBadgeDetailController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _BadgeHeader(controller: controller),
+                    _BadgeHeader(
+                      controller: controller,
+                      onShare: () => _showSharePreview(context, controller),
+                    ),
                     const SizedBox(height: 16),
                     _BadgeMap(controller: controller),
                     const SizedBox(height: 16),
@@ -51,6 +57,8 @@ class RunCityBadgeDetailView extends GetView<RunCityBadgeDetailController> {
                   ],
                 ),
               ),
+            ),
+          ],
         );
       }),
     );
@@ -75,12 +83,24 @@ class RunCityBadgeDetailView extends GetView<RunCityBadgeDetailController> {
       ),
     );
   }
+
+  void _showSharePreview(
+    BuildContext context,
+    RunCityBadgeDetailController controller,
+  ) {
+    Get.dialog(
+      _BadgeSharePreviewDialog(controller: controller),
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.65),
+    );
+  }
 }
 
 class _BadgeHeader extends StatelessWidget {
-  const _BadgeHeader({required this.controller});
+  const _BadgeHeader({required this.controller, required this.onShare});
 
   final RunCityBadgeDetailController controller;
+  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -88,8 +108,13 @@ class _BadgeHeader extends StatelessWidget {
     if (badge == null) {
       return const SizedBox.shrink();
     }
-    final collected = controller.collectedLocations.length;
-    final total = badge.totalPoints;
+    final collected = controller.collectedPoints;
+    final total = controller.totalPoints;
+    final canShare = controller.isCompleted;
+    final Color shareButtonColor =
+        canShare ? TPColors.runCityBlue : TPColors.grayscale200;
+    final Color shareIconColor =
+        canShare ? TPColors.white : TPColors.grayscale500;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,26 +157,155 @@ class _BadgeHeader extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         InkWell(
-          onTap: controller.shareBadge,
+          onTap: canShare ? onShare : null,
           borderRadius: BorderRadius.circular(24),
           child: Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: TPColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x14000000),
-                  blurRadius: 16,
-                  offset: Offset(0, 8),
-                ),
-              ],
+              color: shareButtonColor,
+              boxShadow: canShare
+                  ? const [
+                      BoxShadow(
+                        color: Color(0x14000000),
+                        blurRadius: 16,
+                        offset: Offset(0, 8),
+                      ),
+                    ]
+                  : null,
             ),
-            child: const Icon(Icons.ios_share, color: TPColors.primary500),
+            child: Icon(Icons.ios_share, color: shareIconColor),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _BadgeSharePreviewDialog extends StatelessWidget {
+  const _BadgeSharePreviewDialog({required this.controller});
+
+  final RunCityBadgeDetailController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final badge = controller.badge;
+    if (badge == null) {
+      return const SizedBox.shrink();
+    }
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      backgroundColor: Colors.transparent,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 420,
+          maxHeight: screenSize.height * 0.85,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Material(
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                  child: Column(
+                    children: const [
+                      TPText(
+                        '分享徽章',
+                        style: TPTextStyles.h3SemiBold,
+                        color: TPColors.grayscale900,
+                      ),
+                      SizedBox(height: 4),
+                      TPText(
+                        '預覽分享畫面，確認後點擊分享即可',
+                        style: TPTextStyles.caption,
+                        color: TPColors.grayscale400,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, color: TPColors.grayscale100),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Center(
+                      child: RepaintBoundary(
+                        key: controller.shareCardKey,
+                        child: RunCityBadgeShareCard(
+                          badgeName: badge.name,
+                          badgeDescription: controller.badgeDescription,
+                          collectedPoints: controller.collectedPoints,
+                          totalPoints: controller.totalPoints,
+                          userName: controller.shareUserName,
+                          completedAt: badge.unlockedAt ?? DateTime.now(),
+                          badgeColor: badge.badgeColor ?? TPColors.orange500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1, color: TPColors.grayscale100),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                  child: GetBuilder<RunCityBadgeDetailController>(
+                    id: 'sharePreview',
+                    builder: (ctrl) {
+                      final bool busy = ctrl.isSharing;
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: busy ? null : () => Get.back<void>(),
+                              child: const Text('取消'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: busy
+                                  ? null
+                                  : () async {
+                                      final success = await ctrl.shareBadge();
+                                      if (success &&
+                                          (Get.isDialogOpen ?? false)) {
+                                        Get.back<void>();
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: TPColors.runCityBlue,
+                                foregroundColor: TPColors.white,
+                              ),
+                              child: busy
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          TPColors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : const Text('分享'),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

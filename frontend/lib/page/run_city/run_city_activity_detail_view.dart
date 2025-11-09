@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:town_pass/page/run_city/run_city_activity_detail_controller.dart';
 import 'package:town_pass/page/run_city/run_city_point.dart';
+import 'package:town_pass/page/run_city/widgets/run_city_activity_share_card.dart';
 import 'package:town_pass/util/tp_app_bar.dart';
 import 'package:town_pass/util/tp_cached_network_image.dart';
 import 'package:town_pass/util/tp_colors.dart';
@@ -36,7 +37,7 @@ class RunCityActivityDetailView
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => controller.refresh(),
+                  onPressed: () => controller.refreshActivity(),
                   child: const TPText('重試'),
                 ),
               ],
@@ -58,7 +59,7 @@ class RunCityActivityDetailView
         return Container(
           color: TPColors.runCityBackground,
           child: RefreshIndicator(
-            onRefresh: () => controller.refresh(),
+            onRefresh: () => controller.refreshActivity(),
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -72,7 +73,7 @@ class RunCityActivityDetailView
                   child: Column(
                     children: [
                       // 活動摘要區塊（姓名、日期時間、距離時間）
-                      _buildActivitySummarySection(detail),
+                      _buildActivitySummarySection(context, detail),
                       // 地圖區塊
                       _buildMapSection(detail),
                       // 點位紀錄區塊
@@ -89,7 +90,10 @@ class RunCityActivityDetailView
   }
 
   /// 建立活動摘要區塊（姓名、日期時間、距離時間）
-  Widget _buildActivitySummarySection(detail) {
+  Widget _buildActivitySummarySection(
+    BuildContext context,
+    RunCityActivityDetail detail,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,11 +147,28 @@ class RunCityActivityDetailView
                       color: TPColors.grayscale950,
                     ),
                     const SizedBox(height: 8),
-                    // 日期時間 14px
-                    TPText(
-                      detail.formattedDateTimeRange,
-                      style: TPTextStyles.bodyRegular.copyWith(fontSize: 14),
-                      color: TPColors.grayscale950,
+                    // 日期時間 + 分享
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: TPText(
+                            detail.formattedDateTimeRange,
+                            style:
+                                TPTextStyles.bodyRegular.copyWith(fontSize: 14),
+                            color: TPColors.grayscale950,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.ios_share),
+                          color: TPColors.runCityBlue,
+                          splashRadius: 20,
+                          tooltip: '分享',
+                          onPressed: () => _handleShareTap(context, controller),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -425,6 +446,174 @@ class RunCityActivityDetailView
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> _handleShareTap(
+  BuildContext context,
+  RunCityActivityDetailController controller,
+) async {
+  final ready = await controller.prepareSharePreview();
+  if (!ready) {
+    return;
+  }
+
+  final detail = controller.activityDetail.value;
+  if (detail == null) {
+    controller.closeSharePreview();
+    return;
+  }
+
+  await Get.dialog(
+    _ActivitySharePreviewDialog(
+      controller: controller,
+      detail: detail,
+    ),
+    barrierDismissible: true,
+    barrierColor: Colors.black.withOpacity(0.65),
+  );
+  controller.closeSharePreview();
+}
+
+class _ActivitySharePreviewDialog extends StatelessWidget {
+  const _ActivitySharePreviewDialog({
+    required this.controller,
+    required this.detail,
+  });
+
+  final RunCityActivityDetailController controller;
+  final RunCityActivityDetail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      backgroundColor: Colors.transparent,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 420,
+          maxHeight: screenSize.height * 0.85,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Material(
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      TPText(
+                        '分享運動紀錄',
+                        style: TPTextStyles.h3SemiBold,
+                        color: TPColors.grayscale900,
+                      ),
+                      SizedBox(height: 4),
+                      TPText(
+                        '預覽分享畫面，確認後點擊分享即可',
+                        style: TPTextStyles.caption,
+                        color: TPColors.grayscale400,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, color: TPColors.grayscale100),
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topCenter,
+                        child: SizedBox(
+                          width: 393,
+                          height: 753,
+                          child: RepaintBoundary(
+                            key: controller.shareCardKey,
+                            child: RunCityActivityShareCard(
+                              userName: detail.userName,
+                              dateTimeRange: detail.formattedDateTimeRange,
+                              distanceText: detail.formattedDistance,
+                              durationText: detail.formattedDuration,
+                              coinsText: detail.totalCoinsEarned.toString(),
+                              mapSnapshot: controller.shareMapSnapshot,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1, color: TPColors.grayscale100),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                  child: GetBuilder<RunCityActivityDetailController>(
+                    id: 'sharePreview',
+                    builder: (ctrl) {
+                      final busy = ctrl.isSharing;
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: busy
+                                  ? null
+                                  : () {
+                                      controller.closeSharePreview();
+                                      Get.back<void>();
+                                    },
+                              child: const Text('取消'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: busy
+                                  ? null
+                                  : () async {
+                                      final success =
+                                          await ctrl.shareActivity();
+                                      if (success &&
+                                          (Get.isDialogOpen ?? false)) {
+                                        ctrl.closeSharePreview();
+                                        Get.back<void>();
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: TPColors.runCityBlue,
+                                foregroundColor: TPColors.white,
+                              ),
+                              child: busy
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          TPColors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : const Text('分享'),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
