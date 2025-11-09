@@ -152,9 +152,12 @@ class RunCityBadgeDetailController extends GetxController {
   double _degToRad(double deg) => deg * (pi / 180);
 
   Future<void> _prepareMarkers() async {
-    _pointMarkerIcon ??= await _createMarkerBitmap(
+    // 使用徽章的顏色，如果沒有則使用默認顏色
+    final badgeColor = badge?.badgeColor ?? _pointColor;
+    // 每次重新創建標記圖標，以確保使用正確的徽章顏色
+    _pointMarkerIcon = await _createMarkerBitmap(
       diameter: 50,
-      fillColor: _pointColor,
+      fillColor: badgeColor,
       borderColor: Colors.white,
       borderWidth: 4,
       shadowBlur: 8,

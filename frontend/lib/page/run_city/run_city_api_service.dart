@@ -347,42 +347,33 @@ class RunCityApiService extends GetxService {
     required String userId,
   }) async {
     if (useMockData) {
-      return _getMockUserBadges();
+      return _getMockUserBadges(userId: userId);
     }
 
     final response = await _get('/api/users/$userId/badges');
     final data = response['data'] as Map<String, dynamic>? ?? <String, dynamic>{};
     final badges = data['badges'] as List<dynamic>? ?? <dynamic>[];
     
-    // 調試：打印第一個徽章的完整 JSON 數據
+    // 調試：打印API返回的徽章數據，確認是否包含color字段
+    debugPrint('========== API返回的徽章數據 ==========');
+    debugPrint('徽章總數: ${badges.length}');
     if (badges.isNotEmpty) {
+      // 打印所有徽章的color字段
+      for (var i = 0; i < badges.length; i++) {
+        final badge = badges[i] as Map<String, dynamic>;
+        debugPrint('徽章[$i]: ${badge['name']} - color: ${badge['color']} (類型: ${badge['color']?.runtimeType})');
+      }
       debugPrint('第一個徽章的完整 JSON: ${badges.first}');
     }
+    debugPrint('=======================================');
     
     return badges
-        .asMap()
-        .entries
-        .map((entry) {
-          final index = entry.key;
-          final json = entry.value as Map<String, dynamic>;
-          // 調試：打印每個徽章的 requiredLocationIds
-          debugPrint('徽章 ${json['name']} 的 requiredLocationIds: ${json['requiredLocationIds']}');
-          // 臨時方法：根據索引循環分配顏色（之後會由資料庫提供）
-          final badgeColor = _getBadgeColor(index);
-          return RunCityBadge.fromJson(json, badgeColor: badgeColor);
+        .map((json) {
+          return RunCityBadge.fromJson(json as Map<String, dynamic>);
         })
         .toList(growable: false);
   }
 
-  /// 獲取徽章顏色（根據索引循環使用三種顏色）- 臨時方法
-  Color _getBadgeColor(int index) {
-    final colors = [
-      Color(0xFF76A732), // #76a732
-      Color(0xFFFD8534), // #fd8534
-      Color(0xFFF5BA49), // #f5ba49
-    ];
-    return colors[index % colors.length];
-  }
 
   /// 獲取用戶徽章統計（包含已收集數量）
   /// GET /api/users/{userId}/badges
@@ -390,12 +381,20 @@ class RunCityApiService extends GetxService {
     required String userId,
   }) async {
     if (useMockData) {
-      final badges = await _getMockUserBadges();
-      final collectedCount = badges.where((b) => b.status == RunCityBadgeStatus.collected).length;
-      return UserBadgeStats(
-        collectedCount: collectedCount,
-        totalCount: badges.length,
-      );
+      // Mock模式下也從真實API獲取數據，確保數據從數據庫讀取
+      try {
+        final response = await _get('/api/users/$userId/badges');
+        final data = response['data'] as Map<String, dynamic>? ?? <String, dynamic>{};
+        final collectedCount = data['collectedCount'] as int? ?? 0;
+        final totalCount = data['totalBadges'] as int? ?? 0;
+        return UserBadgeStats(
+          collectedCount: collectedCount,
+          totalCount: totalCount,
+        );
+      } catch (e) {
+        debugPrint('Mock模式：無法連接到後端，返回空統計');
+        return const UserBadgeStats(collectedCount: 0, totalCount: 0);
+      }
     }
 
     final response = await _get('/api/users/$userId/badges');
@@ -414,7 +413,7 @@ class RunCityApiService extends GetxService {
     required String badgeId,
   }) async {
     if (useMockData) {
-      return _getMockBadgeDetail(badgeId);
+      return _getMockBadgeDetail(userId: userId, badgeId: badgeId);
     }
 
     final response = await _get('/api/users/$userId/badges/$badgeId');
@@ -563,121 +562,66 @@ class RunCityApiService extends GetxService {
   }
 
   /// Mock 用戶徽章列表
-  Future<List<RunCityBadge>> _getMockUserBadges() async {
+  /// 注意：即使使用Mock模式，也嘗試從真實API獲取數據，確保顏色從數據庫讀取
+  Future<List<RunCityBadge>> _getMockUserBadges({required String userId}) async {
     await Future.delayed(const Duration(milliseconds: 300));
     
-    final mockBadges = [
-      RunCityBadge(
-        badgeId: 'badge_001',
-        name: '台大探險家',
-        description: '收集完台大區域所有點位',
-        area: '台大區域',
-        imageUrl: 'https://example.com/badges/badge_001.png',
-        status: RunCityBadgeStatus.collected,
-        unlockedAt: DateTime.now().subtract(const Duration(days: 2)),
-        progress: const RunCityBadgeProgress(collected: 2, total: 3, percentage: 67),
-        // 使用 mock 地圖點的 ID：國立台灣大學、師大夜市、大安森林公園
-        requiredLocationIds: ['mock-point-010', 'mock-point-011', 'mock-point-009'],
-      ),
-      RunCityBadge(
-        badgeId: 'badge_002',
-        name: '大安森林公園漫步者',
-        description: '收集完大安森林公園區域所有點位',
-        area: '大安森林公園',
-        imageUrl: 'https://example.com/badges/badge_002.png',
-        status: RunCityBadgeStatus.inProgress,
-        unlockedAt: null,
-        progress: const RunCityBadgeProgress(collected: 1, total: 2, percentage: 50),
-        // 使用 mock 地圖點的 ID：大安森林公園、師大夜市
-        requiredLocationIds: ['mock-point-009', 'mock-point-011'],
-      ),
-      RunCityBadge(
-        badgeId: 'badge_003',
-        name: '中正紀念堂探索者',
-        description: '收集完中正紀念堂區域所有點位',
-        area: '中正紀念堂',
-        imageUrl: 'https://example.com/badges/badge_003.png',
-        status: RunCityBadgeStatus.locked,
-        unlockedAt: null,
-        progress: const RunCityBadgeProgress(collected: 0, total: 3, percentage: 0),
-        // 使用 mock 地圖點的 ID：台北車站、總統府、西門町
-        requiredLocationIds: ['mock-point-001', 'mock-point-002', 'mock-point-003'],
-      ),
-    ];
-    
-    // 為每個徽章分配顏色（臨時方法）
-    return mockBadges.asMap().entries.map((entry) {
-      final index = entry.key;
-      final badge = entry.value;
-      final badgeColor = _getBadgeColor(index);
-      return badge.copyWith(badgeColor: badgeColor);
-    }).toList();
+    // Mock模式下，嘗試從真實API獲取數據（如果後端可用）
+    // 這樣可以確保即使使用Mock模式，顏色也從數據庫獲取
+    try {
+      final response = await _get('/api/users/$userId/badges');
+      final data = response['data'] as Map<String, dynamic>? ?? <String, dynamic>{};
+      final badges = data['badges'] as List<dynamic>? ?? <dynamic>[];
+      
+      return badges
+          .map((json) {
+            return RunCityBadge.fromJson(json as Map<String, dynamic>);
+          })
+          .toList(growable: false);
+    } catch (e) {
+      // 如果後端不可用，返回空列表
+      debugPrint('Mock模式：無法連接到後端，返回空徽章列表');
+      return <RunCityBadge>[];
+    }
   }
 
   /// Mock 徽章詳情
-  Future<RunCityBadgeDetail> _getMockBadgeDetail(String badgeId) async {
+  /// 注意：即使使用Mock模式，也嘗試從真實API獲取數據，確保顏色從數據庫讀取
+  Future<RunCityBadgeDetail> _getMockBadgeDetail({
+    required String userId,
+    required String badgeId,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 300));
     
-    final allBadges = await _getMockUserBadges();
-    final badge = allBadges.firstWhere(
-      (b) => b.badgeId == badgeId,
-      orElse: () => allBadges.first,
-    );
-
-    final requiredLocations = badge.requiredLocationIds?.map((locId) {
-      final isCollected = badge.status == RunCityBadgeStatus.collected ||
-          (badge.status == RunCityBadgeStatus.inProgress && 
-           badge.requiredLocationIds!.indexOf(locId) < badge.progress!.collected);
-      
-      return RunCityBadgeLocation(
-        locationId: locId,
-        name: '${badge.area}點位${locId.split('_').last}',
-        latitude: 25.0173 + math.Random().nextDouble() * 0.01,
-        longitude: 121.5397 + math.Random().nextDouble() * 0.01,
-        nfcId: 'nfc_$locId',
-        isCollected: isCollected,
-        collectedAt: isCollected ? DateTime.now().subtract(Duration(days: math.Random().nextInt(7))) : null,
-      );
-    }).toList(growable: false) ?? <RunCityBadgeLocation>[];
-
-    return RunCityBadgeDetail(
-      badge: badge,
-      requiredLocations: requiredLocations,
-    );
+    // Mock模式下，嘗試從真實API獲取數據
+    try {
+      final response = await _get('/api/users/$userId/badges/$badgeId');
+      final data = response['data'] as Map<String, dynamic>;
+      return RunCityBadgeDetail.fromJson(data);
+    } catch (e) {
+      debugPrint('Mock模式：無法連接到後端獲取徽章詳情');
+      rethrow;
+    }
   }
 
   /// Mock 所有徽章列表
   Future<List<RunCityBadge>> _getMockAllBadges() async {
     await Future.delayed(const Duration(milliseconds: 300));
     
-    final mockBadges = [
-      RunCityBadge(
-        badgeId: 'badge_001',
-        name: '台大探險家',
-        description: '收集完台大區域所有點位',
-        area: '台大區域',
-        imageUrl: 'https://example.com/badges/badge_001.png',
-        // 使用 mock 地圖點的 ID
-        requiredLocationIds: ['mock-point-010', 'mock-point-011', 'mock-point-009'],
-      ),
-      RunCityBadge(
-        badgeId: 'badge_002',
-        name: '大安森林公園漫步者',
-        description: '收集完大安森林公園區域所有點位',
-        area: '大安森林公園',
-        imageUrl: 'https://example.com/badges/badge_002.png',
-        // 使用 mock 地圖點的 ID
-        requiredLocationIds: ['mock-point-009', 'mock-point-011'],
-      ),
-    ];
-    
-    // 為每個徽章分配顏色（臨時方法）
-    return mockBadges.asMap().entries.map((entry) {
-      final index = entry.key;
-      final badge = entry.value;
-      final badgeColor = _getBadgeColor(index);
-      return badge.copyWith(badgeColor: badgeColor);
-    }).toList();
+    // Mock模式下，嘗試從真實API獲取數據（如果後端可用）
+    // 這樣可以確保即使使用Mock模式，顏色也從數據庫獲取
+    try {
+      final response = await _get('/api/badges');
+      final data = response['data'] as List<dynamic>? ?? <dynamic>[];
+      
+      return data
+          .map((dynamic json) => RunCityBadge.fromJson(json as Map<String, dynamic>))
+          .toList(growable: false);
+    } catch (e) {
+      // 如果後端不可用，返回空列表
+      debugPrint('Mock模式：無法連接到後端，返回空徽章列表');
+      return <RunCityBadge>[];
+    }
   }
 
   /// Mock 活動列表資料

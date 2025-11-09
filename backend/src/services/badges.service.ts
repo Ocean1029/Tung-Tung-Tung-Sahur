@@ -337,6 +337,13 @@ const getUserBadges = async (
     userCollections.map((collection) => collection.locationId)
   );
 
+  // 調試：記錄從數據庫查詢到的徽章顏色
+  console.log('========== 數據庫徽章顏色檢查 ==========');
+  badges.forEach((badge, index) => {
+    console.log(`徽章[${index}]: ${badge.name} - color: ${badge.color} (類型: ${typeof badge.color})`);
+  });
+  console.log('========================================');
+
   const badgeSummaries: UserBadgeSummary[] = badges.map((badge) => {
     const areaCandidates = badge.badgeLocationRequirements
       .map((req) => req.location?.area ?? null)
@@ -369,7 +376,7 @@ const getUserBadges = async (
         ? "in_progress"
         : "locked";
 
-    return {
+    const badgeSummary = {
       badgeId: badge.id,
       name: badge.name,
       description: badge.description,
@@ -385,6 +392,18 @@ const getUserBadges = async (
         percentage
       }
     };
+    
+    // 調試：記錄徽章顏色資訊
+    if (badge.name === '溫室雜草' || badge.name.includes('溫室')) {
+      console.log('========== 徽章顏色調試 ==========');
+      console.log(`徽章名稱: ${badge.name}`);
+      console.log(`數據庫中的 color: ${badge.color}`);
+      console.log(`返回的 color: ${badgeSummary.color}`);
+      console.log(`完整 badge 對象:`, JSON.stringify(badge, null, 2));
+      console.log('================================');
+    }
+    
+    return badgeSummary;
   });
 
   const filteredBadges = status

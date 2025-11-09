@@ -647,19 +647,6 @@ class _BadgePreview extends StatelessWidget {
   final int badgeIndex;
   final VoidCallback onTap;
 
-  /// 獲取徽章顏色（根據索引循環使用三種顏色）
-  Color _getBadgeColor(int index) {
-    if (index < 0) {
-      return _badgeCompletedColor; // 默認顏色
-    }
-    const colors = [
-      Color(0xFF76A732), // #76a732
-      Color(0xFFFD8534), // #fd8534
-      Color(0xFFF5BA49), // #f5ba49
-    ];
-    return colors[index % colors.length];
-  }
-
   @override
   Widget build(BuildContext context) {
     final collectedCount = badge.collectedPoints;
@@ -689,7 +676,7 @@ class _BadgePreview extends StatelessWidget {
                 width: 40,
                 height: 40,
                 colorFilter: ColorFilter.mode(
-                  badge.badgeColor ?? _getBadgeColor(badgeIndex),
+                  badge.badgeColor ?? _badgeCompletedColor,
                   BlendMode.srcIn,
                 ),
               ),

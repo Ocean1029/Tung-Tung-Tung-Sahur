@@ -242,7 +242,7 @@ class RunCityBadge {
   final DateTime? unlockedAt;
   final RunCityBadgeProgress? progress;
   final List<String>? requiredLocationIds;
-  final Color? badgeColor; // 徽章顏色（臨時屬性，之後會由資料庫提供）
+  final Color? badgeColor; // 徽章顏色（從後端獲取）
 
   // 向後兼容的舊字段
   final List<String>? pointIds;
@@ -295,7 +295,7 @@ class RunCityBadge {
 
   double get distanceKm => (distanceMeters ?? 0) / 1000;
 
-  factory RunCityBadge.fromJson(Map<String, dynamic> json, {Color? badgeColor}) {
+  factory RunCityBadge.fromJson(Map<String, dynamic> json) {
     RunCityBadgeStatus? status;
     if (json['status'] != null) {
       switch (json['status'] as String) {
@@ -323,6 +323,43 @@ class RunCityBadge {
       progress = RunCityBadgeProgress.fromJson(json['progress'] as Map<String, dynamic>);
     }
 
+    // 從後端獲取顏色，如果沒有則為null
+    Color? badgeColor;
+    debugPrint('========== 解析徽章顏色 ==========');
+    debugPrint('徽章名稱: ${json['name']}');
+    debugPrint('JSON中的 color 字段: ${json['color']}');
+    debugPrint('color 字段類型: ${json['color']?.runtimeType}');
+    if (json['color'] != null && json['color'] is String) {
+      final colorString = json['color'] as String;
+      debugPrint('color 字符串值: $colorString');
+      try {
+        // 將hex顏色字符串轉換為Color對象
+        // Flutter的Color需要32位值（ARGB格式），所以需要在6位hex前添加FF（完全不透明）
+        final hexString = colorString.replaceFirst('#', '').toUpperCase();
+        debugPrint('處理後的hex字符串: $hexString');
+        
+        // 如果已經是8位（包含alpha），直接使用；否則添加FF前綴
+        final fullHexString = hexString.length == 8 ? hexString : 'FF$hexString';
+        debugPrint('完整hex字符串（含alpha）: $fullHexString');
+        
+        final colorValue = int.parse(fullHexString, radix: 16);
+        badgeColor = Color(colorValue);
+        debugPrint('✅ 成功解析顏色: $badgeColor');
+        debugPrint('顏色值: ${badgeColor.value}');
+        debugPrint('顏色hex: #${badgeColor.value.toRadixString(16).substring(2).toUpperCase()}');
+        debugPrint('顏色RGB: R=${badgeColor.red}, G=${badgeColor.green}, B=${badgeColor.blue}');
+      } catch (e) {
+        // 如果解析失敗，使用null
+        debugPrint('❌ 顏色解析失敗: $e');
+        badgeColor = null;
+      }
+    } else {
+      debugPrint('⚠️ color 字段為 null 或不是 String 類型');
+      badgeColor = null;
+    }
+    debugPrint('最終 badgeColor: $badgeColor');
+    debugPrint('================================');
+
     return RunCityBadge(
       badgeId: json['badgeId'] as String,
       name: json['name'] as String,
@@ -335,7 +372,7 @@ class RunCityBadge {
       requiredLocationIds: json['requiredLocationIds'] != null
           ? (json['requiredLocationIds'] as List<dynamic>).map((e) => e as String).toList()
           : null,
-      badgeColor: badgeColor, // 臨時屬性，之後會由資料庫提供
+      badgeColor: badgeColor,
     );
   }
 
