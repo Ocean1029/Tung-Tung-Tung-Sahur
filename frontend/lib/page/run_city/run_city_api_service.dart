@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -40,7 +41,7 @@ class RunCityApiService extends GetxService {
         baseUrl = baseUrl ??
             const String.fromEnvironment(
               'RUN_CITY_API_BASE_URL',
-              defaultValue: 'http://localhost:3000',
+              defaultValue: 'http://172.20.10.3:3000', // 使用 Mac IP，手機才能連接
             );
 
   final http.Client _httpClient;
@@ -191,7 +192,7 @@ class RunCityApiService extends GetxService {
     return distance;
   }
 
-  Future<void> collectLocation({
+  Future<Map<String, dynamic>> collectNfcLocation({
     required String userId,
     required String activityId,
     required String nfcId,
@@ -199,15 +200,26 @@ class RunCityApiService extends GetxService {
     if (useMockData) {
       // 模擬成功回傳
       await Future.delayed(const Duration(milliseconds: 200));
-      return;
+      return {
+        'success': true,
+        'data': {
+          'locationId': 'mock-location-id',
+          'name': '模擬地點',
+          'coinsEarned': 1,
+          'totalCoins': 100,
+          'isFirstCollection': true,
+        }
+      };
     }
 
-    await _post(
-      '/api/users/$userId/activities/$activityId/collect',
+    final response = await _post(
+      '/api/users/$userId/activities/$activityId/collect/nfc',
       body: <String, dynamic>{
         'nfcId': nfcId,
       },
     );
+    
+    return response;
   }
 
   Future<RunCityActivitySummary> endActivity({
@@ -520,12 +532,48 @@ class RunCityApiService extends GetxService {
     Map<String, dynamic>? body,
   }) async {
     final uri = _buildUri(path, queryParameters: queryParameters);
-    final response = await _httpClient.post(
+    
+    try {
+      final response = await _httpClient
+          .post(
       uri,
       headers: _jsonHeaders,
       body: body != null ? jsonEncode(body) : null,
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw RunCityApiException(
+                '請求超時，請檢查網路連接',
+                code: 'TIMEOUT',
+                statusCode: 408,
+              );
+            },
     );
     return _handleResponse(response);
+    } on http.ClientException catch (e) {
+      // 處理網路連接錯誤
+      throw RunCityApiException(
+        '網路連接失敗：${e.message}\n請確認：\n1. 後端伺服器正在運行\n2. iPhone 和 Mac 在同一網路\n3. Mac IP 地址正確',
+        code: 'NETWORK_ERROR',
+        statusCode: null,
+      );
+    } on SocketException catch (e) {
+      throw RunCityApiException(
+        '無法連接到伺服器：${e.message}\n請確認後端伺服器正在運行',
+        code: 'CONNECTION_ERROR',
+        statusCode: null,
+      );
+    } catch (e) {
+      if (e is RunCityApiException) {
+        rethrow;
+      }
+      throw RunCityApiException(
+        '請求失敗：${e.toString()}',
+        code: 'UNKNOWN_ERROR',
+        statusCode: null,
+      );
+    }
   }
 
   Future<Map<String, dynamic>> _patch(

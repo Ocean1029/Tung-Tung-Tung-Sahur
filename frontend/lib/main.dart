@@ -11,6 +11,7 @@ import 'package:town_pass/service/geo_locator_service.dart';
 import 'package:town_pass/service/notification_service.dart';
 import 'package:town_pass/service/package_service.dart';
 import 'package:town_pass/service/shared_preferences_service.dart';
+import 'package:town_pass/page/run_city/run_city_controller.dart';
 import 'package:town_pass/service/nfc_service.dart';
 import 'package:town_pass/service/run_city_service.dart';
 import 'package:town_pass/service/subscription_service.dart';
@@ -67,12 +68,6 @@ void _setupDeepLinkHandler() {
   });
 }
 
-// NFC ID 到地名的硬編碼映射
-final Map<String, String> _nfcLocationMap = {
-  'nfc_001': '國立臺灣大學圖書館',
-  // 可以在這裡添加更多映射
-};
-
 void _handleDeepLink(String url) {
   try {
     final uri = Uri.parse(url);
@@ -81,8 +76,8 @@ void _handleDeepLink(String url) {
     if (uri.scheme == 'runcity') {
       print('收到 Deep Link: $url');
       
-      // 解析參數（例如 runcity://nfc?tag=nfc_001）
-      final tagId = uri.queryParameters['tag'] ?? uri.queryParameters['id'];
+      // 解析參數（例如 runcity://runcity?nfcId=nfc-001）
+      final nfcId = uri.queryParameters['nfcId'];
       
       // 根據 host 或 path 決定跳轉到哪個頁面
       String targetRoute;
@@ -131,90 +126,47 @@ void _handleDeepLink(String url) {
       // 執行跳轉
       // 使用 Future.microtask 確保在 Widget 樹構建完成後再跳轉
       Future.microtask(() async {
-        // 先跳轉到目標頁面
-        Get.offAllNamed(targetRoute);
+        final currentRoute = Get.currentRoute;
+        final isAlreadyOnTargetRoute = currentRoute == targetRoute;
         
-        // 如果有 tag ID 且目標是 runcity 頁面，顯示成功提示
-        if (tagId != null && targetRoute == TPRoute.runCity) {
+        // 如果已經在目標頁面，不需要跳轉
+        if (!isAlreadyOnTargetRoute) {
+          // 使用 Get.toNamed 而不是 Get.offAllNamed，保留頁面棧
+          // 這樣用戶可以返回上一頁，也不會清除 Controller 狀態
+          Get.toNamed(targetRoute);
           // 等待頁面載入完成
           await Future.delayed(const Duration(milliseconds: 500));
+        }
+        
+        // 如果有 nfcId 且目標是 runcity 頁面，處理 NFC 收集
+        if (nfcId != null && targetRoute == TPRoute.runCity) {
+          // 如果已經在 runcity 頁面，不需要額外等待
+          if (isAlreadyOnTargetRoute) {
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
           
-          // 獲取地點名稱
-          final locationName = _nfcLocationMap[tagId] ?? tagId;
-          
-          // 顯示成功提示
-          _showCollectionSuccessDialog(locationName);
+          // 獲取 RunCityController 並處理 NFC 收集
+          try {
+            final controller = Get.find<RunCityController>();
+            await controller.handleNfcCollection(nfcId);
+          } catch (e) {
+            print('處理 NFC 收集失敗: $e');
+            // 如果找不到 controller，顯示錯誤提示
+            Get.snackbar(
+              '錯誤',
+              '無法處理 NFC 收集，請稍後再試',
+              snackPosition: SnackPosition.BOTTOM,
+              colorText: Colors.white,
+              backgroundColor: Colors.red,
+            );
+          }
         }
       });
-      print('跳轉到: $targetRoute${tagId != null ? " (tag: $tagId)" : ""}');
+      print('跳轉到: $targetRoute${nfcId != null ? " (nfcId: $nfcId)" : ""}');
     }
   } catch (e) {
     print('處理 Deep Link 失敗: $e');
   }
-}
-
-void _showCollectionSuccessDialog(String locationName) {
-  Get.dialog(
-    Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // "收集成功!" 文字
-            const Text(
-              '收集成功!',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: TPColors.primary500, // 使用主題色
-              ),
-            ),
-            const SizedBox(height: 32),
-            // 勾選圖標
-            Container(
-              width: 80,
-              height: 80,
-              decoration: const BoxDecoration(
-                color: TPColors.primary500,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check,
-                color: Colors.white,
-                size: 50,
-              ),
-            ),
-            const SizedBox(height: 32),
-            // 地點名稱
-            Text(
-              locationName,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    ),
-    barrierDismissible: true,
-  );
-  
-  // 3 秒後自動關閉
-  Future.delayed(const Duration(seconds: 3), () {
-    if (Get.isDialogOpen ?? false) {
-      Get.back();
-    }
-  });
 }
 
 class MyApp extends StatelessWidget {

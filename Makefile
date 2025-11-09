@@ -16,7 +16,7 @@ set +a; \
 cd $(BACKEND_DIR) && $(1)
 endef
 
-.PHONY: help install dev stop lint lint-fix format format-fix build clean prisma-generate prisma-migrate prisma-push seed test docker-build-dev docker-build-prod docker-run-prod
+.PHONY: help install dev stop lint lint-fix format format-fix build clean prisma-generate prisma-migrate prisma-push seed test docker-build-dev docker-build-prod docker-run-prod db-create-user db-reset
 
 help:
 	@echo "Available targets:"
@@ -37,6 +37,8 @@ help:
 	@echo "  docker-build-dev    Build development Docker image"
 	@echo "  docker-build-prod   Build production Docker image"
 	@echo "  docker-run-prod     Run production Docker container"
+	@echo "  db-create-user      Create tung_user role in PostgreSQL"
+	@echo "  db-reset            Reset database (WARNING: deletes all data)"
 
 install:
 	@echo "Installing backend dependencies..."
@@ -105,4 +107,22 @@ docker-build-prod:
 docker-run-prod:
 	@echo "Running production Docker container..."
 	@docker run --rm --env-file .env.prod -p 8080:3000 --name tung-backend tung-backend:prod
+
+db-create-user:
+	@echo "Creating tung_user role in PostgreSQL..."
+	@bash -c 'set -a; \
+	if [ -f $(ENV_FILE) ]; then . $(ENV_FILE); fi; \
+	set +a; \
+	docker compose --env-file $(ENV_FILE) exec -T db psql -U $$POSTGRES_USER -d $$POSTGRES_DB -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '\''tung_user'\'') THEN CREATE ROLE tung_user WITH LOGIN PASSWORD '\''$$POSTGRES_PASSWORD'\''; GRANT ALL PRIVILEGES ON DATABASE $$POSTGRES_DB TO tung_user; ALTER DATABASE $$POSTGRES_DB OWNER TO tung_user; END IF; END \$\$;" || echo "Note: If container is not running, start it first with 'make dev'"'
+
+db-reset:
+	@echo "WARNING: This will delete all database data!"
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		$(DOCKER_COMPOSE) --env-file $(ENV_FILE) down -v; \
+		echo "Database volume removed. Run 'make dev' to recreate."; \
+	else \
+		echo "Cancelled."; \
+	fi
 

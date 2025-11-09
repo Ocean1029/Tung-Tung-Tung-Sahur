@@ -23,15 +23,18 @@ if [ ! -d "node_modules" ]; then
     echo ""
 fi
 
-# 啟動開發伺服器
-echo "✅ 伺服器將在 http://localhost:3000 啟動"
+# 使用端口 3000（預設）
+PORT=3000
+export PORT
+
+echo "✅ 伺服器將在 http://localhost:$PORT 啟動"
 echo "📱 NFC 端點："
-echo "   - GET  http://localhost:3000/api/nfc?id=station_001"
-echo "   - POST http://localhost:3000/api/nfc/read"
+echo "   - GET  http://localhost:$PORT/api/nfc?id=station_001"
+echo "   - POST http://localhost:$PORT/api/nfc/read"
 echo ""
 echo "按 Ctrl+C 停止伺服器"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-npm run dev
+PORT=$PORT npm run dev
 

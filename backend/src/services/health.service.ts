@@ -24,7 +24,7 @@ const getStatus = async ({ traceId }: HealthStatusInput): Promise<HealthStatus> 
   try {
     // Check if DATABASE_URL is set
     if (process.env.DATABASE_URL) {
-      await prisma.$queryRaw`SELECT 1`;
+  await prisma.$queryRaw`SELECT 1`;
       databaseConnected = true;
     }
   } catch (error) {

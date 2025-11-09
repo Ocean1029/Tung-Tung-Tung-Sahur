@@ -92,44 +92,110 @@ class RunCityActivityDetailController extends GetxController {
   }
 
   /// 更新地圖顯示
+  /// 
+  /// 地圖顯示邏輯：優先使用 NFC 收集的位置繪製路線
+  /// 1. 如果有 NFC 收集位置：使用 NFC 位置繪製（Demo 場景）
+  /// 2. 如果沒有 NFC 收集位置但有 GPS 路線：使用 GPS 路線繪製（真實使用場景）
+  /// 3. 兩種數據都保留，根據可用性自動選擇
   void _updateMap() {
     final detail = activityDetail.value;
-    if (detail == null || detail.route.isEmpty) {
+    if (detail == null) {
+      return;
+    }
+
+    // 判斷使用哪種數據源
+    // 優先級：NFC locationRecords（Demo） > GPS route（真實使用）
+    final hasNfcLocations = detail.locationRecords.isNotEmpty;
+    final hasGpsRoute = detail.route.length >= 2;
+    
+    List<LatLng> routePoints;
+    bool useNfcLocations = false;
+    bool useGpsRoute = false;
+
+    if (hasNfcLocations) {
+      // 情況 1：有 NFC 收集位置（Demo 場景）- 優先使用 NFC 位置
+      routePoints = detail.locationRecords
+          .map((record) => LatLng(record.latitude, record.longitude))
+          .toList();
+      useNfcLocations = true;
+    } else if (hasGpsRoute) {
+      // 情況 2：沒有 NFC 收集位置但有 GPS 路線（真實使用場景）- 使用 GPS 路線
+      routePoints = detail.route
+          .map((point) => LatLng(point.latitude, point.longitude))
+          .toList();
+      useGpsRoute = true;
+    } else {
+      // 情況 3：兩種都沒有，不顯示地圖
       return;
     }
 
     // 建立路線 Polyline
-    final routePoints = detail.route
-        .map((point) => LatLng(point.latitude, point.longitude))
-        .toList();
     polylines.clear();
-    polylines.add(
-      Polyline(
-        polylineId: const PolylineId('route'),
-        points: routePoints,
-        color: const Color(0xFFFF853A), // 橙色
-        width: 5,
-      ),
-    );
+    if (routePoints.length > 1) {
+      polylines.add(
+        Polyline(
+          polylineId: const PolylineId('route'),
+          points: routePoints,
+          color: const Color(0xFFFF853A), // 橙色
+          width: 5,
+        ),
+      );
+    }
 
-    // 建立起點和終點 Marker
-    final startPoint = detail.route.first;
-    final endPoint = detail.route.last;
+    // 建立 Marker
     markers.clear();
-    markers.addAll({
-      Marker(
-        markerId: const MarkerId('start'),
-        position: LatLng(startPoint.latitude, startPoint.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-      ),
-      Marker(
-        markerId: const MarkerId('end'),
-        position: LatLng(endPoint.latitude, endPoint.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      ),
-    });
+    
+    if (useNfcLocations) {
+      // 使用 NFC 收集的位置作為 Marker（Demo 場景）
+      for (int i = 0; i < detail.locationRecords.length; i++) {
+        final record = detail.locationRecords[i];
+        final position = LatLng(record.latitude, record.longitude);
+        
+        // 第一個點是起點（綠色），最後一個點是終點（紅色），其他是收集點（藍色）
+        double markerHue;
+        String markerId;
+        if (i == 0) {
+          markerHue = BitmapDescriptor.hueGreen; // 起點：綠色
+          markerId = 'start';
+        } else if (i == detail.locationRecords.length - 1) {
+          markerHue = BitmapDescriptor.hueRed; // 終點：紅色
+          markerId = 'end';
+        } else {
+          markerHue = BitmapDescriptor.hueBlue; // 收集點：藍色
+          markerId = 'nfc_$i';
+        }
+        
+        markers.add(
+          Marker(
+            markerId: MarkerId(markerId),
+            position: position,
+            icon: BitmapDescriptor.defaultMarkerWithHue(markerHue),
+            infoWindow: InfoWindow(
+              title: record.locationName,
+              snippet: '${record.formattedTime}',
+            ),
+          ),
+        );
+      }
+    } else if (useGpsRoute) {
+      // 使用 GPS 路線的起點和終點（真實使用場景）
+      final startPoint = routePoints.first;
+      final endPoint = routePoints.last;
+      markers.addAll({
+        Marker(
+          markerId: const MarkerId('start'),
+          position: startPoint,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        ),
+        Marker(
+          markerId: const MarkerId('end'),
+          position: endPoint,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        ),
+      });
+    }
 
-    // 調整地圖視角以包含所有路線
+    // 調整地圖視角以包含所有路線和標記
     if (mapController != null && routePoints.isNotEmpty) {
       _fitBounds(routePoints);
     }
