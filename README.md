@@ -14,9 +14,7 @@
 ### 📖 專案文件
 - **Google Docs**: [專案發想、分工文件](https://docs.google.com/document/d/1SIkJgET925s7sBVYUhLn7tcre8B-_hKaHptOVJA48E8/edit?usp=sharing)
 
-### 🔌 API 文件
-- **API 文檔**: [API 文件](https://run-city-424370484311.asia-east1.run.app/docs/)
-- **API 基礎 URL**: `https://run-city-424370484311.asia-east1.run.app`
+
 
 > ✅ **後端已部署**：前端預設連接到此 API，無需啟動本地後端即可開發前端。
 
